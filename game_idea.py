@@ -10,17 +10,9 @@ import types
 import traceback
 import argparse
 
-maze = m = [[0,2,0,0,0,0,0,0,0],
-            [0,1,0,1,1,1,0,0,0],
-            [0,1,0,1,0,1,0,0,0],
-            [0,1,0,1,0,1,0,0,0],
-            [0,1,1,1,1,1,0,0,0],
-            [0,1,0,1,0,0,0,0,0],
-            [0,0,0,1,0,1,1,1,0],
-            [0,0,0,1,0,1,0,1,0],
-            [0,1,1,1,1,1,1,1,0],
-            [0,0,0,0,0,0,0,1,0],
-            [0,0,0,0,0,0,0,0,0]]
+from interpreter import Interpreter
+from drone import Drone
+from pokemon import Pokedex
 
 def add(self, item):
     self.items[item.name] = item
@@ -49,90 +41,13 @@ class I():
                 print(i)
         else:
             print('Your bag is currently empty')
-            
-class Drone():
-    
-    def __init__(self):
-        self.name = 'drone'
-        self.pos = None
-
-    def start(self):
-        self.pos = [9, 7]
-        self.echo(9, 7)
-
-    def move(self, row, col):
-        if maze[row][col] == 1:
-            self.pos = [row, col]
-            self.echo(row, col)
-        elif maze[row][col] == 2:
-            print('Congrats, you finished!')
-        else:
-            print('There is a wall there.')
-        if DEBUG:
-            print(self.pos)
-            
-    def f(self):
-        row = self.pos[0] - 1
-        col = self.pos[1]
-        self.move(row, col)        
-
-    def b(self):
-        row = self.pos[0] + 1
-        col = self.pos[1]
-        self.move(row, col)    
-
-    def l(self):
-        row = self.pos[0]
-        col = self.pos[1] - 1
-        self.move(row, col)    
-
-    def r(self):        
-        row = self.pos[0]
-        col = self.pos[1] + 1
-        self.move(row, col)            
-
-    def echo(self, row, col):
-        up = maze[row - 1][col]
-        down = maze[row + 1][col]
-        left = maze[row][col - 1]
-        right = maze[row][col + 1]
-        print('_{}_'.format(up))
-        print('{}_{}'.format(left, right))
-        print('_{}_'.format(down))
-
-class Interpreter():
-    """"""
-    def __init__(self):
-        self.cmd = None
-        
-    def parse(self, cmd):
-        try:
-            start = (cmd[:2] == 'i.') or (cmd[:2] == 'd.')
-            call = '(' in cmd and ')' in cmd
-            if start and call:
-                cmd = 'self.' + cmd
-                error = None
-            else:
-                error = 'This syntax is incorrect:'
-            if '(drone)' in cmd:
-                cmd = cmd.replace('(drone)', '(self.d)')
-        except:
-            error = traceback.format_exc()
-            if DEBUG:
-                print('1. ', error)
-            print('This syntax is incorrect...')
-        return error, cmd 
-    
-    def error_message(self, cmd):
-        print(cmd)
-        print('This error message would eventually be customized.')
         
 class App():
     
     def __init__(self):
-        self.interpreter = Interpreter()
+        self.interpreter = Interpreter(DEBUG)
         self.i = I()
-        self.d = Drone()
+        self.d = Drone(DEBUG)
         
     def evaluate(self, cmd):
         try:
@@ -154,8 +69,22 @@ class App():
             else:
                 print(error)
                 self.interpreter.error_message(cmd)
+    
+    def battle(self):
+        self.i.add = types.MethodType(add, self.i)
+        self.i.add(Pokedex())
+        self.monsters = Pokedex()
+        print('You are about to enter a battle.')
+        print('You can get infomation about your pokemon through the pokedex.')
+        print('Do \'pd.all_stats()\' to get the stats of all pokemon.')
+        print('It is a 6 vs. 6 battle. You can attack with any pokemon at any time.')
+        self.command()
+        
+    def run(self, battle=False):
+        if battle:
+            self.battle()
+            return
             
-    def run(self):
         intro = input('Would you like to read the intro? [y/n]: ')
         if intro == 'y':
             with open('intro.txt') as infile:
@@ -196,10 +125,11 @@ class App():
             
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d", '--debug', action='store_true', help="Print information to help with debugging.")
+    parser.add_argument('-d', '--debug', action='store_true', help="Print information to help with debugging.")
+    parser.add_argument('-b', '--battle', action='store_true', help='Jump straight into a battle.')
     args = parser.parse_args()
     
     DEBUG = args.debug
     
     app = App()
-    app.run()
+    app.run(args.battle)
