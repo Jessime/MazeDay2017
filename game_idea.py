@@ -80,6 +80,7 @@ class App():
         print('It is a 6 vs. 6 battle. You can attack with any pokemon at any time.')
         self.command()
         
+        
     def run(self, battle=False):
         if battle:
             self.battle()
