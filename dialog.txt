@@ -1,0 +1,30 @@
+>pm_battle1
+
+You are about to enter a battle.
+You can get infomation about your pokemon through the pokedex.
+Do 'pd.all_stats()' to get the stats of all pokemon.
+It is a 6 vs. 6 battle. You can attack with any pokemon at any time.
+
+>intro1
+
+You just finish reading the intro. Where would you like to go?
+You just got a new skill! You can go places. Use 'i.go('place')'.
+You can see all of your skills by 'i.skills()'.
+Similarly, you can see the items you have in your possession by 'i.bag()'.
+Type 'done' to exit a command loop.
+
+>cmd1
+
+Good job with your first command.
+You are currently at {loc}.
+What is that in the corner? It is a drone.
+You just got a new skill! You can pick things up. Use 'i.add(thing)'.
+
+>drone1
+
+You can control the drone by starting your commands with \'d.\'.            
+For example, \'d.start()\' will launch the drone into a maze.
+Control the drone with with .f(), .b(), .l(), .r()
+Which correspond to forward, back, left, right
+More powerful drones will be able to go up and down as well.
+
