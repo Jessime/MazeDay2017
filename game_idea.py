@@ -12,7 +12,7 @@ import argparse
 
 from interpreter import Interpreter
 from drone import Drone
-from pokemon import Pokedex
+from pokemon import Pokedex, Battle
 from dialog import Dialog
 
 def add(self, item):
@@ -52,6 +52,7 @@ class App():
 
         self.i = I()
         self.drone = Drone(self.debug)
+        self.battle = None
         
     def evaluate(self, cmd):
         try:
@@ -74,16 +75,24 @@ class App():
                 print(error)
                 self.interpreter.error_message(cmd)
     
-    def battle(self):
+    def battle_intro(self):
+        intro = input('Would you like to read the intro? [y/n]: ')
+        if intro == 'y':
+            for i in range(1,3):
+                self.dialog.say('pm_battle{}'.format(i))
+                self.command()        
+                    
+    def fight_battle(self):
         self.i.add = types.MethodType(add, self.i)
         self.i.add(Pokedex())
-        self.monsters = Pokedex()
-        self.dialog.say('pm_battle1')
+        self.battle = Battle(self.i.items['pd'], Pokedex())
+        self.battle_intro()
+#        while not self.battle.finished:
         self.command()
         
     def run(self, battle=False):
         if battle:
-            self.battle()
+            self.fight_battle()
             return
             
         intro = input('Would you like to read the intro? [y/n]: ')

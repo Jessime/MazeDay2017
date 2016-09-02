@@ -12,10 +12,15 @@ class Interpreter():
     def __init__(self, debug):
         self.cmd = None
         self.debug = debug
-
+        self.keywords = {'enemy': 'self.battle.monsters.active.stats()',
+                         'attack': 'self.battle.attack(True)'}
+        
     def parse(self, cmd):
         self.cmd = cmd
         try:
+            if cmd in self.keywords:
+                return None, self.keywords[cmd]
+                
             objects = ['i', 'd', 'pd'] + ['pm' + str(i) for i in range(1,7)]
             obj = cmd.split('.')[0]
             call = cmd.split('.')[1]

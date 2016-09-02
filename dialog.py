@@ -27,6 +27,8 @@ class Dialog():
                     else:
                         assert i == 0, 'There may be a header without a saying at line {}.'.format(i)
                     header = line[1:].strip()
+                elif line[0] == '#':
+                    pass
                 else:
                     saying.append(line.strip())
             dialog[header]= saying
