@@ -22,7 +22,7 @@ class TypingGame():
         self.WPM_adjusted = None
         
     def load_sentences(self):
-        infile = '/home/jessime/Documents/sentences_clean.txt'
+        infile = 'sentences_clean.txt'
         with open(infile) as infile:
             lines = infile.readlines()
         lines = [l.lower().strip() for l in lines]
@@ -39,7 +39,9 @@ class TypingGame():
         while not move_on:
             ans = input('Are you ready for level {}? (y/n): '.format(self.level))
             if ans == 'y':
-                move_on = True 
+                move_on = True
+#            elif ans == 'n':
+#                raise KeyboardInterrupt, 'Thank you for playing.'
 
     def run_level(self):
         total_words = 0
@@ -68,12 +70,16 @@ class TypingGame():
         self.level += 1
         self.WPM_min += 10
         print('Time: {:.2f}s'.format(total_time))
-        print('Correct: {:.2f}'.format(correction))
+        print('Correct: {:.2f}'.format(avg_correction))
         print('Raw WPM: {:.2f}'.format(WPM))
         print('Adjusted WPM: {:.2f}'.format(self.WPM_adjusted))
         print('')
             
     def run(self):
+        print('Welcome to typer.')
+        print('Each round, you will receive an increasing number of sentences.')
+        print('Type the sentences as quickly and accurately as possible.')
+        print('')
         for i in range(self.num_lvls):
             self.pause()
             self.run_level()
