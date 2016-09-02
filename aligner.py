@@ -1,3 +1,10 @@
+"""
+This is not our code. It was taken and adapted from:
+
+http://hipersayanx.blogspot.com/2012/07/sequences-alignment-in-python.html
+http://hipersayanx.blogspot.com.ar/2012/07/longest-common-subsequence-in-python.html
+"""
+
 def lcs(a, b):
     if a == [] or b == []:
         return []
