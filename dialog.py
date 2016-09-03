@@ -6,19 +6,19 @@ Created on Fri Aug 19 21:05:49 2016
 """
 
 class Dialog():
-    
+
     def __init__(self):
         self.dict = self.load()
-        
+
     def say(self, key, **kwargs):
         for line in self.dict[key]:
             print(line.format(**kwargs))
-        
+
     def load(self):
         dialog = {}
         header = ''
         saying = []
-        with open('dialog.txt') as infile:
+        with open('data/dialog.txt') as infile:
             for i, line in enumerate(infile):
                 if line[0] == '>':
                     if saying:
@@ -33,5 +33,4 @@ class Dialog():
                     saying.append(line.strip())
             dialog[header]= saying
         return dialog
-        
-    
+
