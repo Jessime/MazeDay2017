@@ -71,7 +71,7 @@ class TypingGame():
     def set_mp3_player(self):
         platform = sys.platform
         if self.verbose:
-            print('Platform: ', platform)
+            print('\nPlatform: {}\n'.format(platform))
         if platform == 'linux':
             player = self.play_linux
         elif platform == 'darwin':
@@ -185,6 +185,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if sys.platform == 'win32':
-        pygame.mixer.init(int(22050*1.5))
+        pygame.mixer.init(44100)
     game = TypingGame(args.num_lvls, args.verbose, args.print_only, args.silent)
     game.run()
