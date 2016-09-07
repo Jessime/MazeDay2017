@@ -70,6 +70,8 @@ class TypingGame():
 
     def set_mp3_player(self):
         platform = sys.platform
+        if self.verbose:
+            print('Platform: ', platform)
         if platform == 'linux':
             player = self.play_linux
         elif platform == 'darwin':
