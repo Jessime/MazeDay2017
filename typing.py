@@ -9,6 +9,7 @@ import time
 import argparse
 import sys
 import pickle
+import pygame
 
 from subprocess import Popen
 
@@ -64,14 +65,17 @@ class TypingGame():
         Popen(['afplay', mp3])
 
     def play_windows(self, mp3):
-        pass
+        pygame.mixer.music.load(mp3)
+        pygame.mixer.music.play()
 
     def set_mp3_player(self):
         platform = sys.platform
         if platform == 'linux':
             player = self.play_linux
-        if platform == 'darwin':
+        elif platform == 'darwin':
             player = self.play_osx
+        elif platform == 'win32':
+            player = self.play_windows
         return player
 
     def hamming_score(self, str1, str2):
@@ -178,5 +182,7 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--silent', action='store_true', help='Set if you do not want the sentences printed to the console.')
     args = parser.parse_args()
 
+    if sys.platform == 'win32':
+        pygame.mixer.init(int(22050*1.5))
     game = TypingGame(args.num_lvls, args.verbose, args.print_only, args.silent)
     game.run()
