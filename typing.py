@@ -109,6 +109,7 @@ class TypingGame():
         if self.verbose:
             print(aligned[0])
             print(aligned[1])
+            print('')
 
     def output(self):
         if self.print_only:
@@ -173,7 +174,7 @@ class TypingGame():
             self.pause()
             self.run_level()
             if self.WPM_adjusted < self.WPM_min:
-                print('Sorry, you lose. You need a {} WPM.'.format(self.WPM_min))
+                print('Please try again! You need a {} WPM to beat this level.'.format(self.WPM_min))
                 break
 
 if __name__ == '__main__':
