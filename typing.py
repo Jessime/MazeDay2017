@@ -29,25 +29,46 @@ class TypingGame():
 
     Attributes
     ----------
-
+    sentences : [str] or {str:(int,int)}
+        Either raw sentences or sentences as keys to mp3 files.
+    play_mp3 : func
+        Function used to play the sentence.
+    level : int
+        Current game level. Number of sentences prompted is equal to level.
+    total_words : float
+        Words (5 character chunks) in the current sentence.
+    avg_accuracy : float
+        Accuracy across all sentences in a given level.
+    WPM : float
+        Raw Words Per Minute typed by player.
+    WPM_adjusted : float
+        Words Per Minute typed by player and corrected for accuracy.
+    WPM_min : int
+        Minimum Words Per Minute (adjusted) needed to pass level.
     """
-    def __init__(self, num_lvls=3, verbose=False, print_only=False, silent=False):
+    def __init__(self, num_lvls=5, verbose=False, print_only=False, no_sentences=False):
         self.num_lvls = num_lvls
         self.verbose = verbose
         self.print_only = print_only
-        self.silent = silent
+        self.no_sentences = no_sentences
 
         self.sentences = self.load_sentences()
         self.play_mp3 = self.set_mp3_player()
         self.level = 1
-        self.total_words = 0
-        self.avg_accuracy = 0
-        self.WPM_min = 20
+        self.total_words = 0.
+        self.avg_accuracy = 0.
         self.WPM = None
         self.WPM_adjusted = None
+        self.WPM_min = 20
 
     def load_sentences(self):
-        """"Loads appropriate text files for prompt sentences."""
+        """"Loads appropriate text files for prompt sentences.
+
+        Returns
+        -------
+        sentences : [str] or {str:(int,int)}
+            Either raw sentences or sentences as keys to mp3 files.
+        """
         if self.print_only:
             infile = 'data/typing/sentences_clean.txt'
             with open(infile) as infile:
@@ -69,20 +90,33 @@ class TypingGame():
         pygame.mixer.music.play()
 
     def set_mp3_player(self):
+        """Chooses the proper play function based off of the OS.
+
+        Returns
+        -------
+        play_mp3 : func
+            The function used to play the sentence.
+        """
         platform = sys.platform
         if self.verbose:
             print('\nPlatform: {}\n'.format(platform))
         if platform == 'linux':
-            player = self.play_linux
+            play_mp3 = self.play_linux
         elif platform == 'darwin':
-            player = self.play_osx
+            play_mp3 = self.play_osx
         elif platform == 'win32':
-            player = self.play_windows
-        return player
+            play_mp3 = self.play_windows
+        return play_mp3
 
     def hamming_score(self, str1, str2):
         """Typing accuracy based on hamming distance of prompt vs. answer.
 
+        Parameters
+        ----------
+        str1 : str
+            The original sentence, after alignment.
+        str2 : str
+            The sentence given by the user, after alignment.
         Returns
         -------
         score : int
@@ -105,6 +139,13 @@ class TypingGame():
                 sys.exit()
 
     def print_alignment(self, aligned):
+        """Shows the alignment.
+
+        Parameters
+        ----------
+        aligned : (str, str)
+            Both the original and the input versions of the sentence after alignment.
+        """
         print('')
         if self.verbose:
             print(aligned[0])
@@ -112,6 +153,7 @@ class TypingGame():
             print('')
 
     def output(self):
+        """Gives sentence via print and/or mp3"""
         if self.print_only:
             sentence = random.choice(self.sentences)
         else:
@@ -119,12 +161,13 @@ class TypingGame():
             load_info = self.sentences[sentence]
             mp3_file = 'data/typing/{}/{}.mp3'.format(load_info[0], load_info[1])
             self.play_mp3(mp3_file)
-        if not self.silent:
+        if not self.no_sentences:
             print('')
             print(sentence)
         return sentence
 
     def calc_accuracy(self):
+        """"Logic of main loop. Gets input, aligns input, and finds accuracy score."""
         sentence = self.output()
         user_input = input('> ')
         self.total_words += len(sentence)/5
@@ -135,7 +178,12 @@ class TypingGame():
         self.avg_accuracy += accuracy
 
     def report_lvl(self, total_time):
-        """Show the results of a level."""
+        """Show the results of a level.
+
+        Parameters
+        ----------
+        total_time : float
+            The amount of time player spent on current sentence."""
         print('')
         print('Time: {:.2f}s'.format(total_time))
         print('Accuracy: {:.2f}'.format(self.avg_accuracy))
@@ -145,8 +193,8 @@ class TypingGame():
 
     def update_lvl(self):
         """Reset some variables at the end of a lvl."""
-        self.total_words = 0
-        self.avg_accuracy = 0
+        self.total_words = 0.
+        self.avg_accuracy = 0.
         self.level += 1
         self.WPM_min += 10
 
@@ -179,13 +227,13 @@ class TypingGame():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-n', '--num_lvls', default=3, type=int, help='The number of levels you want to play')
+    parser.add_argument('-n', '--num_lvls', default=5, type=int, help='The number of levels you want to play')
     parser.add_argument('-v', '--verbose', action='store_true', help='Print information to help with debugging.')
     parser.add_argument('-po', '--print_only', action='store_true', help='Set if you do not want to use sound-based sentences')
-    parser.add_argument('-s', '--silent', action='store_true', help='Set if you do not want the sentences printed to the console.')
+    parser.add_argument('-ns', '--no_sentences', action='store_true', help='Set if you do not want the sentences printed to the console.')
     args = parser.parse_args()
 
     if sys.platform == 'win32':
         pygame.mixer.init(44100)
-    game = TypingGame(args.num_lvls, args.verbose, args.print_only, args.silent)
+    game = TypingGame(args.num_lvls, args.verbose, args.print_only, args.no_sentences)
     game.run()
