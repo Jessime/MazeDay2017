@@ -25,8 +25,9 @@ class TypingGame():
     verbose : bool (default=False)
         If true, additional information will be printed
     print_only : bool (default=False)
-        Sets the style of the game. Sound on will provide spoken sentences.
-
+        Sets the style of the game. Printing only will have no sounds.
+    no_printing : bool (default=False)
+        If true, sound will play, but the sentences will not be printed to the console.
     Attributes
     ----------
     sentences : [str] or {str:(int,int)}
@@ -46,11 +47,11 @@ class TypingGame():
     WPM_min : int
         Minimum Words Per Minute (adjusted) needed to pass level.
     """
-    def __init__(self, num_lvls=5, verbose=False, print_only=False, no_sentences=False):
+    def __init__(self, num_lvls=5, verbose=False, print_only=False, no_printing=False):
         self.num_lvls = num_lvls
         self.verbose = verbose
         self.print_only = print_only
-        self.no_sentences = no_sentences
+        self.no_printing = no_printing
 
         self.sentences = self.load_sentences()
         self.play_mp3 = self.set_mp3_player()
@@ -70,12 +71,12 @@ class TypingGame():
             Either raw sentences or sentences as keys to mp3 files.
         """
         if self.print_only:
-            infile = 'data/typing/sentences_clean.txt'
+            infile = '../data/typing/sentences_clean.txt'
             with open(infile) as infile:
                 lines = infile.readlines()
             sentences = [l.lower().strip() for l in lines]
         else:
-            infile = 'data/typing/audio_lookup_subset.txt'
+            infile = '../data/typing/audio_lookup_subset.txt'
             sentences = pickle.load(open(infile, 'rb'))
         return sentences
 
@@ -159,9 +160,9 @@ class TypingGame():
         else:
             sentence = random.choice(list(self.sentences.keys()))
             load_info = self.sentences[sentence]
-            mp3_file = 'data/typing/{}/{}.mp3'.format(load_info[0], load_info[1])
+            mp3_file = '../data/typing/{}/{}.mp3'.format(load_info[0], load_info[1])
             self.play_mp3(mp3_file)
-        if not self.no_sentences:
+        if not self.no_printing:
             print('')
             print(sentence)
         return sentence
@@ -230,10 +231,10 @@ if __name__ == '__main__':
     parser.add_argument('-n', '--num_lvls', default=5, type=int, help='The number of levels you want to play')
     parser.add_argument('-v', '--verbose', action='store_true', help='Print information to help with debugging.')
     parser.add_argument('-po', '--print_only', action='store_true', help='Set if you do not want to use sound-based sentences')
-    parser.add_argument('-ns', '--no_sentences', action='store_true', help='Set if you do not want the sentences printed to the console.')
+    parser.add_argument('-np', '--no_printing', action='store_true', help='Set if you do not want the sentences printed to the console.')
     args = parser.parse_args()
 
     if sys.platform == 'win32':
         pygame.mixer.init(44100)
-    game = TypingGame(args.num_lvls, args.verbose, args.print_only, args.no_sentences)
+    game = TypingGame(args.num_lvls, args.verbose, args.print_only, args.no_printing)
     game.run()
