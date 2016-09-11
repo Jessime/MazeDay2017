@@ -9,6 +9,10 @@ import random
 import pygame
 import time
 
+import events
+from controller import Controller
+from view import BasicView
+
 class Sunflower():
 
     def __init__(self):
@@ -41,57 +45,59 @@ class Board():
 class Player():
 
     def __init__(self):
+        self.name = 'Player'
         self.pos = [0, 0]
         self.alive = True
         self.sun_points = 50
 
-class PvsZ():
+    def move(self, direction, step):
+        if direction == 'up' and self.pos[0] - step >= 0:
+            self.pos[0] -= step
+        elif direction == 'down' and self.pos[0] + step <= 4:
+            self.pos[0] += step
+        elif direction == 'left' and self.pos[1] - step >= 0:
+            self.pos[1] -= step
+        elif direction == 'right' and self.pos[1] + step <= 99:
+            self.pos[1] += step
 
-    def __init__(self):
+class Model():
+
+    def __init__(self, ev_manager):
+        self.ev_manager = ev_manager
 
         self.level = 1
         self.board = Board()
         self.player = Player()
+        self.ev_manager.register(self)
 
-    def check_arrows(self, event):
-        """Move player on board if arrow key has been pressed."""
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT:
-                if self.player.pos[1] > 0:
-                    self.player.pos[1] -= 1
-            if event.key == pygame.K_RIGHT:
-                if self.player.pos[1] < 99:
-                    self.player.pos[1] += 5
-            if event.key == pygame.K_UP:
-                if self.player.pos[0] > 0:
-                    self.player.pos[0] -= 1
-            if event.key == pygame.K_DOWN:
-                if self.player.pos[0] < 4:
-                    self.player.pos[0] += 5
+    def update(self, event):
+        if isinstance(event, events.MoveObject):
+            event.obj.move(event.direction, event.step)
 
-            print(self.player.pos)
-            print(self.board[self.player.pos])
+#    def run_level(self):
+#        over = False
+#        while not over:
+#            self.check_input()
+#            self.update()
+#            self.render()
 
-    def run_level(self):
-        over = False
-        while not over:
-            self.check_input()
-            self.update()
-            self.render()
-            for event in pygame.event.get():
-                self.check_arrows(event)
-                if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_ESCAPE:
-                        pygame.display.quit()
-                        pygame.quit()
-                        over = True
-                        self.player.alive = False
+    def run(self):
+        while self.player.alive:
+#            self.run_level()
+            self.ev_manager.post(events.LoopEnd())
+
+class PvsZ():
+
+    def __init__(self):
+        self.ev_manager = events.EventManager()
+        self.model = Model(self.ev_manager)
+        self.controller = Controller(self.ev_manager, self.model)
+        self.basic_view = BasicView(self.ev_manager, self.model)
 
     def run(self):
         pygame.init()
-        pygame.display.set_mode()
-        while self.player.alive:
-            self.run_level()
+        pygame.display.set_mode([100, 100])
+        self.model.run()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
