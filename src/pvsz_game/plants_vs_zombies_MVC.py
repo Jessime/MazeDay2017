@@ -22,6 +22,12 @@ class Sunflower():
         self.time_til_spawn = 20
         self.suns = 0
 
+    def __str__(self):
+        return 'Sunflower'
+
+    def __repr__(self):
+        return str(self) # Advised against http://stackoverflow.com/questions/727761/python-str-and-lists
+
     def spawn_sun(self, timedelta):
         self.time_til_spawn -= timedelta
         if self.time_til_spawn <= 0:
@@ -34,13 +40,20 @@ class Sunflower():
 class Board():
 
     def __init__(self):
-        self.board = [[[]]*100]*5
+        self.board = []
+        for i in range(5):
+            self.board.append([])
+            for i in range(100):
+                self.board[-1].append([])
 
     def __getitem__(self, pos):
         return self.board[pos[0]][pos[1]]
 
     def __setitem__(self, pos, value):
         self.board[pos[0]][pos[1]] = value
+
+    def __str__(self):
+        return str(self.board)
 
 class Player():
 
@@ -68,11 +81,18 @@ class Model():
         self.level = 1
         self.board = Board()
         self.player = Player()
+
+        self.plant_lookup = {'Sunflower': Sunflower}
         self.ev_manager.register(self)
 
     def update(self, event):
         if isinstance(event, events.MoveObject):
             event.obj.move(event.direction, event.step)
+        if isinstance(event, events.GrowPlant):
+            if self.board[event.pos] == []:
+                print('pos: ', event.pos)
+                print('square: ', self.board[event.pos])
+                self.board[event.pos].append(self.plant_lookup[event.plant]())
 
 #    def run_level(self):
 #        over = False

@@ -16,6 +16,9 @@ class Controller():
         self.done = False
 
         self.ev_manager.register(self)
+        self.key_event_checks = [self.check_arrows,
+                             self.check_quit,
+                             self.check_plant]
 
     def check_arrows(self, event):
         """Move player on board if arrow key has been pressed."""
@@ -28,8 +31,14 @@ class Controller():
             ev = events.MoveObject(self.model.player, 'up', 1)
         elif event.key == pygame.K_DOWN:
             ev = events.MoveObject(self.model.player, 'down', 1)
-        if ev is not None:
-            self.ev_manager.post(ev)
+        return ev
+
+    def check_plant(self, event):
+        """Plant the appropriate type plant on the board."""
+        ev = None
+        if event.key == pygame.K_1:
+            ev = events.GrowPlant('Sunflower', self.model.player.pos)
+        return ev
 
     def check_quit(self, event):
         if event.key == pygame.K_ESCAPE:
@@ -39,7 +48,10 @@ class Controller():
 
     def update(self, event):
         if isinstance(event, events.LoopEnd):
-            for ev in pygame.event.get():
-                if ev.type == pygame.KEYUP:
-                    self.check_arrows(ev)
-                #self.check_quit(event)
+            for pygame_event in pygame.event.get():
+                if pygame_event.type == pygame.KEYUP:
+                    for func in self.key_event_checks:
+                        ev = func(pygame_event)
+                        if ev:
+                            self.ev_manager.post(ev)
+                            break

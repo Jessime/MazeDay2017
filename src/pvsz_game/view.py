@@ -24,7 +24,12 @@ class BasicView():
             self.clock.tick(20)
         elif isinstance(event, events.MoveObject):
             print(event)
+            current_square = self.model.board[self.model.player.pos]
+            print('Square contains: {}'.format(current_square))
 
+        elif isinstance(event, events.GrowPlant):
+            print(event)
+            print(self.model.board)
 
 class AudioView():
     pass # For pygame audio later

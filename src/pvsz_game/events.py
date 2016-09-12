@@ -10,6 +10,15 @@ class LoopEnd():
     def __init__(self):
         self.name = 'LoopEnd'
 
+class GrowPlant():
+
+    def __init__(self, plant, pos):
+        self.plant = plant
+        self.pos = pos
+
+    def __str__(self):
+        return '{} planted at {}.'.format(self.plant, self.pos)
+
 class MoveObject():
 
     def __init__(self, obj, direction, step):
