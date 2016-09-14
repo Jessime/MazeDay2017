@@ -21,15 +21,18 @@ class BasicView():
 
     def update(self, event):
         if isinstance(event, events.LoopEnd):
-            self.clock.tick(20)
+            self.clock.tick(5)
         elif isinstance(event, events.MoveObject):
             print(event)
             current_square = self.model.board[self.model.player.pos]
             print('Square contains: {}'.format(current_square))
-
         elif isinstance(event, events.GrowPlant):
             print(event)
+        elif isinstance(event, events.CheckBoard):
+            print()
+            print(self.model.board.items)
             print(self.model.board)
+            print()
 
 class AudioView():
     pass # For pygame audio later

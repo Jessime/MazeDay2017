@@ -29,6 +29,10 @@ class MoveObject():
     def __str__(self):
         return '{}: {}'.format(self.obj.name, self.obj.pos)
 
+class CheckBoard():
+    def __init__(self): pass
+    def __str__(self): return 'Board state check requested.'
+
 class EventManager():
 
     def __init__(self):
