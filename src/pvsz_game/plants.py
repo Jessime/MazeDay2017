@@ -9,9 +9,11 @@ import time
 
 class Plant():
 
-    def __init__(self, pos, board):
+    def __init__(self, pos, board, cost=50):
         self.pos = pos
         self.board = board
+        self.cost = cost
+
         self.level = 1
         self.health = 100
 
@@ -20,10 +22,13 @@ class Plant():
 
 class Sun():
 
+    gold = 50
+
     def __init__(self, pos, spawn_time):
         self.pos = pos
-        self.lifetime = 10
+        self.lifetime = 20
         self.spawn_time = spawn_time
+        self.collected = False
 
     def __str__(self):
         return 'Sun'
@@ -32,14 +37,14 @@ class Sun():
         return str(self)
 
     def alive(self):
-        return self.lifetime > (time.time() - self.spawn_time)
+        return (self.lifetime > (time.time() - self.spawn_time)) and (not self.collected)
 
 class Sunflower(Plant):
 
     def __init__(self, pos, board):
         super().__init__(pos, board)
-        self.reload_time = 20
-        self.time_til_reload = 20
+        self.reload_time = 25
+        self.time_til_reload = 25
         self.suns = 0
 
     def __str__(self):

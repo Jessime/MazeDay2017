@@ -33,6 +33,17 @@ class BasicView():
             print(self.model.board.items)
             print(self.model.board)
             print()
-
+        elif isinstance(event, events.CheckPlayer):
+            print()
+            print('Gold: {}'.format(self.model.player.gold))
+#            pos = self.model.player.pos
+#            print('At: {}: {}'.format(pos, self.model.board[pos]))
+            print()
+        elif isinstance(event, events.UserQuit):
+            print()
+            print(event)
+        elif isinstance(event, events.SunCollected):
+            print()
+            print(event)
 class AudioView():
     pass # For pygame audio later

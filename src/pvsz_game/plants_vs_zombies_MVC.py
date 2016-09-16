@@ -12,7 +12,7 @@ import time
 import events
 from controller import Controller
 from view import BasicView
-from plants import Sunflower
+from plants import Sunflower, Sun
 
 class Board():
 
@@ -36,12 +36,27 @@ class Board():
     def __str__(self):
         return str(self.board)
 
-    def remove_item(self, item):
-        """Removes an item from it's 2D location on the board."""
-        #print('Board: ', self.board[item.pos])
-        #print('index: ', self.board[item.pos].index(item))
+    def del_item(self, item):
+        """Removes an item from it's 2D location on the board.
+
+        Parameters
+        ----------
+        item : class instance
+            The specific item to be removed"""
         index = self.board[item.pos[0]][item.pos[1]].index(item)
         del self.board[item.pos[0]][item.pos[1]][index]
+#
+#    def del_index(self, pos, index):
+#        """Removes an item at a given index from it's 2D location on the board.
+#
+#        Parameters
+#        ----------
+#        pos : [int, int]
+#             2D location on the board
+#        index : int
+#            Spot in list to be deleted
+#        """
+#        del self.board[pos[0]][pos[1]][index]
 
     def clean(self):
         """Remove all objects that are no longer alive."""
@@ -52,7 +67,7 @@ class Board():
                 if i.alive():
                     filtered_ls.append(i)
                 else:
-                    self.remove_item(i)
+                    self.del_item(i)
             filtered_items[name] = filtered_ls
         self.items = filtered_items
 
@@ -62,7 +77,7 @@ class Player():
         self.name = 'Player'
         self.pos = [0, 0]
         self.alive = True
-        self.sun_points = 50
+        self.gold = 50
 
     def move(self, direction, step):
         if direction == 'up' and self.pos[0] - step >= 0:
@@ -92,20 +107,50 @@ class Model():
         for plant in self.board.items['plants']:
             plant.spawn(self.loop_time)
 
-    def grow_plant(self, event):
-        if self.board[event.pos] == []:
-            new_plant = self.plant_lookup[event.plant](list(event.pos), self.board)
+    def grow_plant(self, new_plant, event):
             self.board[event.pos].append(new_plant)
             self.board.items['plants'].append(new_plant)
+            self.player.gold -= new_plant.cost
+            ev = events.GrowPlant(event.plant, event.pos, self.player.gold)
+            self.ev_manager.post(ev)
+
+    def try_planting(self, event):
+        new_plant = self.plant_lookup[event.plant](list(event.pos), self.board)
+        board_pos_empty = self.board[event.pos] == []
+        enough_gold = new_plant.cost <= self.player.gold
+        if board_pos_empty and enough_gold:
+            self.grow_plant(new_plant, event)
+        elif not board_pos_empty:
+            pass
+        elif not enough_gold:
+            pass
+
+    def try_collecting(self, event):
+        """If there is a Sun at a position, convert it to player gold."""
+        sun_list = [i for i in self.board[event.pos] if isinstance(i, Sun)]
+        if sun_list:
+            #self.board.del_index(event.pos, sun_list.index(True))
+            sun_list[0].collected = True
+            self.player.gold += Sun.gold
+            self.ev_manager.post(events.SunCollected(self.player.gold))
+
+    def exit_game(self):
+        pygame.display.quit()
+        pygame.quit()
+        self.player.alive = False
 
     def update(self, event):
         if isinstance(event, events.MoveObject):
             event.obj.move(event.direction, event.step)
-        elif isinstance(event, events.GrowPlant):
-            self.grow_plant(event)
+        elif isinstance(event, events.TryPlanting):
+            self.try_planting(event)
+        elif isinstance(event, events.TryCollecting):
+            self.try_collecting(event)
         elif isinstance(event, events.LoopEnd):
             self.loop_time = time.time() - self.loop_start
             self.loop_start = time.time()
+        elif isinstance(event, events.UserQuit):
+            self.exit_game()
 
     def run(self):
         while self.player.alive:
