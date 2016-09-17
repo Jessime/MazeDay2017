@@ -63,3 +63,16 @@ class Sunflower(Plant):
 
     def level_up(self):
         pass #Maybe later
+
+class PeaShooter(Plant):
+
+    def __init__(self, pos, board, cost=100):
+        super().__init__(pos, board)
+        self.reload_time = 25
+        self.time_til_reload = 25
+
+    def __str__(self):
+        return 'Sunflower'
+
+    def __repr__(self):
+        return str(self)
