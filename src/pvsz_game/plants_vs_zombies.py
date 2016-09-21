@@ -13,6 +13,7 @@ import events
 from controller import Controller
 from view import BasicView
 from plants import Sunflower, Sun
+from zombies import Zombie
 
 class Board():
 
@@ -34,7 +35,7 @@ class Board():
         self.board[pos[0]][pos[1]] = value
 
     def __str__(self):
-        return str(self.board)
+        return '\n\n'.join([str(i) for i in self.board])
 
     def del_item(self, item):
         """Removes an item from it's 2D location on the board.
@@ -45,18 +46,6 @@ class Board():
             The specific item to be removed"""
         index = self.board[item.pos[0]][item.pos[1]].index(item)
         del self.board[item.pos[0]][item.pos[1]][index]
-#
-#    def del_index(self, pos, index):
-#        """Removes an item at a given index from it's 2D location on the board.
-#
-#        Parameters
-#        ----------
-#        pos : [int, int]
-#             2D location on the board
-#        index : int
-#            Spot in list to be deleted
-#        """
-#        del self.board[pos[0]][pos[1]][index]
 
     def clean(self):
         """Remove all objects that are no longer alive."""
@@ -95,17 +84,34 @@ class Model():
         self.ev_manager = ev_manager
 
         self.level = 1
+        self.zombie_deaths_needed = 10 * self.level
+        self.zombie_delay_time = 1
         self.board = Board()
         self.player = Player()
         self.plant_lookup = {'Sunflower': Sunflower}
         self.loop_start = time.time()
-        self.loop_time = None
+        self.loop_time = 0
 
         self.ev_manager.register(self)
 
     def check_plant_spawning(self):
         for plant in self.board.items['plants']:
             plant.spawn(self.loop_time)
+
+    def check_zombie_spawning(self):
+        self.zombie_delay_time -= self.loop_time
+        if self.zombie_delay_time <= 0:
+            new_zombie_lvl = random.randint(0, self.level - 1)
+            new_zombie = Zombie(new_zombie_lvl, [random.randint(0, 4), 99], self.board)
+            new_zombie.spawn()
+            self.zombie_delay_time = random.randint(50, 100)
+
+    def update_zombies(self):
+        self.check_zombie_spawning()
+        kill_player = [z.update(self.loop_time) for z in self.board.items['zombies']]
+        if any(kill_player):
+            self.player.alive = False
+            self.ev_manager.post(events.DeathByZombie())
 
     def grow_plant(self, new_plant, event):
             self.board[event.pos].append(new_plant)
@@ -129,7 +135,6 @@ class Model():
         """If there is a Sun at a position, convert it to player gold."""
         sun_list = [i for i in self.board[event.pos] if isinstance(i, Sun)]
         if sun_list:
-            #self.board.del_index(event.pos, sun_list.index(True))
             sun_list[0].collected = True
             self.player.gold += Sun.gold
             self.ev_manager.post(events.SunCollected(self.player.gold))
@@ -139,7 +144,7 @@ class Model():
         pygame.quit()
         self.player.alive = False
 
-    def update(self, event):
+    def notify(self, event):
         if isinstance(event, events.MoveObject):
             event.obj.move(event.direction, event.step)
         elif isinstance(event, events.TryPlanting):
@@ -152,10 +157,14 @@ class Model():
         elif isinstance(event, events.UserQuit):
             self.exit_game()
 
+    def update(self):
+        self.check_plant_spawning()
+        self.update_zombies()
+        self.board.clean()
+
     def run(self):
         while self.player.alive:
-            self.check_plant_spawning()
-            self.board.clean()
+            self.update()
             self.ev_manager.post(events.LoopEnd())
 
 class PvsZ():

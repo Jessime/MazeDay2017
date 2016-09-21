@@ -21,7 +21,8 @@ class BasicView():
                                 'CheckBoard': self.check_board,
                                 'CheckPlayer': self.check_player,
                                 'UserQuit': self.show,
-                                'SunCollected': self.show}
+                                'SunCollected': self.show,
+                                'DeathByZombie': self.show}
 
         self.ev_manager.register(self)
 
@@ -43,7 +44,7 @@ class BasicView():
     def show(self):
         print('\n', self.event, '\n')
 
-    def update(self, event):
+    def notify(self, event):
         self.event = event
         name = event.__class__.__name__
         if name in self.event_func_dict:

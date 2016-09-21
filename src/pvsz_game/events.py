@@ -16,6 +16,10 @@ class CheckPlayer():
     def __init__(self): pass
     def __str__(self): return 'Player state check requested.'
 
+class DeathByZombie():
+    def __init__(self): pass
+    def __str__(self): return 'Oh no! You have been eaten by a zombie! Please try again for redemption.'
+
 class GrowPlant():
 
     def __init__(self, plant, pos, funds):
@@ -70,6 +74,7 @@ class UserQuit():
     def __init__(self): pass
     def __str__(self): return 'Thanks for playing! We hope you enjoyed it.'
 
+
 class EventManager():
 
     def __init__(self):
@@ -80,4 +85,4 @@ class EventManager():
 
     def post(self, event):
         for listener in self.listeners:
-            listener.update(event)
+            listener.notify(event)

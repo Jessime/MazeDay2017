@@ -28,6 +28,7 @@ class TypingGame():
         Sets the style of the game. Printing only will have no sounds.
     no_printing : bool (default=False)
         If true, sound will play, but the sentences will not be printed to the console.
+
     Attributes
     ----------
     sentences : [str] or {str:(int,int)}

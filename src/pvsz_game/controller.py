@@ -54,7 +54,7 @@ class Controller():
             message = events.CheckPlayer()
         return message
 
-    def update(self, event):
+    def notify(self, event):
         if isinstance(event, events.LoopEnd):
             for pygame_event in pygame.event.get():
                 message = None

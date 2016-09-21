@@ -76,3 +76,6 @@ class PeaShooter(Plant):
 
     def __repr__(self):
         return str(self)
+
+    def spawn(self, timedelta):
+        pass
