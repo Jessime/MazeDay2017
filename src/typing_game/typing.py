@@ -72,12 +72,12 @@ class TypingGame():
             Either raw sentences or sentences as keys to mp3 files.
         """
         if self.print_only:
-            infile = '../data/typing/sentences_clean.txt'
+            infile = 'data/sentences_clean.txt'
             with open(infile) as infile:
                 lines = infile.readlines()
             sentences = [l.lower().strip() for l in lines]
         else:
-            infile = '../data/typing/audio_lookup_subset.txt'
+            infile = 'data/audio_lookup_subset.txt'
             sentences = pickle.load(open(infile, 'rb'))
         return sentences
 
@@ -161,7 +161,7 @@ class TypingGame():
         else:
             sentence = random.choice(list(self.sentences.keys()))
             load_info = self.sentences[sentence]
-            mp3_file = '../data/typing/{}/{}.mp3'.format(load_info[0], load_info[1])
+            mp3_file = 'data/{}/{}.mp3'.format(load_info[0], load_info[1])
             self.play_mp3(mp3_file)
         if not self.no_printing:
             print('')

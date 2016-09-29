@@ -6,13 +6,12 @@ Created on Fri Sep  9 23:14:44 2016
 """
 import argparse
 import random
-import pygame
 import time
 
 import events
 from controller import Controller
-from view import BasicView
-from plants import Sunflower, Sun
+from view import BasicView, AudioView
+from plants import Plant, PeaShooter, Sunflower, Sun
 from zombies import Zombie
 
 class Board():
@@ -35,7 +34,15 @@ class Board():
         self.board[pos[0]][pos[1]] = value
 
     def __str__(self):
-        return '\n\n'.join([str(i) for i in self.board])
+        return '\n\n'.join(['{}: {}'.format(i, row) for i, row in enumerate(self.board)])
+
+    def is_plant(self, pos):
+        plants = [issubclass(i.__class__, Plant) for i in self.board[pos[0]][pos[1]]]
+        return plants
+
+    def is_zombie(self, pos):
+        zombies = [isinstance(i, Zombie) for i in self.board[pos[0]][pos[1]]]
+        return zombies
 
     def del_item(self, item):
         """Removes an item from it's 2D location on the board.
@@ -85,26 +92,28 @@ class Model():
 
         self.level = 1
         self.zombie_deaths_needed = 10 * self.level
-        self.zombie_delay_time = 1
+        self.zombie_spawn_delay = 1
+        self.zombie_spawn_delay_range = (5, 10)
         self.board = Board()
         self.player = Player()
-        self.plant_lookup = {'Sunflower': Sunflower}
+        self.plant_lookup = {'Sunflower': Sunflower,
+                             'PeaShooter': PeaShooter}
         self.loop_start = time.time()
         self.loop_time = 0
 
         self.ev_manager.register(self)
 
-    def check_plant_spawning(self):
+    def check_plant_production(self):
         for plant in self.board.items['plants']:
-            plant.spawn(self.loop_time)
+            plant.produce(self.loop_time)
 
     def check_zombie_spawning(self):
-        self.zombie_delay_time -= self.loop_time
-        if self.zombie_delay_time <= 0:
+        self.zombie_spawn_delay -= self.loop_time
+        if self.zombie_spawn_delay <= 0:
             new_zombie_lvl = random.randint(0, self.level - 1)
             new_zombie = Zombie(new_zombie_lvl, [random.randint(0, 4), 99], self.board)
             new_zombie.spawn()
-            self.zombie_delay_time = random.randint(50, 100)
+            self.zombie_spawn_delay = random.randint(*self.zombie_spawn_delay_range)
 
     def update_zombies(self):
         self.check_zombie_spawning()
@@ -140,8 +149,6 @@ class Model():
             self.ev_manager.post(events.SunCollected(self.player.gold))
 
     def exit_game(self):
-        pygame.display.quit()
-        pygame.quit()
         self.player.alive = False
 
     def notify(self, event):
@@ -158,35 +165,35 @@ class Model():
             self.exit_game()
 
     def update(self):
-        self.check_plant_spawning()
+        self.check_plant_production()
         self.update_zombies()
         self.board.clean()
 
     def run(self):
+        self.ev_manager.post(events.Init())
         while self.player.alive:
             self.update()
             self.ev_manager.post(events.LoopEnd())
 
 class PvsZ():
 
-    def __init__(self):
+    def __init__(self, print_only=False, no_printing=False):
         self.ev_manager = events.EventManager()
         self.model = Model(self.ev_manager)
         self.controller = Controller(self.ev_manager, self.model)
-        self.basic_view = BasicView(self.ev_manager, self.model)
-
-    def run(self):
-        pygame.init()
-        pygame.display.set_mode([100, 100])
-        self.model.run()
+        if not no_printing:
+            self.basic_view = BasicView(self.ev_manager, self.model)
+        if not print_only:
+            pass
+            #self.audio_view = AudioView(self.ev_manager, self.model)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', '--num_lvls', default=5, type=int, help='The number of levels you want to play')
     parser.add_argument('-v', '--verbose', action='store_true', help='Print information to help with debugging.')
     parser.add_argument('-po', '--print_only', action='store_true', help='Set if you do not want to use sound-based sentences')
-    parser.add_argument('-ns', '--no_sentences', action='store_true', help='Set if you do not want the sentences printed to the console.')
+    parser.add_argument('-np', '--no_printing', action='store_true', help='Set if you do not want information printed to the console.')
     args = parser.parse_args()
 
-    game = PvsZ()
-    game.run()
+    game = PvsZ(print_only=args.print_only, no_printing=args.no_printing)
+    game.model.run()

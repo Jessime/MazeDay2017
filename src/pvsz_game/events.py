@@ -30,6 +30,10 @@ class GrowPlant():
     def __str__(self):
         return '{} planted at {}.\nRemaining Suns: {}'.format(self.plant, self.pos, self.funds)
 
+class Init():
+    def __init__(self): pass
+    def __str__(self): return 'Starting app.'
+
 class LoopEnd():
 
     def __init__(self):

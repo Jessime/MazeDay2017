@@ -4,11 +4,10 @@ Created on Mon Sep 19 18:46:58 2016
 
 @author: jessime
 """
-from plants import Plant
 
 TYPE_STATS = [{'name':'Basic',
                'health':100,
-               'pause':.1,
+               'pause':1,
                'attack':10
                }
               ]
@@ -26,7 +25,7 @@ class Zombie():
         self.attack = TYPE_STATS[self.level]['attack']
 
     def __str__(self):
-        return '{} Zombie'.format(self.name)
+        return '{}Zombie({})'.format(self.name, self.health)
 
     def __repr__(self):
         return str(self)
@@ -41,9 +40,9 @@ class Zombie():
     def move(self, timedelta):
         if self.pause <= 0:
             self.pause = TYPE_STATS[self.level]['pause']
-            left_pos = self.board[[self.pos[0], self.pos[1] - 1]]
-            contains_plant = any([issubclass(i.__class__, Plant) for i in left_pos])
-            if not contains_plant:
+            left_pos = [self.pos[0], self.pos[1] - 1]
+            contains_plant = self.board.is_plant(left_pos)
+            if not any(contains_plant):
                 index = self.board[self.pos].index(self)
                 del self.board[self.pos][index]
                 self.board[[self.pos[0], self.pos[1] - 1]].append(self)

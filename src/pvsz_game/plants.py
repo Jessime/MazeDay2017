@@ -43,8 +43,8 @@ class Sunflower(Plant):
 
     def __init__(self, pos, board):
         super().__init__(pos, board)
-        self.reload_time = 25
-        self.time_til_reload = 25
+        self.reload_time = 2
+        self.time_til_reload = 2
         self.suns = 0
 
     def __str__(self):
@@ -53,7 +53,7 @@ class Sunflower(Plant):
     def __repr__(self):
         return str(self) # Advised against http://stackoverflow.com/questions/727761/python-str-and-lists
 
-    def spawn(self, timedelta):
+    def produce(self, timedelta):
         self.time_til_reload -= timedelta
         if self.time_til_reload <= 0:
             new_sun = Sun(self.pos, time.time())
@@ -66,16 +66,34 @@ class Sunflower(Plant):
 
 class PeaShooter(Plant):
 
-    def __init__(self, pos, board, cost=100):
-        super().__init__(pos, board)
-        self.reload_time = 25
-        self.time_til_reload = 25
+    def __init__(self, pos, board):
+        super().__init__(pos, board, cost=100)
+        self.reload_time = 2
+        self.time_til_reload = 2
+        self.damage = 10
 
     def __str__(self):
-        return 'Sunflower'
+        return 'PeaShooter'
 
     def __repr__(self):
         return str(self)
 
-    def spawn(self, timedelta):
-        pass
+    def produce(self, timedelta):
+        self.time_til_reload -= timedelta
+        if self.time_til_reload <= 0:
+            self.time_til_reload = self.reload_time
+            end_of_flight = False
+            try:
+                bullet_pos = [self.pos[0], self.pos[1] + 1]
+            except IndexError:
+                end_of_flight = True
+            while not end_of_flight:
+                is_zombie = self.board.is_zombie(bullet_pos)
+                if any(is_zombie):
+                    zombie = self.board[bullet_pos][is_zombie.index(True)]
+                    zombie.health -= self.damage
+                    end_of_flight = True
+                else:
+                    bullet_pos[1] += 1
+                    if bullet_pos[1] == 99:
+                        end_of_flight = True

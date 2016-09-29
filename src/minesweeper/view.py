@@ -6,6 +6,7 @@ Created on Sat Sep 10 15:25:02 2016
 """
 
 import pygame
+from subprocess import Popen, check_call
 
 class View:
 
@@ -29,22 +30,23 @@ class BasicView(View):
         super().__init__(ev_manager, model)
 
         self.clock = pygame.time.Clock()
-        self.event_func_dict = {'CheckBoard': self.check_board,
+        self.event_func_dict = {'ButtonPress' : self.check_board,
+                                'ChangePos' : self.change_pos,
+                                'CheckBoard': self.check_board,
                                 'CheckPlayer': self.check_player,
-                                'DeathByZombie': self.show,
-                                'GrowPlant': self.show,
                                 'Init': self.initialize,
                                 'LoopEnd': self.loop_end,
-                                'MoveObject': self.move_object,
-                                'SunCollected': self.show,
                                 'UserQuit': self.exit_game}
 
+    def change_pos(self):
+        print('\n', 'Pos: {}'.format(self.model.pos), '\n')
+
     def check_board(self):
-        print('\n', self.model.board.items)
-        print(self.model.board, '\n')
+        print('    0, 1, 2, 3, 4. 5, 6, 7')
+        print('\n'.join(['{}: {}'.format(i, row) for i, row in enumerate(self.model.board)]))
 
     def check_player(self):
-        print('\n', 'Gold: {}'.format(self.model.player.gold), '\n')
+        print('\n', 'Pos: {}'.format(self.model.pos), '\n')
 
     def exit_game(self):
         pygame.display.quit()
@@ -58,14 +60,8 @@ class BasicView(View):
     def loop_end(self):
         self.clock.tick(20)
 
-    def move_object(self):
-        print(self.event)
-        current_square = self.model.board[self.model.player.pos]
-        print('Square contains: {}'.format(current_square))
-
     def show(self):
         print('\n', self.event, '\n')
-
 
 
 class AudioView(View):
@@ -74,18 +70,20 @@ class AudioView(View):
         super().__init__(ev_manager, model)
 
         self.previous_player_col = None
-        self.event_func_dict = {'CheckBoard': self.check_board,
-                                'CheckPlayer': self.check_player,
-                                'DeathByZombie': self.show,
-                                'GrowPlant': self.show,
-                                'LoopEnd': self.loop_end,
-                                'MoveObject': self.move_object,
-                                'SunCollected': self.show,
-                                'UserQuit': self.show}
+        self.event_func_dict = {'ButtonPress' : self.button_press,
+                                'ChangePos': self.change_pos}
 
-    def check_board(self): pass
-    def check_player(self): pass
-    def loop_end(self): pass
-#
-#    def move_object(self):
-#        if self.model.player.pos[1] != self.previous_player_col:
+    def button_press(self):
+        cmd = 'mpg123 -q data/press.mp3'.split()
+        check_call(cmd)
+        cmd = ''
+
+    def change_pos(self):
+        cmd = 'mpg123 -q data/move.mp3'.split()
+        check_call(cmd)
+        if self.event.button is not None:
+            if not self.event.button.is_hidden:
+                num = self.event.button.number
+                if num != 0:
+                    cmd = 'mpg123 -q data/{}.mp3'.format(num).split()
+                    check_call(cmd)

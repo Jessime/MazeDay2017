@@ -13,46 +13,37 @@ class Controller():
     def __init__(self, ev_manager, model):
         self.ev_manager = ev_manager
         self.model = model
-        self.done = False
 
         self.ev_manager.register(self)
         self.key_event_checks = [self.check_arrows,
-                             self.check_state_checks,
-                             self.check_plant,
-                             self.check_others]
+                                 self.check_others,
+                                 self.check_state]
 
     def check_arrows(self, message, event):
         """Move player on board if arrow key has been pressed."""
         if event.key == pygame.K_LEFT:
-            message = events.MoveObject(self.model.player, 'left', 5)
+            message = events.TryChangePos('left')
         elif event.key == pygame.K_RIGHT:
-            message = events.MoveObject(self.model.player, 'right', 5)
+            message = events.TryChangePos('right')
         elif event.key == pygame.K_UP:
-            message = events.MoveObject(self.model.player, 'up', 1)
+            message = events.TryChangePos('up')
         elif event.key == pygame.K_DOWN:
-            message = events.MoveObject(self.model.player, 'down', 1)
-        return message
-
-    def check_plant(self, message, event):
-        """Plant the appropriate type plant on the board."""
-        key2plant = {pygame.K_1:'Sunflower',
-                     pygame.K_2:'PeaShooter'}
-        if event.key in key2plant:
-            message = events.TryPlanting(key2plant[event.key], self.model.player.pos)
+            message = events.TryChangePos('down')
         return message
 
     def check_others(self, message, event):
         if event.key == pygame.K_ESCAPE:
             message = events.UserQuit()
         elif event.key == pygame.K_SPACE:
-            message = events.TryCollecting(self.model.player.pos)
+            message = events.TryButtonPress(self.model.pos)
+        elif event.key == pygame.K_f:
+            message = events.TryFlagToggle(self.model.pos)
         return message
 
-    def check_state_checks(self, message, event):
-        """Presents information about current state of game."""
+    def check_state(self, message, event):
         if event.key == pygame.K_b:
             message = events.CheckBoard()
-        if event.key == pygame.K_m:
+        elif event.key == pygame.K_m:
             message = events.CheckPlayer()
         return message
 
