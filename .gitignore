@@ -69,5 +69,5 @@ target/
 #Backups
 *~
 
-#Data
-static/images/wordcloud.png
+#Spyder
+.spyproject/
