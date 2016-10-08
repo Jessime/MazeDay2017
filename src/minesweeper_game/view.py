@@ -14,6 +14,7 @@ class View:
         self.ev_manager = ev_manager
         self.model = model
 
+        self.clock = pygame.time.Clock()
         self.event = None
 
         self.ev_manager.register(self)
@@ -29,7 +30,6 @@ class BasicView(View):
     def __init__(self, ev_manager, model):
         super().__init__(ev_manager, model)
 
-        self.clock = pygame.time.Clock()
         self.event_func_dict = {'ButtonPress' : self.check_board,
                                 'ChangePos' : self.change_pos,
                                 'CheckBoard': self.check_board,
@@ -78,6 +78,7 @@ class AudioView(View):
                                 'Explode' : self.play,
                                 'FlagNum' : self.flag_num,
                                 'Init': self.initialize,
+                                'LoopEnd' : self.loop_end,
                                 'ToggleFlag' : self.play,
                                 'Win' : self.play}
 
@@ -110,6 +111,9 @@ class AudioView(View):
     def initialize(self):
         pygame.init()
         pygame.display.set_mode([100, 100])
+
+    def loop_end(self):
+        self.clock.tick(20)
 
     def play(self):
         cmd = 'mpg123 -q data/{}.mp3'.format(self.event.filename).split()
