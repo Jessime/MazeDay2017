@@ -23,6 +23,8 @@ to launch straight into a game.
 
 Flag | Full Flag | Default | Description
 --- | --- | --- | ---
+-s | --size | 4 | Width and height of model board. Must be between 3 and 10.
+-n | --n_bombs | 3 | Number of bombs in model. Must be between 1 and 10.
 -po | --print_only | N/A | Set if you do not want to use sound-based sentences
 -np | --no_printing | N/A | Set if you do not want the sentences printed to the console.
 

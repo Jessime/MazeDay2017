@@ -59,7 +59,7 @@ class Model():
     ev_manager : EventManager
         Coordinates message passing between MVC classes.
     size : int (default=4)
-        With and hieght of model board. Must be between 3 and 10.
+        Width and height of model board. Must be between 3 and 10.
     n_bombs : int (default=3)
         Number of bombs in model. Must be between 1 and 10.
 
@@ -224,7 +224,7 @@ class App():
     no_printing : bool (default=False)
         If true, sound will play, but the sentences will not be printed to the console.
     size : int (default=4)
-        With and hieght of model board. Must be between 3 and 10.
+        Width and height of model board. Must be between 3 and 10.
     n_bombs : int (default=3)
         Number of bombs in model. Must be between 1 and 10.
 
