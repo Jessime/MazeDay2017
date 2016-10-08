@@ -18,11 +18,11 @@ class ChangePos():
         self.button = button
 
 class CheckBoard():
-    def __init__(self): pass
+
     def __str__(self): return 'Show the current state of the board.'
 
 class CheckPlayer():
-    def __init__(self): pass
+
     def __str__(self): return 'Show the current state of the Player.'
 
 class CountUnflagged():
@@ -39,13 +39,11 @@ class FlagNum():
         self.num = num
 
 class Init():
-    def __init__(self): pass
+
     def __str__(self): return 'Starting app.'
 
 class LoopEnd():
-
-    def __init__(self):
-        self.name = 'LoopEnd'
+    pass
 
 class ToggleFlag():
 
@@ -74,10 +72,11 @@ class TryFlagToggle():
         self.pos = pos
 
 class UserQuit():
-    def __init__(self): pass
+
     def __str__(self): return 'Thanks for playing! We hope you enjoyed it.'
 
 class Win():
+
     def __init__(self):
         self.filename = 'cheer'
 
