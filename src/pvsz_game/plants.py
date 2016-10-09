@@ -48,7 +48,7 @@ class Sunflower(Plant):
         self.suns = 0
 
     def __str__(self):
-        return 'Sunflower'
+        return 'Sunflower({})'.format(self.health)
 
     def __repr__(self):
         return str(self) # Advised against http://stackoverflow.com/questions/727761/python-str-and-lists

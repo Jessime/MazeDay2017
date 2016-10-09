@@ -13,16 +13,35 @@ from view import BasicView, AudioView
 
 
 class Button():
+    """Represents squares on the board with which the player can interact.
 
+    Parameters
+    ----------
+    board : [[Button]]
+        A 2D list of Buttons representing the field to be cleared.
+    pos : [int, int]
+        The location on the board for a particular button.
+
+    is_hidden : bool (default=True)
+        Indicates if player has pressed this button.
+    is_flagged : bool (default=False)
+        Indicates if player has flagged button as potential bomb.
+    is_bomb : bool (default=False)
+        Indicates if button is a bomb.
+    number : None or int
+        None if button is bomb, else int equal to number of adjecent bombs.
+    """
     def __init__(self, board, pos):
         self.board = board
         self.pos = pos
+
         self.is_hidden = True
         self.is_flagged = False
         self.is_bomb = False
         self.number = None
 
     def get_neighbors(self):
+        """Generates Buttons next to this button on the board."""
         off_sets = [-1, 0, 1]
         checked = set()
         for i in off_sets:
@@ -34,6 +53,7 @@ class Button():
                     yield self.board[row][col]
 
     def calc_number(self):
+        """Sets self.number by checking each neighbor's is_bomb flag."""
         if self.is_bomb:
             return
         self.number = 0

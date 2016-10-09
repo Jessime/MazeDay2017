@@ -6,6 +6,9 @@ Created on Sat Sep 10 15:25:02 2016
 """
 
 import pygame
+import random
+
+from subprocess import Popen
 
 class View:
 
@@ -53,6 +56,7 @@ class BasicView(View):
 
     def initialize(self):
         pygame.init()
+        pygame.mixer.init()
         pygame.display.set_mode([100, 100])
 
     def loop_end(self):
@@ -73,7 +77,7 @@ class AudioView(View):
     def __init__(self, ev_manager, model):
         super().__init__(ev_manager, model)
 
-        self.previous_player_col = None
+        self.previous_player_row = None
         self.event_func_dict = {'CheckBoard': self.check_board,
                                 'CheckPlayer': self.check_player,
                                 'DeathByZombie': self.show,
@@ -86,6 +90,21 @@ class AudioView(View):
     def check_board(self): pass
     def check_player(self): pass
     def loop_end(self): pass
-#
-#    def move_object(self):
-#        if self.model.player.pos[1] != self.previous_player_col:
+    def show(self): pass
+
+    def move_object(self):
+        row = self.model.player.pos[0]
+        if row != self.previous_player_row:
+            self.previous_player_col = row
+            r = random.random()
+            print(r)
+            pygame.mixer.music.set_volume(r)
+            self.play()
+
+    def play(self):
+        pygame.mixer.music.load('data/zombie.mp3')
+        pygame.mixer.music.play()
+#        i = 0
+#        while pygame.mixer.music.get_busy():
+#            print(i)
+#            i += 1

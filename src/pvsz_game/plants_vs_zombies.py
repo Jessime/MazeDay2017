@@ -184,8 +184,7 @@ class PvsZ():
         if not no_printing:
             self.basic_view = BasicView(self.ev_manager, self.model)
         if not print_only:
-            pass
-            #self.audio_view = AudioView(self.ev_manager, self.model)
+            self.audio_view = AudioView(self.ev_manager, self.model)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
