@@ -39,6 +39,9 @@ class LoopEnd():
     def __init__(self):
         self.name = 'LoopEnd'
 
+class MoveHome():
+    pass
+
 class MoveObject():
 
     def __init__(self, obj, direction, step):

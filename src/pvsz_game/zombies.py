@@ -7,7 +7,7 @@ Created on Mon Sep 19 18:46:58 2016
 
 TYPE_STATS = [{'name' : 'Basic',
                'health' : 100,
-               'pause' : .1,
+               'pause' : 1,
                'attack' : 4,
                'attack_pause' : 1
                }

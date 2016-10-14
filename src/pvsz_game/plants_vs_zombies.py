@@ -4,15 +4,14 @@ Created on Fri Sep  9 23:14:44 2016
 
 @author: jessime
 """
-import argparse
 import random
 import time
 
-import events
-from controller import Controller
-from view import BasicView, AudioView
-from plants import Plant, PeaShooter, Sunflower, Sun
-from zombies import Zombie
+import pvsz_game.events as events
+from .controller import Controller
+from .view import BasicView, AudioView
+from .plants import Plant, PeaShooter, Sunflower, Sun
+from .zombies import Zombie
 
 class Board():
 
@@ -43,6 +42,23 @@ class Board():
     def is_zombie(self, pos):
         zombies = [isinstance(i, Zombie) for i in self.board[pos[0]][pos[1]]]
         return zombies
+
+    def first_zombie_col(self, row_num):
+        """Return column number of first zombie in row.
+
+        Parameters
+        ----------
+        row_num : int
+            Index of row to search.
+
+        Returns
+        -------
+        col_num : int
+            Index of the first column containing a zombie."""
+        row = self.board[row_num]
+        for col_num, square in enumerate(row):
+            if any(self.is_zombie([row_num, col_num])):
+                return col_num
 
     def del_item(self, item):
         """Removes an item from it's 2D location on the board.
@@ -185,14 +201,3 @@ class PvsZ():
             self.basic_view = BasicView(self.ev_manager, self.model)
         if not print_only:
             self.audio_view = AudioView(self.ev_manager, self.model)
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-n', '--num_lvls', default=5, type=int, help='The number of levels you want to play')
-    parser.add_argument('-v', '--verbose', action='store_true', help='Print information to help with debugging.')
-    parser.add_argument('-po', '--print_only', action='store_true', help='Set if you do not want to use sound-based sentences')
-    parser.add_argument('-np', '--no_printing', action='store_true', help='Set if you do not want information printed to the console.')
-    args = parser.parse_args()
-
-    game = PvsZ(print_only=args.print_only, no_printing=args.no_printing)
-    game.model.run()

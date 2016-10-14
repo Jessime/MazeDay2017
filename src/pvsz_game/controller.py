@@ -6,7 +6,7 @@ Created on Sat Sep 10 15:25:02 2016
 """
 
 import pygame
-import events
+import pvsz_game.events as events
 
 class Controller():
 
@@ -46,6 +46,8 @@ class Controller():
             message = events.UserQuit()
         elif event.key == pygame.K_SPACE:
             message = events.TryCollecting(self.model.player.pos)
+        elif event.key == pygame.K_h:
+            message = events.MoveHome()
         return message
 
     def check_state_checks(self, message, event):

@@ -6,9 +6,7 @@ Created on Sat Sep 10 15:25:02 2016
 """
 
 import pygame
-import random
-
-from subprocess import Popen
+import pkg_resources
 
 class View:
 
@@ -95,16 +93,14 @@ class AudioView(View):
     def move_object(self):
         row = self.model.player.pos[0]
         if row != self.previous_player_row:
-            self.previous_player_col = row
-            r = random.random()
-            print(r)
-            pygame.mixer.music.set_volume(r)
-            self.play()
+            self.previous_player_row = row
+            zombie_col = self.model.board.first_zombie_col(row)
+            if zombie_col is not None:
+                volume = (100 - zombie_col)/100
+                pygame.mixer.music.set_volume(volume)
+                self.play()
 
     def play(self):
-        pygame.mixer.music.load('data/zombie.mp3')
+        template = pkg_resources.resource_filename('pvsz_game', 'data/zombie.mp3')
+        pygame.mixer.music.load(template)
         pygame.mixer.music.play()
-#        i = 0
-#        while pygame.mixer.music.get_busy():
-#            print(i)
-#            i += 1
