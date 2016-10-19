@@ -26,6 +26,8 @@ class Zombie():
         self.attack = TYPE_STATS[self.level]['attack']
         self.attack_pause = TYPE_STATS[self.level]['attack_pause']
 
+        self.spawn()
+        
     def __str__(self):
         return '{}Zombie({})'.format(self.name, self.health)
 

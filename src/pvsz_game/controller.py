@@ -17,9 +17,15 @@ class Controller():
 
         self.ev_manager.register(self)
         self.key_event_checks = [self.check_arrows,
-                             self.check_state_checks,
-                             self.check_plant,
-                             self.check_others]
+                                 self.check_state_checks,
+                                 self.check_plant,
+                                 self.check_others]
+        self.key2plant = {pygame.K_1:'Sunflower',
+                          pygame.K_2:'PeaShooter',
+                          pygame.K_3:'CherryBomb',
+                          pygame.K_4:'WallNut',
+                          pygame.K_5:'SnowPea'}
+
 
     def check_arrows(self, message, event):
         """Move player on board if arrow key has been pressed."""
@@ -35,10 +41,8 @@ class Controller():
 
     def check_plant(self, message, event):
         """Plant the appropriate type plant on the board."""
-        key2plant = {pygame.K_1:'Sunflower',
-                     pygame.K_2:'PeaShooter'}
-        if event.key in key2plant:
-            message = events.TryPlanting(key2plant[event.key], self.model.player.pos)
+        if event.key in self.key2plant:
+            message = events.TryPlanting(self.key2plant[event.key], self.model.player.pos)
         return message
 
     def check_others(self, message, event):

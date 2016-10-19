@@ -10,7 +10,7 @@ import time
 import pvsz_game.events as events
 from .controller import Controller
 from .view import BasicView, AudioView
-from .plants import Plant, PeaShooter, Sunflower, Sun
+from .plants import CherryBomb, Plant, PeaShooter, Sunflower, Sun, WallNut
 from .zombies import Zombie
 
 class Board():
@@ -113,7 +113,9 @@ class Model():
         self.board = Board()
         self.player = Player()
         self.plant_lookup = {'Sunflower': Sunflower,
-                             'PeaShooter': PeaShooter}
+                             'PeaShooter': PeaShooter,
+                             'CherryBomb': CherryBomb,
+                             'WallNut':WallNut}
         self.loop_start = time.time()
         self.loop_time = 0
 
@@ -127,8 +129,7 @@ class Model():
         self.zombie_spawn_delay -= self.loop_time
         if self.zombie_spawn_delay <= 0:
             new_zombie_lvl = random.randint(0, self.level - 1)
-            new_zombie = Zombie(new_zombie_lvl, [random.randint(0, 4), 99], self.board)
-            new_zombie.spawn()
+            _ = Zombie(new_zombie_lvl, [random.randint(0, 4), 99], self.board)
             self.zombie_spawn_delay = random.randint(*self.zombie_spawn_delay_range)
 
     def update_zombies(self):

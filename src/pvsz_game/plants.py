@@ -14,11 +14,13 @@ class Plant():
         self.board = board
         self.cost = cost
 
-        self.level = 1
         self.health = 100
 
     def alive(self):
         return self.health > 0
+
+    def produce(self, timedelta):
+        pass
 
 class Sun():
 
@@ -61,9 +63,6 @@ class Sunflower(Plant):
             self.board.items['suns'].append(new_sun)
             self.time_til_reload = self.reload_time
 
-    def level_up(self):
-        pass #Maybe later
-
 class PeaShooter(Plant):
 
     def __init__(self, pos, board):
@@ -73,7 +72,7 @@ class PeaShooter(Plant):
         self.damage = 10
 
     def __str__(self):
-        return 'PeaShooter'
+        return 'PeaShooter({})'.format(self.health)
 
     def __repr__(self):
         return str(self)
@@ -82,18 +81,81 @@ class PeaShooter(Plant):
         self.time_til_reload -= timedelta
         if self.time_til_reload <= 0:
             self.time_til_reload = self.reload_time
-            end_of_flight = False
-            try:
-                bullet_pos = [self.pos[0], self.pos[1] + 1]
-            except IndexError:
-                end_of_flight = True
-            while not end_of_flight:
-                is_zombie = self.board.is_zombie(bullet_pos)
+            bullet_pos = [self.pos[0], self.pos[1] + 1]
+            while True:
+                try:
+                    is_zombie = self.board.is_zombie(bullet_pos)
+                except IndexError:
+                    break
                 if any(is_zombie):
                     zombie = self.board[bullet_pos][is_zombie.index(True)]
                     zombie.health -= self.damage
-                    end_of_flight = True
+                    break
                 else:
-                    bullet_pos[1] += 1
                     if bullet_pos[1] == 99:
-                        end_of_flight = True
+                        break
+                    bullet_pos[1] += 1
+
+
+class CherryBomb(Plant):
+
+    def __init__(self, pos, board):
+        super().__init__(pos, board, cost=150)
+        self.damage = 100
+        self.time_to_detonate = 2
+
+    def __str__(self):
+        return 'CherryBomb'
+
+    def __repr__(self):
+        return str(self)
+
+    def explode(self, active_pos):
+        try:
+            is_zombie = self.board.is_zombie(active_pos)
+        except IndexError:
+            return
+        square = self.board[active_pos]
+        for item, iz in zip(square, is_zombie):
+            if iz:
+                item.health -= self.damage
+
+    def produce(self, timedelta):
+        self.time_to_detonate -= timedelta
+        if self.time_to_detonate <= 0:
+            self.health = 0
+            row_changes = (-1, 0, 1)
+            col_changes = range(-5, 6)
+            for i in row_changes:
+                for j in col_changes:
+                    active_pos = [self.pos[0] + i, self.pos[1] + j]
+                    self.explode(active_pos)
+
+class WallNut(Plant):
+
+    def __init__(self, pos, board):
+        super().__init__(pos, board, cost=50)
+        self.health = 1200
+
+    def __str__(self):
+        return 'WallNut({})'.format(self.health)
+
+    def __repr__(self):
+        return str(self)
+
+#class SnowPea(Plant):
+#
+#    def __init__(self, pos, board):
+#        super().__init__(pos, board, cost=175)
+#        self.reload_time = 2
+#        self.time_til_reload = 2
+#        self.damage = 10
+
+# How can I reuse the produce method from Peashooter? Should I have a shoot_bullet global function?
+
+
+
+
+
+
+
