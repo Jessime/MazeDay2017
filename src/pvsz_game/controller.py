@@ -52,6 +52,8 @@ class Controller():
             message = events.TryCollecting(self.model.player.pos)
         elif event.key == pygame.K_h:
             message = events.MoveHome()
+        elif event.key == pygame.K_p:
+            pass #TODO add pause
         return message
 
     def check_state_checks(self, message, event):

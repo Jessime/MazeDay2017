@@ -10,8 +10,20 @@ TYPE_STATS = [{'name' : 'Basic',
                'pause' : 1,
                'attack' : 4,
                'attack_pause' : 1
+               },
+              {'name' : 'Tank',
+               'health' : 300,
+               'pause' : 2,
+               'attack' : 9,
+               'attack_pause' : 1
+               },
+              {'name' : 'Speedy',
+               'health' : 75,
+               'pause' : .5,
+               'attack' : 2,
+               'attack_pause' : .3
                }
-              ]
+               ]
 
 class Zombie():
 
@@ -27,7 +39,7 @@ class Zombie():
         self.attack_pause = TYPE_STATS[self.level]['attack_pause']
 
         self.spawn()
-        
+
     def __str__(self):
         return '{}Zombie({})'.format(self.name, self.health)
 

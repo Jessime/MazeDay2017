@@ -103,11 +103,17 @@ class Player():
 
 class Model():
 
-    def __init__(self, ev_manager):
+    def __init__(self, ev_manager, num_lvls):
         self.ev_manager = ev_manager
+        self.num_lvls = num_lvls
 
-        self.level = 1
-        self.zombie_deaths_needed = 10 * self.level
+        self.level = 0
+        self.level_over = False
+        self.stream_over = False
+        self.zombies_in_stream = 1
+        self.zombies_left = self.zombies_in_stream
+        self.zombies_in_wave = (self.level * 1) + 1
+        self.wave_launched = False
         self.zombie_spawn_delay = 1
         self.zombie_spawn_delay_range = (5, 10)
         self.board = Board()
@@ -118,6 +124,8 @@ class Model():
                              'WallNut':WallNut}
         self.loop_start = time.time()
         self.loop_time = 0
+        self.game_over = False
+        self.player_win = None
 
         self.ev_manager.register(self)
 
@@ -125,12 +133,22 @@ class Model():
         for plant in self.board.items['plants']:
             plant.produce(self.loop_time)
 
+    def spawn(self):
+        """Randomly add new Zombie to board"""
+        new_zombie_lvl = random.randint(0, self.level)
+        _ = Zombie(new_zombie_lvl, [random.randint(0, 4), 99], self.board)
+        self.zombie_spawn_delay = random.randint(*self.zombie_spawn_delay_range)
+
     def check_zombie_spawning(self):
         self.zombie_spawn_delay -= self.loop_time
-        if self.zombie_spawn_delay <= 0:
-            new_zombie_lvl = random.randint(0, self.level - 1)
-            _ = Zombie(new_zombie_lvl, [random.randint(0, 4), 99], self.board)
-            self.zombie_spawn_delay = random.randint(*self.zombie_spawn_delay_range)
+        if self.zombie_spawn_delay <= 0 and self.zombies_left > 0:
+            self.zombies_left -= 1
+            self.spawn()
+        elif self.zombies_left <= 0 and not self.wave_launched:
+            #TODO announce wave somehow
+            self.wave_launched = True
+            for i in range(self.zombies_in_wave):
+                self.spawn()
 
     def update_zombies(self):
         self.check_zombie_spawning()
@@ -165,8 +183,18 @@ class Model():
             self.player.gold += Sun.gold
             self.ev_manager.post(events.SunCollected(self.player.gold))
 
-    def exit_game(self):
-        self.player.alive = False
+    def check_level_end(self):
+        no_more_zombies = self.wave_launched and not self.board.items['zombies']
+        if not self.player.alive or no_more_zombies:
+            self.level_over = True
+
+    def clean_and_reset(self):
+        self.zombies_left = self.zombies_in_stream
+        self.board = Board()
+        self.player = Player()
+        self.loop_start = time.time()
+        self.loop_time = 0
+        self.player_win = None
 
     def notify(self, event):
         if isinstance(event, events.MoveObject):
@@ -179,24 +207,31 @@ class Model():
             self.loop_time = time.time() - self.loop_start
             self.loop_start = time.time()
         elif isinstance(event, events.UserQuit):
-            self.exit_game()
+            self.game_over = True
+            self.level_over = True
 
     def update(self):
         self.check_plant_production()
         self.update_zombies()
         self.board.clean()
+        self.check_level_end()
+        if not self.player.alive: self.game_over = True
 
     def run(self):
         self.ev_manager.post(events.Init())
-        while self.player.alive:
-            self.update()
-            self.ev_manager.post(events.LoopEnd())
+        for level in range(self.num_lvls):
+            while not self.level_over:
+                self.update()
+                self.ev_manager.post(events.LoopEnd())
+            if self.game_over:
+                break
+            self.clean_and_reset()
 
 class PvsZ():
 
-    def __init__(self, print_only=False, no_printing=False):
+    def __init__(self, num_lvls=3, print_only=False, no_printing=False):
         self.ev_manager = events.EventManager()
-        self.model = Model(self.ev_manager)
+        self.model = Model(self.ev_manager, num_lvls)
         self.controller = Controller(self.ev_manager, self.model)
         if not no_printing:
             self.basic_view = BasicView(self.ev_manager, self.model)

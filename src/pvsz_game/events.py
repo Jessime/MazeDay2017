@@ -88,6 +88,11 @@ class EventManager():
         self.listeners = []
 
     def register(self, listener):
+        # The order of registration should usually be:
+            # Model
+            # Controller
+            # Basic View
+            # Audio View
         self.listeners.append(listener)
 
     def post(self, event):

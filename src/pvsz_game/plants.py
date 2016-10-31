@@ -45,8 +45,8 @@ class Sunflower(Plant):
 
     def __init__(self, pos, board):
         super().__init__(pos, board)
-        self.reload_time = 2
-        self.time_til_reload = 2
+        self.reload_time = 6
+        self.time_til_reload = 6
         self.suns = 0
 
     def __str__(self):
