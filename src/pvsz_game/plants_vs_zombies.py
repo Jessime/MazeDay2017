@@ -10,7 +10,7 @@ import time
 import pvsz_game.events as events
 from .controller import Controller
 from .view import BasicView, AudioView
-from .plants import CherryBomb, Plant, PeaShooter, Sunflower, Sun, WallNut
+from .plants import CherryBomb, Plant, PeaShooter, Sunflower, Sun, WallNut, SnowPea
 from .zombies import Zombie
 
 class Board():
@@ -121,7 +121,8 @@ class Model():
         self.plant_lookup = {'Sunflower': Sunflower,
                              'PeaShooter': PeaShooter,
                              'CherryBomb': CherryBomb,
-                             'WallNut':WallNut}
+                             'WallNut':WallNut,
+                             'SnowPea':SnowPea}
         self.loop_start = time.time()
         self.loop_time = 0
         self.game_over = False

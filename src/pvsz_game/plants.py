@@ -19,8 +19,27 @@ class Plant():
     def alive(self):
         return self.health > 0
 
-    def produce(self, timedelta):
-        pass
+    def base_produce(self, timedelta):
+        zombie = None
+        self.time_til_reload -= timedelta
+        if self.time_til_reload <= 0:
+            self.time_til_reload = self.reload_time
+            bullet_pos = [self.pos[0], self.pos[1] + 1]
+            while True:
+                try:
+                    is_zombie = self.board.is_zombie(bullet_pos)
+                except IndexError:
+                    break
+                if any(is_zombie):
+                    zombie = self.board[bullet_pos][is_zombie.index(True)]
+                    zombie.health -= self.damage
+                    break
+                else:
+                    if bullet_pos[1] == 99:
+                        break
+                    bullet_pos[1] += 1
+        if zombie is not None:
+            return zombie
 
 class Sun():
 
@@ -78,23 +97,7 @@ class PeaShooter(Plant):
         return str(self)
 
     def produce(self, timedelta):
-        self.time_til_reload -= timedelta
-        if self.time_til_reload <= 0:
-            self.time_til_reload = self.reload_time
-            bullet_pos = [self.pos[0], self.pos[1] + 1]
-            while True:
-                try:
-                    is_zombie = self.board.is_zombie(bullet_pos)
-                except IndexError:
-                    break
-                if any(is_zombie):
-                    zombie = self.board[bullet_pos][is_zombie.index(True)]
-                    zombie.health -= self.damage
-                    break
-                else:
-                    if bullet_pos[1] == 99:
-                        break
-                    bullet_pos[1] += 1
+        self.base_produce(timedelta)
 
 
 class CherryBomb(Plant):
@@ -143,19 +146,26 @@ class WallNut(Plant):
     def __repr__(self):
         return str(self)
 
-#class SnowPea(Plant):
-#
-#    def __init__(self, pos, board):
-#        super().__init__(pos, board, cost=175)
-#        self.reload_time = 2
-#        self.time_til_reload = 2
-#        self.damage = 10
+    def produce(self):
+        pass
 
-# How can I reuse the produce method from Peashooter? Should I have a shoot_bullet global function?
+class SnowPea(Plant):
 
+    def __init__(self, pos, board):
+        super().__init__(pos, board, cost=225)
+        self.reload_time = 2
+        self.time_til_reload = 2
+        self.damage = 10
 
+    def __str__(self):
+        return 'SnowPea({})'.format(self.health)
 
+    def __repr__(self):
+        return str(self)
 
-
+    def produce(self, timedelta):
+        zombie = self.base_produce(timedelta)
+        if zombie is not None:
+            zombie.freeze()
 
 

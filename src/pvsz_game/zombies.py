@@ -37,6 +37,7 @@ class Zombie():
         self.pause = TYPE_STATS[self.level]['pause']
         self.attack = TYPE_STATS[self.level]['attack']
         self.attack_pause = TYPE_STATS[self.level]['attack_pause']
+        self.is_frozen = False
 
         self.spawn()
 
@@ -45,6 +46,11 @@ class Zombie():
 
     def __repr__(self):
         return str(self)
+
+    def freeze(self):
+        if not self.is_frozen:
+            self.is_frozen = True
+            self.pause *= 2
 
     def left_pos(self):
         return [self.pos[0], self.pos[1] - 1]
