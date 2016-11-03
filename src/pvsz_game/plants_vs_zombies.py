@@ -112,7 +112,7 @@ class Model():
         self.stream_over = False
         self.zombies_in_stream = 1
         self.zombies_left = self.zombies_in_stream
-        self.zombies_in_wave = (self.level * 1) + 1
+        self.zombies_in_wave = (self.level * 1) + 0
         self.wave_launched = False
         self.zombie_spawn_delay = 1
         self.zombie_spawn_delay_range = (5, 10)
@@ -190,14 +190,19 @@ class Model():
             self.level_over = True
 
     def clean_and_reset(self):
+        self.level_over = False
         self.zombies_left = self.zombies_in_stream
         self.board = Board()
         self.player = Player()
         self.loop_start = time.time()
         self.loop_time = 0
-        self.player_win = None
+
+    def results(self):
+        if self.player_win:
+            self.ev_manager.post(events.Win())
 
     def notify(self, event):
+        #TODO refactor to dict
         if isinstance(event, events.MoveObject):
             event.obj.move(event.direction, event.step)
         elif isinstance(event, events.TryPlanting):
@@ -221,13 +226,16 @@ class Model():
     def run(self):
         self.ev_manager.post(events.Init())
         for level in range(self.num_lvls):
+            input('Are you ready for level {}? '.format(level))
             while not self.level_over:
                 self.update()
                 self.ev_manager.post(events.LoopEnd())
             if self.game_over:
                 break
             self.clean_and_reset()
-
+        else:
+            self.player_win = True
+        self.results()
 class PvsZ():
 
     def __init__(self, num_lvls=3, print_only=False, no_printing=False):

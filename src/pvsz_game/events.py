@@ -81,6 +81,9 @@ class UserQuit():
     def __init__(self): pass
     def __str__(self): return 'Thanks for playing! We hope you enjoyed it.'
 
+class Win():
+    def __str__(self): return 'Awesome, you have survived the horde!! Nice job.'
+
 
 class EventManager():
 

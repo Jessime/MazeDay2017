@@ -38,10 +38,11 @@ class BasicView(View):
                                 'LoopEnd': self.loop_end,
                                 'MoveObject': self.move_object,
                                 'SunCollected': self.show,
-                                'UserQuit': self.exit_game}
+                                'UserQuit': self.exit_game,
+                                'Win':self.show}
 
     def check_board(self):
-        print('\n', self.model.board.items)
+        print('\n', self.model.board.items, '\n')
         print(self.model.board, '\n')
 
     def check_player(self):

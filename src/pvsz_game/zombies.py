@@ -37,6 +37,7 @@ class Zombie():
         self.pause = TYPE_STATS[self.level]['pause']
         self.attack = TYPE_STATS[self.level]['attack']
         self.attack_pause = TYPE_STATS[self.level]['attack_pause']
+        self.time_till_move = self.pause
         self.is_frozen = False
 
         self.spawn()
@@ -70,8 +71,8 @@ class Zombie():
             self.attack_pause -= timedelta
 
     def move(self, timedelta):
-        if self.pause <= 0:
-            self.pause = TYPE_STATS[self.level]['pause']
+        if self.time_till_move <= 0:
+            self.time_till_move = self.pause
             contains_plant = self.board.is_plant(self.left_pos())
             if not any(contains_plant):
                 index = self.board[self.pos].index(self)
@@ -80,7 +81,7 @@ class Zombie():
                 self.pos[1] -= 1
 
         else:
-            self.pause -= timedelta
+            self.time_till_move -= timedelta
 
     def alive(self):
         return self.health > 0
