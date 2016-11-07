@@ -36,7 +36,8 @@ class BasicView(View):
                                 'GrowPlant': self.show,
                                 'Init': self.initialize,
                                 'LoopEnd': self.loop_end,
-                                'MoveObject': self.move_object,
+                                'NoGold':self.show,
+                                'PlayerMoves': self.player_moves,
                                 'SunCollected': self.show,
                                 'UserQuit': self.exit_game,
                                 'Win':self.show}
@@ -61,7 +62,7 @@ class BasicView(View):
     def loop_end(self):
         self.clock.tick(20)
 
-    def move_object(self):
+    def player_moves(self):
         print(self.event)
         current_square = self.model.board[self.model.player.pos]
         print('Square contains: {}'.format(current_square))
@@ -82,8 +83,9 @@ class AudioView(View):
                                 'DeathByZombie': self.show,
                                 'GrowPlant': self.show,
                                 'LoopEnd': self.loop_end,
-                                'MoveObject': self.move_object,
-                                'SunCollected': self.show,
+                                'NoGold':self.play,
+                                'PlayerMoves': self.player_moves,
+                                'SunCollected': self.play,
                                 'UserQuit': self.show}
 
     def check_board(self): pass
@@ -91,7 +93,7 @@ class AudioView(View):
     def loop_end(self): pass
     def show(self): pass
 
-    def move_object(self):
+    def player_moves(self):
         row = self.model.player.pos[0]
         if row != self.previous_player_row:
             self.previous_player_row = row
@@ -99,9 +101,18 @@ class AudioView(View):
             if zombie_col is not None:
                 volume = (100 - zombie_col)/100
                 pygame.mixer.music.set_volume(volume)
-                self.play()
+                self.play('zombie')
 
-    def play(self):
-        template = pkg_resources.resource_filename('pvsz_game', 'data/zombie.mp3')
+    def play(self, filename=None):
+        """Play the event mp3.
+
+        Paramters
+        ---------
+        filename : str
+            If filename is past, the corresponding mp3 file will be played instead of self.event.mp3.
+        """
+        if filename is None:
+            filename = self.event.mp3
+        template = pkg_resources.resource_filename('pvsz_game', 'data/{}.mp3'.format(filename))
         pygame.mixer.music.load(template)
         pygame.mixer.music.play()

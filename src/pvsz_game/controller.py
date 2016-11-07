@@ -30,13 +30,13 @@ class Controller():
     def check_arrows(self, message, event):
         """Move player on board if arrow key has been pressed."""
         if event.key == pygame.K_LEFT:
-            message = events.MoveObject(self.model.player, 'left', 5)
+            message = events.PlayerMoves(self.model.player, 'left', 5)
         elif event.key == pygame.K_RIGHT:
-            message = events.MoveObject(self.model.player, 'right', 5)
+            message = events.PlayerMoves(self.model.player, 'right', 5)
         elif event.key == pygame.K_UP:
-            message = events.MoveObject(self.model.player, 'up', 1)
+            message = events.PlayerMoves(self.model.player, 'up', 1)
         elif event.key == pygame.K_DOWN:
-            message = events.MoveObject(self.model.player, 'down', 1)
+            message = events.PlayerMoves(self.model.player, 'down', 1)
         return message
 
     def check_plant(self, message, event):

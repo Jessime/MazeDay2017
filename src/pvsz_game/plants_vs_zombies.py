@@ -110,9 +110,9 @@ class Model():
         self.level = 0
         self.level_over = False
         self.stream_over = False
-        self.zombies_in_stream = 1
+        self.zombies_in_stream = 3
         self.zombies_left = self.zombies_in_stream
-        self.zombies_in_wave = (self.level * 1) + 0
+        self.zombies_in_wave = (self.level * 1) + 4
         self.wave_launched = False
         self.zombie_spawn_delay = 1
         self.zombie_spawn_delay_range = (5, 10)
@@ -136,7 +136,7 @@ class Model():
 
     def spawn(self):
         """Randomly add new Zombie to board"""
-        new_zombie_lvl = random.randint(0, self.level)
+        new_zombie_lvl = random.randint(0, min(self.level, 3))
         _ = Zombie(new_zombie_lvl, [random.randint(0, 4), 99], self.board)
         self.zombie_spawn_delay = random.randint(*self.zombie_spawn_delay_range)
 
@@ -174,7 +174,7 @@ class Model():
         elif not board_pos_empty:
             pass
         elif not enough_gold:
-            pass
+            self.ev_manager.post(events.NoGold())
 
     def try_collecting(self, event):
         """If there is a Sun at a position, convert it to player gold."""
@@ -192,6 +192,7 @@ class Model():
     def clean_and_reset(self):
         self.level_over = False
         self.zombies_left = self.zombies_in_stream
+        self.wave_launched = False
         self.board = Board()
         self.player = Player()
         self.loop_start = time.time()
@@ -203,7 +204,7 @@ class Model():
 
     def notify(self, event):
         #TODO refactor to dict
-        if isinstance(event, events.MoveObject):
+        if isinstance(event, events.PlayerMoves):
             event.obj.move(event.direction, event.step)
         elif isinstance(event, events.TryPlanting):
             self.try_planting(event)
@@ -226,6 +227,7 @@ class Model():
     def run(self):
         self.ev_manager.post(events.Init())
         for level in range(self.num_lvls):
+            self.level = level
             input('Are you ready for level {}? '.format(level))
             while not self.level_over:
                 self.update()
@@ -236,6 +238,7 @@ class Model():
         else:
             self.player_win = True
         self.results()
+
 class PvsZ():
 
     def __init__(self, num_lvls=3, print_only=False, no_printing=False):

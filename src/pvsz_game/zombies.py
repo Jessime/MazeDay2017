@@ -43,7 +43,7 @@ class Zombie():
         self.spawn()
 
     def __str__(self):
-        return '{}Zombie({})'.format(self.name, self.health)
+        return '{}Zombie({}, {})'.format(self.name, self.health, self.pos[1])
 
     def __repr__(self):
         return str(self)
