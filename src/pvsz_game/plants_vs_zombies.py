@@ -236,6 +236,7 @@ class Model():
         else:
             self.player_win = True
         self.results()
+
 class PvsZ():
 
     def __init__(self, num_lvls=3, print_only=False, no_printing=False):
