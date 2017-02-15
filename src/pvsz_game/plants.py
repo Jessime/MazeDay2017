@@ -146,7 +146,7 @@ class WallNut(Plant):
     def __repr__(self):
         return str(self)
 
-    def produce(self):
+    def produce(self, timedelta):
         pass
 
 class SnowPea(Plant):

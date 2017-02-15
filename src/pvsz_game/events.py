@@ -42,7 +42,14 @@ class LoopEnd():
 class MoveHome():
     pass
 
-class MoveObject():
+class NoGold():
+
+    def __init__(self):
+        self.mp3 = 'no_gold'
+    def __str__(self):
+        return 'You do not have enough gold for this transaction.'
+
+class PlayerMoves():
 
     def __init__(self, obj, direction, step):
         self.obj = obj
@@ -56,7 +63,7 @@ class SunCollected():
 
     def __init__(self, gold):
         self.gold = gold
-
+        self.mp3 = 'coins2'
     def __str__(self):
         return 'Sun collected! Total gold: {}'.format(self.gold)
 
