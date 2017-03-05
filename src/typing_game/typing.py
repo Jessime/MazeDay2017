@@ -11,7 +11,8 @@ import sys
 import pickle
 import pygame
 
-from subprocess import Popen
+from subprocess import Popen, check_call
+from gtts import gTTS
 
 from aligner import align_strings
 
@@ -28,6 +29,8 @@ class TypingGame():
         Sets the style of the game. Printing only will have no sounds.
     no_printing : bool (default=False)
         If true, sound will play, but the sentences will not be printed to the console.
+    skip_intro : bool (default=False)
+        If true, intro will not be played. It will still print out.
 
     Attributes
     ----------
@@ -48,11 +51,12 @@ class TypingGame():
     WPM_min : int
         Minimum Words Per Minute (adjusted) needed to pass level.
     """
-    def __init__(self, num_lvls=5, verbose=False, print_only=False, no_printing=False):
+    def __init__(self, num_lvls=5, verbose=False, print_only=False, no_printing=False, skip_intro=False):
         self.num_lvls = num_lvls
         self.verbose = verbose
         self.print_only = print_only
         self.no_printing = no_printing
+        self.skip_intro = skip_intro
 
         self.sentences = self.load_sentences()
         self.play_mp3 = self.set_mp3_player()
@@ -81,15 +85,20 @@ class TypingGame():
             sentences = pickle.load(open(infile, 'rb'))
         return sentences
 
-    def play_linux(self, mp3):
-        Popen(['mpg123', '-q', mp3])
+    def play_linux(self, mp3, pause=False):
+        sub = check_call if pause else Popen
+        sub(['mpg123', '-q', mp3])
 
-    def play_osx(self, mp3):
-        Popen(['afplay', mp3])
+    def play_osx(self, mp3, pause=False):
+        sub = check_call if pause else Popen
+        sub(['afplay', mp3])
 
-    def play_windows(self, mp3):
+    def play_windows(self, mp3, pause=False):
         pygame.mixer.music.load(mp3)
         pygame.mixer.music.play()
+        if pause:
+            while pygame.mixer.music.get_busy():
+                time.sleep(.1)
 
     def set_mp3_player(self):
         """Chooses the proper play function based off of the OS.
@@ -102,13 +111,23 @@ class TypingGame():
         platform = sys.platform
         if self.verbose:
             print('\nPlatform: {}\n'.format(platform))
-        if platform == 'linux':
-            play_mp3 = self.play_linux
-        elif platform == 'darwin':
-            play_mp3 = self.play_osx
-        elif platform == 'win32':
-            play_mp3 = self.play_windows
+        platform2play = {'linux':self.play_linux,
+                         'darwin':self.play_osx,
+                         'win32':self.play_windows}
+        play_mp3 = platform2play[platform]
         return play_mp3
+
+    def tts_and_play(self, string, pause=True):
+        """Translate text to speech and play the mp3.
+
+        Parameters
+        ----------
+        string : str
+            The sentence or words to be spoken.
+        """
+        temp = 'data/temp.mp3'
+        gTTS(string).save(temp)
+        self.play_mp3(temp, pause)
 
     def hamming_score(self, str1, str2):
         """Typing accuracy based on hamming distance of prompt vs. answer.
@@ -133,11 +152,15 @@ class TypingGame():
         """Wait for approval to move on to the next level."""
         move_on = False
         while not move_on:
-            ans = input('Are you ready for level {}? (y/n): '.format(self.level))
-            if ans == 'y':
+            prompt = 'Are you ready for level {}? '.format(self.level)
+            if self.level < 6:
+                self.play_mp3('data/prompts/{}.mp3'.format(self.level))
+            ans = input(prompt).lower()
+            if ans in ('y', 'yes'):
                 move_on = True
-            elif ans == 'n':
+            elif ans in ('n', 'no'):
                 print('\nSee you next time!\n')
+                self.play_mp3('data/prompts/bye.mp3')
                 sys.exit()
 
     def print_alignment(self, aligned):
@@ -185,13 +208,19 @@ class TypingGame():
         Parameters
         ----------
         total_time : float
-            The amount of time player spent on current sentence."""
-        print('')
-        print('Time: {:.2f}s'.format(total_time))
-        print('Accuracy: {:.2f}'.format(self.avg_accuracy))
-        print('Raw WPM: {:.2f}'.format(self.WPM))
-        print('Adjusted WPM: {:.2f}'.format(self.WPM_adjusted))
-        print('')
+            The amount of time player spent on current sentence.
+        """
+        results = ('\n'
+                   'Time: {} seconds.\n'
+                   'Accuracy: {} percent.\n'
+                   'Raw words per minute: {}.\n'
+                   'Adjusted words per minute: {}.\n'
+                   '\n'.format(int(total_time),
+                               int(self.avg_accuracy*100),
+                               int(self.WPM),
+                               int(self.WPM_adjusted)))
+        print(results)
+        self.tts_and_play(results)
 
     def update_lvl(self):
         """Reset some variables at the end of a lvl."""
@@ -216,15 +245,24 @@ class TypingGame():
 
     def run(self):
         """Main loop. Runs level and checks for a passing speed."""
-        print('Welcome to typer.')
-        print('Each round, you will receive an increasing number of sentences.')
-        print('Type the sentences as quickly and accurately as possible.')
-        print('')
+        intro = ('Welcome to typer.\n'
+                 'Each round, you will receive an increasing number of sentences.\n'
+                 'Be ready, there are no pauses between sentences.\n'
+                 'Also, you can start typing as soon as you want.\n'
+                 'You do not need to wait for the sentence to finish.\n'
+                 'Type the sentences as quickly and accurately as possible.\n'
+                 'To make things easier, there will be no upper case characters.\n'
+                 'But there will be punctuation in the middle and end of sentences.\n')
+        print(intro)
+        if not self.skip_intro:
+            self.play_mp3('data/prompts/intro.mp3', pause=True)
         for i in range(self.num_lvls):
             self.pause()
             self.run_level()
             if self.WPM_adjusted < self.WPM_min:
-                print('Please try again! You need a {} WPM to beat this level.'.format(self.WPM_min))
+                prompt = 'Please try again! You need {} words per minute to beat this level.'.format(self.WPM_min)
+                print(prompt)
+                self.tts_and_play(prompt)
                 break
 
 if __name__ == '__main__':
@@ -233,9 +271,14 @@ if __name__ == '__main__':
     parser.add_argument('-v', '--verbose', action='store_true', help='Print information to help with debugging.')
     parser.add_argument('-po', '--print_only', action='store_true', help='Set if you do not want to use sound-based sentences')
     parser.add_argument('-np', '--no_printing', action='store_true', help='Set if you do not want the sentences printed to the console.')
+    parser.add_argument('-s', '--skip_intro', action='store_true', help='Set if you do not want to listen to the intro.')
     args = parser.parse_args()
 
     if sys.platform == 'win32':
         pygame.mixer.init(44100)
-    game = TypingGame(args.num_lvls, args.verbose, args.print_only, args.no_printing)
+    game = TypingGame(args.num_lvls,
+                      args.verbose,
+                      args.print_only,
+                      args.no_printing,
+                      args.skip_intro)
     game.run()
