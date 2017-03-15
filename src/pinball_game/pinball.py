@@ -9,6 +9,7 @@ import time
 import events
 from controller import Controller
 from view import BasicView
+import components
 
 class Model():
 
@@ -21,8 +22,23 @@ class Model():
 
         self.ev_manager.register(self)
 
+        self.width = 400
+        self.height = 800
+
+        self.components_list = []
+        self.ball = components.Particle(250,300,15)
+
+        self.flipper_left = components.Flipper(75,700,125,730,75,650)
+        self.flipper_right = components.Flipper(325,700,275,730,325,650)
+
     def exit_game(self):
         self.running = False
+
+    def flip_left(self):
+        self.components.flipper_left.flip_up = True
+
+    def flip_right(self):
+        self.components.flipper_right.flip_up = True
 
     def notify(self, event):
         if isinstance(event, events.LoopEnd):
@@ -30,10 +46,17 @@ class Model():
             self.loop_start = time.time()
         elif isinstance(event, events.UserQuit):
             self.exit_game()
+        elif isinstance(event, events.Flip('l')):
+            self.flip_left()
+        elif isinstance(event, events.Flip('r')):
+            self.flip_right()
 
     def update(self):
         '''All game logic.'''
-        pass
+        self.ball.move()
+        self.ball.bounce(self.width,self.height)
+        self.flipper_left.update()
+        self.flipper_right.update()
 
     def run(self):
         self.ev_manager.post(events.Init())

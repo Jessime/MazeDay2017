@@ -20,6 +20,11 @@ class Controller():
     def check_others(self, message, event):
         if event.key == pygame.K_ESCAPE:
             message = events.UserQuit()
+        elif event.key == pygame.K_f:
+            # message = flipper_left.flip_up = True # events.MoveFlipper()
+            message = events.Flip('l')
+        elif event.key == pygame.K_j:
+            message = events.Flip('r')
         return message
 
     def notify(self, event):

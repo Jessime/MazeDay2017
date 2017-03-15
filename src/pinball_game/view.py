@@ -32,6 +32,11 @@ class BasicView(View):
         self.event_func_dict = {'Init': self.initialize,
                                 'LoopEnd': self.loop_end,
                                 'UserQuit': self.exit_game}
+                                # 'l': self.draw_flipper
+                                # 'r': self.draw_flipper}
+        self.background_color = (255,255,255)
+        self.screen = None
+        self.flipper_color = (0,0,0)
 
     def exit_game(self):
         pygame.display.quit()
@@ -41,10 +46,32 @@ class BasicView(View):
     def initialize(self):
         print(str(self.event))
         pygame.init()
-        pygame.display.set_mode([100, 100])
+        self.screen = pygame.display.set_mode([self.model.width, self.model.height])
+
+    def draw_particle(self, particle):
+        # print(particle.x,particle.y)
+        pygame.draw.circle(self.screen,
+                           particle.color,
+                           (int(particle.x), int(particle.y)),
+                           particle.size,
+                           particle.thickness)
+
+    def draw_flipper(self,flipper):
+        pygame.draw.line(self.screen, self.flipper_color,
+                        [flipper.x1,flipper.y1],
+                        [flipper.x2,flipper.y2],
+                        flipper.flipper_size)
+
+    def render(self):
+        self.draw_particle(self.model.ball)
+        self.draw_flipper(self.model.flipper_left)
+        self.draw_flipper(self.model.flipper_right)
 
     def loop_end(self):
-        self.clock.tick(20)
+        self.screen.fill(self.background_color)
+        self.render()
+        pygame.display.flip()
+        self.clock.tick(60)
 
     def show(self):
         print('\n', self.event, '\n')
