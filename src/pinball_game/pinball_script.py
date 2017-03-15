@@ -25,15 +25,15 @@ def collide(p1, p2):
 # flipper_left = Flipper(100,700,150,730,100,650)
 # flipper_right = Flipper(350,700,300,730,350,650)
 
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.KEYUP:
-            if event.key == pygame.K_f:
-                flipper_left.flip_up = True
-            elif event.key == pygame.K_j:
-                flipper_right.flip_up = True
+# while running:
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             running = False
+#         elif event.type == pygame.KEYUP:
+#             if event.key == pygame.K_f:
+#                 flipper_left.flip_up = True
+#             elif event.key == pygame.K_j:
+#                 flipper_right.flip_up = True
 
     # flipper_left.update()
     # flipper_right.update()

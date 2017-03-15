@@ -35,10 +35,10 @@ class Model():
         self.running = False
 
     def flip_left(self):
-        self.components.flipper_left.flip_up = True
+        self.flipper_left.flip_up = True
 
     def flip_right(self):
-        self.components.flipper_right.flip_up = True
+        self.flipper_right.flip_up = True
 
     def notify(self, event):
         if isinstance(event, events.LoopEnd):
@@ -46,9 +46,9 @@ class Model():
             self.loop_start = time.time()
         elif isinstance(event, events.UserQuit):
             self.exit_game()
-        elif isinstance(event, events.Flip('l')):
+        elif isinstance(event, events.Flip_l):      #???
             self.flip_left()
-        elif isinstance(event, events.Flip('r')):
+        elif isinstance(event, events.Flip_r):      #???
             self.flip_right()
 
     def update(self):
@@ -65,7 +65,6 @@ class Model():
             self.ev_manager.post(events.LoopEnd())
 
 class App():
-
     def __init__(self, print_only=False, no_printing=False):
         self.ev_manager = events.EventManager()
         self.model = Model(self.ev_manager)

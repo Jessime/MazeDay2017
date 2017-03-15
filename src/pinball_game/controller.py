@@ -9,7 +9,6 @@ import pygame
 import events
 
 class Controller():
-
     def __init__(self, ev_manager, model):
         self.ev_manager = ev_manager
         self.model = model
@@ -21,10 +20,9 @@ class Controller():
         if event.key == pygame.K_ESCAPE:
             message = events.UserQuit()
         elif event.key == pygame.K_f:
-            # message = flipper_left.flip_up = True # events.MoveFlipper()
-            message = events.Flip('l')
+            message = events.Flip_l()
         elif event.key == pygame.K_j:
-            message = events.Flip('r')
+            message = events.Flip_r()
         return message
 
     def notify(self, event):

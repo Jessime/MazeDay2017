@@ -8,7 +8,6 @@ Created on Sat Sep 10 15:25:02 2016
 import pygame
 
 class View:
-
     def __init__(self, ev_manager, model):
         self.ev_manager = ev_manager
         self.model = model
@@ -24,7 +23,6 @@ class View:
             self.event_func_dict[name]()
 
 class BasicView(View):
-
     def __init__(self, ev_manager, model):
         super().__init__(ev_manager, model)
 
@@ -32,8 +30,8 @@ class BasicView(View):
         self.event_func_dict = {'Init': self.initialize,
                                 'LoopEnd': self.loop_end,
                                 'UserQuit': self.exit_game}
-                                # 'l': self.draw_flipper
-                                # 'r': self.draw_flipper}
+                                # 'l': self.draw_flipper        #???
+                                # 'r': self.draw_flipper}       #???
         self.background_color = (255,255,255)
         self.screen = None
         self.flipper_color = (0,0,0)
@@ -49,7 +47,6 @@ class BasicView(View):
         self.screen = pygame.display.set_mode([self.model.width, self.model.height])
 
     def draw_particle(self, particle):
-        # print(particle.x,particle.y)
         pygame.draw.circle(self.screen,
                            particle.color,
                            (int(particle.x), int(particle.y)),

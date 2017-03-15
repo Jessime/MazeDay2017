@@ -12,11 +12,11 @@ class Particle:
         self.color = (0, 0, 255)
         self.thickness = 0
         self.speed = 10
-        self.angle = 0
+        self.angle = 8
         self.mass = mass
         self.drag = 1
         self.elasticity = 0.9
-        self.gravity = (math.pi, 0.02)
+        self.gravity = (math.pi, 0.05)
 
     def move(self):
         self.angle, self.speed = self.addVectors(self.angle,
@@ -106,7 +106,7 @@ class Flipper():
         self.flip_down = False
         self.line = None
         self.flipper_size = 15
-        self.update()
+        self.update()               #???
 
     def move(self):
         """change flipper end position while flipping"""
