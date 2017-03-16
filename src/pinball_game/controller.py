@@ -20,9 +20,9 @@ class Controller():
         if event.key == pygame.K_ESCAPE:
             message = events.UserQuit()
         elif event.key == pygame.K_f:
-            message = events.Flip_l()
+            message = events.Flip('l')
         elif event.key == pygame.K_j:
-            message = events.Flip_r()
+            message = events.Flip('r')
         return message
 
     def notify(self, event):

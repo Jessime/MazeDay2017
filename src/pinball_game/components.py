@@ -106,7 +106,6 @@ class Flipper():
         self.flip_down = False
         self.line = None
         self.flipper_size = 15
-        self.update()               #???
 
     def move(self):
         """change flipper end position while flipping"""

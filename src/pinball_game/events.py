@@ -20,13 +20,9 @@ class UserQuit():
     def __init__(self): pass
     def __str__(self): return 'Thanks for playing! We hope you enjoyed it.'
 
-class Flip_l():                 #???
-    def __init__(self): pass
-        # self.name = 'l'
-
-class Flip_r():                 #???
-    def __init__(self): pass
-        # self.name = 'r'
+class Flip():
+    def __init__(self, side):
+        self.side = side
 
 class EventManager():
     def __init__(self):

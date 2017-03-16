@@ -30,8 +30,7 @@ class BasicView(View):
         self.event_func_dict = {'Init': self.initialize,
                                 'LoopEnd': self.loop_end,
                                 'UserQuit': self.exit_game}
-                                # 'l': self.draw_flipper        #???
-                                # 'r': self.draw_flipper}       #???
+
         self.background_color = (255,255,255)
         self.screen = None
         self.flipper_color = (0,0,0)

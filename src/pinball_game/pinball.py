@@ -12,7 +12,6 @@ from view import BasicView
 import components
 
 class Model():
-
     def __init__(self, ev_manager):
         self.ev_manager = ev_manager
 
@@ -31,25 +30,26 @@ class Model():
         self.flipper_left = components.Flipper(75,700,125,730,75,650)
         self.flipper_right = components.Flipper(325,700,275,730,325,650)
 
+        self.event = None
+
     def exit_game(self):
         self.running = False
 
-    def flip_left(self):
-        self.flipper_left.flip_up = True
-
-    def flip_right(self):
-        self.flipper_right.flip_up = True
+    def flip(self):
+        if self.event.side == 'l':
+            self.flipper_left.flip_up = True
+        elif self.event.side == 'r':
+            self.flipper_right.flip_down = True
 
     def notify(self, event):
+        self.event = event
         if isinstance(event, events.LoopEnd):
             self.loop_time = time.time() - self.loop_start
             self.loop_start = time.time()
         elif isinstance(event, events.UserQuit):
             self.exit_game()
-        elif isinstance(event, events.Flip_l):      #???
-            self.flip_left()
-        elif isinstance(event, events.Flip_r):      #???
-            self.flip_right()
+        elif isinstance(event, events.Flip):
+            self.flip()
 
     def update(self):
         '''All game logic.'''
