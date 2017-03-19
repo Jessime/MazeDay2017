@@ -9,7 +9,7 @@ import time
 import events
 from controller import Controller
 from view import BasicView
-import components
+from components import Flipper, Particle, Segment, Point
 
 class Model():
     def __init__(self, ev_manager):
@@ -18,19 +18,22 @@ class Model():
         self.loop_start = time.time()
         self.loop_time = 0
         self.running = True
-
-        self.ev_manager.register(self)
-
         self.width = 400
         self.height = 800
 
-        self.components_list = []
-        self.ball = components.Particle(250,300,15)
-
-        self.flipper_left = components.Flipper(75,700,125,730,75,650)
-        self.flipper_right = components.Flipper(325,700,275,730,325,650)
+        self.segment_list = []
+        self.ball = Particle(280,300,15)
+        self.flipper_left = Flipper(Point(75, 700),
+                                    Point(125, 730),
+                                    Point(75,650))
+        self.flipper_right = Flipper(Point(325, 700),
+                                     Point(275, 730),
+                                     Point(325, 650))
 
         self.event = None
+        self.ev_manager.register(self)
+        self.segment_list.append(self.flipper_left)
+        self.segment_list.append(self.flipper_right)
 
     def exit_game(self):
         self.running = False
@@ -54,7 +57,7 @@ class Model():
     def update(self):
         '''All game logic.'''
         self.ball.move()
-        self.ball.bounce(self.width,self.height)
+        self.ball.bounce(self.width, self.height, self.segment_list)
         self.flipper_left.update()
         self.flipper_right.update()
 

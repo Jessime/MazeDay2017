@@ -54,9 +54,9 @@ class BasicView(View):
 
     def draw_flipper(self,flipper):
         pygame.draw.line(self.screen, self.flipper_color,
-                        [flipper.x1,flipper.y1],
-                        [flipper.x2,flipper.y2],
-                        flipper.flipper_size)
+                        [flipper.a.x,flipper.a.y],
+                        [flipper.b.x,flipper.b.y],
+                        flipper.thickness)
 
     def render(self):
         self.draw_particle(self.model.ball)
