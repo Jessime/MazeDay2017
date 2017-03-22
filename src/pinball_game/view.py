@@ -64,6 +64,8 @@ class BasicView(View):
         self.draw_flipper(self.model.flipper_right)
 
     def loop_end(self):
+        if not self.model.running:
+            return
         self.screen.fill(self.background_color)
         self.render()
         pygame.display.flip()
