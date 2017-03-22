@@ -131,8 +131,9 @@ class Particle:
     def seg_bounce(self, segment_list):
         for seg in segment_list:
             if collision.segment_particle(seg, self):
-                print(self.pos)
                 self.angle = 2*seg.angle - self.angle
+                if seg.flip_up or seg.flip_down:
+                    self.speed *= 2
 
     def particle_bounce(self):
         pass
@@ -155,13 +156,15 @@ class Particle:
 
 class Flipper():
 
-    def __init__(self, a, b, on):
+    def __init__(self, a, b, on_angle, side='l'):
         self.a = a
         self.b = b
-        self.on = on
+        self.on_angle = on_angle
 
-        self.angle = (math.atan2(b.x-a.x, b.y-a.y) + math.pi/2) % (2*math.pi)
-        self.off = self.b
+        self.rot = 1 if side == 'l' else -1
+        self.len = math.hypot(self.b.x - self.a.x, self.b.y - self.a.y)
+        self.angle = (math.atan2(a.x-b.x, a.y-b.y) + math.pi/2) % (2*math.pi)
+        self.off_angle = self.angle
         self.flip_up = False
         self.flip_down = False
         self.thickness = 15
@@ -172,17 +175,24 @@ class Flipper():
 
     def move(self):
         """change flipper end position while flipping"""
-        self.b.x = self.on.x if self.b.x == self.off.x else self.off.y
-        self.b.y = self.on.y if self.b.y == self.off.y else self.off.y
+        if self.flip_up:
+            self.angle += (.2 * self.rot)
+        elif self.flip_down:
+            self.angle -= (.2 * self.rot)
+        self.angle %= 2*math.pi
+        self.b.x = self.a.x + math.cos(self.angle) * self.len
+        self.b.y = self.a.y - math.sin(self.angle) * self.len
 
+    def test_flip_limit():
+        pass
 
     def update(self):
         if self.flip_up:
             self.move()
-            if self.b.x == self.on.x:
+            if self.on_angle - .11 <= self.angle <= self.on_angle + .11:
                 self.flip_up = False
                 self.flip_down = True
         elif self.flip_down:
             self.move()
-            if self.b.x == self.off.x:
+            if self.off_angle - .11 <= self.angle <= self.off_angle + .11:
                 self.flip_down = False

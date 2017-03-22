@@ -25,10 +25,10 @@ class Model():
         self.ball = Particle(280,300,15)
         self.flipper_left = Flipper(Point(75, 700),
                                     Point(125, 730),
-                                    Point(75,650))
+                                    1.57)
         self.flipper_right = Flipper(Point(325, 700),
                                      Point(275, 730),
-                                     Point(325, 650))
+                                     1.57, 'r')
 
         self.event = None
         self.ev_manager.register(self)
@@ -42,7 +42,7 @@ class Model():
         if self.event.side == 'l':
             self.flipper_left.flip_up = True
         elif self.event.side == 'r':
-            self.flipper_right.flip_down = True
+            self.flipper_right.flip_up = True
 
     def notify(self, event):
         self.event = event
