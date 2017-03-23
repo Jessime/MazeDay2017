@@ -44,7 +44,20 @@ class Point():
         return str(self)
 
 class Segment():
+    """Line segment with which ball can interact
 
+    Parameters
+    ----------
+    a : Point
+        Location of beginning of segment
+    b : Point
+        Location of ending of segment
+
+    Attributes
+    ----------
+    angle : float
+        angle of segment in radians, where a horizontal segment is 0 or pi
+    """
     def __init__(self, a, b):
         self.a = a
         self.b = b
@@ -155,7 +168,36 @@ class Particle:
         return (angle, length)
 
 class Flipper():
+    """Creates left and right flippers the player controls to hit the ball
 
+    Parameters
+    ----------
+    a : Point
+        Location of the base of flipper
+    b : Point
+        Location of the rotation end of flipper
+    on_angle : float
+        radian angle of flipper at the top of rotation when user flippers
+    side : str (default='l')
+        Indicates if flipper is on left or right side of board
+
+    Attributes
+    ----------
+    rot : int
+        Makes flipper rotate clockwise (-1) or counter-clockwise (1)
+    len : float
+        Length of flipper
+    angle : float
+        Current angle of flipper.
+    off_angle : float
+        radian angle of flipper at the bottom of rotation when user flippers
+    flip_up : bool
+        Is True after user 'flips', until angle ~= on_angle
+    flip_down : bool
+        Is True after angle ~= on_angle, until angle ~= off_angle
+    thickness : int
+        Visual thinkness of line
+    """
     def __init__(self, a, b, on_angle, side='l'):
         self.a = a
         self.b = b
