@@ -5,6 +5,7 @@ Created on Fri Sep  9 23:14:44 2016
 @author: jessime
 """
 import time
+import os
 
 import events
 from controller import Controller
@@ -18,13 +19,13 @@ class Model():
         self.loop_start = time.time()
         self.loop_time = 0
         self.running = True
-        self.width = 400
-        self.height = 800
+        self.width = 600
+        self.height = 1000
 
         self.segment_list = []
-        self.ball = Particle(280,300,15)
-        self.flipper_left = Flipper(Point(75, 700),
-                                    Point(125, 730),
+        self.ball = Particle(599-16,1000-16,15)
+        self.flipper_left = Flipper(Point(125, 900),
+                                    Point(210, 925),
                                     1.57)
         self.flipper_right = Flipper(Point(325, 700),
                                      Point(275, 730),
@@ -35,6 +36,16 @@ class Model():
         self.segment_list.append(self.flipper_left)
         self.segment_list.append(self.flipper_right)
 
+        # shooter line
+        self.segment_list.append(Segment(Point(self.width-1-40, self.height-1),
+                                         Point(self.width-1-40,150)))
+        # shooter angled line
+        self.segment_list.append(Segment(Point(self.width-1, 25),
+                                         Point(self.width-1-25,0)))
+
+        self.segment_list.append(Segment(Point(75, 0),
+                                         Point(0,100),1))
+        
     def exit_game(self):
         self.running = False
 
@@ -75,6 +86,6 @@ class App():
         self.basic_view = BasicView(self.ev_manager, self.model)
 
 if __name__ == '__main__':
-
+    os.environ['SDL_VIDEO_CENTERED'] = '1'
     app = App()
     app.model.run()

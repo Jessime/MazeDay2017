@@ -33,7 +33,7 @@ class BasicView(View):
 
         self.background_color = (255,255,255)
         self.screen = None
-        self.flipper_color = (0,0,0)
+        self.seg_color = (0,0,0)
 
     def exit_game(self):
         pygame.display.quit()
@@ -52,16 +52,16 @@ class BasicView(View):
                            particle.size,
                            particle.thickness)
 
-    def draw_flipper(self,flipper):
-        pygame.draw.line(self.screen, self.flipper_color,
-                        [flipper.a.x,flipper.a.y],
-                        [flipper.b.x,flipper.b.y],
-                        flipper.thickness)
+    def draw_seg(self):
+        for seg in self.model.segment_list:
+            pygame.draw.line(self.screen, self.seg_color,
+                            [seg.a.x,seg.a.y],
+                            [seg.b.x,seg.b.y],
+                            seg.thickness)
 
     def render(self):
         self.draw_particle(self.model.ball)
-        self.draw_flipper(self.model.flipper_left)
-        self.draw_flipper(self.model.flipper_right)
+        self.draw_seg()
 
     def loop_end(self):
         if not self.model.running:

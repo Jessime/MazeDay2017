@@ -58,10 +58,14 @@ class Segment():
     angle : float
         angle of segment in radians, where a horizontal segment is 0 or pi
     """
-    def __init__(self, a, b):
+    def __init__(self, a, b, value=0, noise=''):
         self.a = a
         self.b = b
         self.angle = (math.atan2(b.x-a.x, b.y-a.y) + math.pi/2) % (2*math.pi)
+
+        self.value = value
+        self.noise = noise
+        self.thickness = 5
 
 class Particle:
     """ A circular object with a velocity, size and mass """
@@ -73,12 +77,13 @@ class Particle:
         self.size = 15
         self.color = (0, 0, 255)
         self.thickness = 0
-        self.speed = 10
-        self.angle = 4.75
+        self.speed = 50
+        self.angle = math.pi/2
         self.mass = mass
         self.drag = 1
         self.elasticity = 0.9
         self.gravity = (3/2*math.pi, .25)
+        self.score = 0
 
     def move(self):
         self.angle, self.speed = self.addVectors(self.angle,
@@ -143,10 +148,13 @@ class Particle:
 
     def seg_bounce(self, segment_list):
         for seg in segment_list:
+
             if collision.segment_particle(seg, self):
+                self.score += seg.value
                 self.angle = 2*seg.angle - self.angle
-                if seg.flip_up or seg.flip_down:
-                    self.speed *= 2
+                if isinstance(seg,Flipper):
+                    if seg.flip_up or seg.flip_down:
+                        self.speed *= 2
 
     def particle_bounce(self):
         pass
@@ -210,6 +218,7 @@ class Flipper():
         self.flip_up = False
         self.flip_down = False
         self.thickness = 15
+        self.value = 0
 
     def __repr__(self):
         base = 'Flipper({}\n{}\nAngle: {:.2f})\n'
@@ -229,12 +238,13 @@ class Flipper():
         pass
 
     def update(self):
+        delta = .15
         if self.flip_up:
             self.move()
-            if self.on_angle - .11 <= self.angle <= self.on_angle + .11:
+            if self.on_angle - delta <= self.angle <= self.on_angle + delta:
                 self.flip_up = False
                 self.flip_down = True
         elif self.flip_down:
             self.move()
-            if self.off_angle - .11 <= self.angle <= self.off_angle + .11:
+            if self.off_angle - delta <= self.angle <= self.off_angle + delta:
                 self.flip_down = False
