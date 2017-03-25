@@ -1,28 +1,40 @@
-from math import sqrt
+import math
 
-def circle_circle(p1, p2):
+def circle_circle(ball, p2):
     """ Tests whether two particles overlap
         If they do, make them bounce, i.e. update their angle, speed and position """
 
-    dx = p1.x - p2.x
-    dy = p1.y - p2.y
+    dx = ball.x - p2.x
+    dy = ball.y - p2.y
 
     dist = math.hypot(dx, dy)
-    if dist < p1.size + p2.size:
-        angle = math.atan2(dy, dx) + 0.5 * math.pi
-        total_mass = p1.mass + p2.mass
+    collision_occurs = dist < ball.size + p2.size
+    if collision_occurs:
+        angle = (math.atan2(dy, dx) + 0.5 * math.pi) % (2*math.pi)
+        total_mass = ball.mass + p2.mass
+        # print(ball.speed)
+        print(ball.angle,ball.speed*(ball.mass-p2.mass)/total_mass,
+                                              angle,
+                                              2*p2.speed*p2.mass/total_mass)
+        (ball.angle, ball.speed) = ball.addVectors(ball.angle,
+                                              ball.speed*(ball.mass-p2.mass)/total_mass,
+                                              angle,
+                                              2*p2.speed*p2.mass/total_mass)
+        print(ball.angle,ball.speed)
+        # 1/0
+        # (p2.angle, p2.speed) = addVectors(p2.angle, p2.speed*(p2.mass-ball.mass)/total_mass, angle+math.pi, 2*ball.speed*ball.mass/total_mass)
+        # print(ball.speed)
+        elasticity = ball.elasticity * p2.elasticity
+        ball.speed *= elasticity
+        # p2.speed *= elasticity
+        # print(ball.speed)
 
-        (p1.angle, p1.speed) = addVectors(p1.angle, p1.speed*(p1.mass-p2.mass)/total_mass, angle, 2*p2.speed*p2.mass/total_mass)
-        (p2.angle, p2.speed) = addVectors(p2.angle, p2.speed*(p2.mass-p1.mass)/total_mass, angle+math.pi, 2*p1.speed*p1.mass/total_mass)
-        elasticity = p1.elasticity * p2.elasticity
-        p1.speed *= elasticity
-        p2.speed *= elasticity
-
-        overlap = 0.5*(p1.size + p2.size - dist+1)
-        p1.x += math.sin(angle)*overlap
-        p1.y -= math.cos(angle)*overlap
-        p2.x -= math.sin(angle)*overlap
-        p2.y += math.cos(angle)*overlap
+        overlap = 0.5*(ball.size + p2.size - dist+1)
+        ball.x += math.sin(angle)*overlap
+        ball.y -= math.cos(angle)*overlap
+        # p2.x -= math.sin(angle)*overlap
+        # p2.y += math.cos(angle)*overlap
+    return  collision_occurs
 
 
 def closest_point_on_seg(seg, pt):
@@ -42,7 +54,7 @@ def closest_point_on_seg(seg, pt):
     """
     seg_v = seg.b - seg.a
     pt_v = pt - seg.a
-    seg_len = sqrt(seg_v.dot(seg_v))
+    seg_len = math.sqrt(seg_v.dot(seg_v))
     seg_v_unit = seg_v.copy() / seg_len
     proj = pt_v.dot(seg_v_unit)
     if proj <= 0:

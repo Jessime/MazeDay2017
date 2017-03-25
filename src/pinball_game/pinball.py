@@ -6,6 +6,7 @@ Created on Fri Sep  9 23:14:44 2016
 """
 import time
 import os
+import math
 
 import events
 from controller import Controller
@@ -23,7 +24,12 @@ class Model():
         self.height = 1000
 
         self.segment_list = []
-        self.ball = Particle(599-16,1000-16,15)
+        self.particle_list = []
+        # self.ball = Particle(599-16,1000-16,15)
+        self.ball = Particle(266,233,15)
+        self.ball.speed = 5
+        self.ball.mass = 5
+
         self.flipper_left = Flipper(Point(125, 900),
                                     Point(210, 925),
                                     1.57)
@@ -45,7 +51,12 @@ class Model():
 
         self.segment_list.append(Segment(Point(75, 0),
                                          Point(0,100),1))
-        
+
+        self.segment_list.append(Segment(Point(0,863.2),
+                                         Point(125,900)))
+
+        self.particle_list.append(Particle(300, 333,30))
+
     def exit_game(self):
         self.running = False
 
@@ -68,7 +79,7 @@ class Model():
     def update(self):
         '''All game logic.'''
         self.ball.move()
-        self.ball.bounce(self.width, self.height, self.segment_list)
+        self.ball.bounce(self.width, self.height, self.segment_list, self.particle_list)
         self.flipper_left.update()
         self.flipper_right.update()
 

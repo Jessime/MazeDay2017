@@ -65,21 +65,21 @@ class Segment():
 
         self.value = value
         self.noise = noise
-        self.thickness = 5
+        self.thickness = 10
 
 class Particle:
     """ A circular object with a velocity, size and mass """
 
-    def __init__(self, x, y, size, mass=1):
+    def __init__(self, x, y, size):
         self.x = x
         self.y = y
         self.pos = Point(x, y)
-        self.size = 15
+        self.size = size
         self.color = (0, 0, 255)
         self.thickness = 0
-        self.speed = 50
+        self.speed = 1
         self.angle = math.pi/2
-        self.mass = mass
+        self.mass = 1
         self.drag = 1
         self.elasticity = 0.9
         self.gravity = (3/2*math.pi, .25)
@@ -156,13 +156,16 @@ class Particle:
                     if seg.flip_up or seg.flip_down:
                         self.speed *= 2
 
-    def particle_bounce(self):
-        pass
+    def particle_bounce(self, particle_list):
+        for particle in particle_list:
+            collision_occurs = collision.circle_circle(self, particle)
+            if collision_occurs:
+                break
 
-    def bounce(self, width, height, segment_list):
+    def bounce(self, width, height, segment_list, particle_list):
         self.wall_bounce(width, height)
         self.seg_bounce(segment_list)
-        self.particle_bounce()
+        self.particle_bounce(particle_list)
 
     def addVectors(self,angle1, length1, angle2, length2):
         """ Returns the sum of two vectors """
@@ -214,10 +217,11 @@ class Flipper():
         self.rot = 1 if side == 'l' else -1
         self.len = math.hypot(self.b.x - self.a.x, self.b.y - self.a.y)
         self.angle = (math.atan2(a.x-b.x, a.y-b.y) + math.pi/2) % (2*math.pi)
+        print(self.angle)
         self.off_angle = self.angle
         self.flip_up = False
         self.flip_down = False
-        self.thickness = 15
+        self.thickness = 1
         self.value = 0
 
     def __repr__(self):
