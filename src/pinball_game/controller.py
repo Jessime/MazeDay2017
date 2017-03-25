@@ -32,6 +32,8 @@ class Controller():
                 if pygame_event.type == pygame.KEYUP:
                     for func in self.key_event_checks:
                         message = func(message, pygame_event)
-                        if message:
-                            self.ev_manager.post(message)
-                            break
+                elif pygame_event.type == pygame.QUIT:
+                    message = events.UserQuit()
+                if message:
+                    self.ev_manager.post(message)
+                    break
