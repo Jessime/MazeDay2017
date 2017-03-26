@@ -26,9 +26,9 @@ class Model():
         self.segment_list = []
         self.particle_list = []
         # self.ball = Particle(599-16,1000-16,15)
-        self.ball = Particle(266,233,15)
+        self.ball = Particle(150,233,15)
         self.ball.speed = 5
-        self.ball.mass = 5
+        self.ball.mass = 1
 
         self.flipper_left = Flipper(Point(125, 900),
                                     Point(210, 925),

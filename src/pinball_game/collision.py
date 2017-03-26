@@ -13,27 +13,27 @@ def circle_circle(ball, p2):
         angle = (math.atan2(dy, dx) + 0.5 * math.pi) % (2*math.pi)
         total_mass = ball.mass + p2.mass
         # print(ball.speed)
-        print(ball.angle,ball.speed*(ball.mass-p2.mass)/total_mass,
-                                              angle,
-                                              2*p2.speed*p2.mass/total_mass)
+        # print(ball.angle,ball.speed*(ball.mass-p2.mass)/total_mass,
+        #                                       angle,
+        #                                       2*p2.speed*p2.mass/total_mass)
         (ball.angle, ball.speed) = ball.addVectors(ball.angle,
                                               ball.speed*(ball.mass-p2.mass)/total_mass,
                                               angle,
                                               2*p2.speed*p2.mass/total_mass)
-        print(ball.angle,ball.speed)
+        # print(ball.angle,ball.speed)
         # 1/0
-        # (p2.angle, p2.speed) = addVectors(p2.angle, p2.speed*(p2.mass-ball.mass)/total_mass, angle+math.pi, 2*ball.speed*ball.mass/total_mass)
+        (p2.angle, p2.speed) = ball.addVectors(p2.angle, p2.speed*(p2.mass-ball.mass)/total_mass, angle+math.pi, 2*ball.speed*ball.mass/total_mass)
         # print(ball.speed)
         elasticity = ball.elasticity * p2.elasticity
         ball.speed *= elasticity
-        # p2.speed *= elasticity
+        p2.speed *= elasticity
         # print(ball.speed)
 
         overlap = 0.5*(ball.size + p2.size - dist+1)
         ball.x += math.sin(angle)*overlap
         ball.y -= math.cos(angle)*overlap
-        # p2.x -= math.sin(angle)*overlap
-        # p2.y += math.cos(angle)*overlap
+        p2.x -= math.sin(angle)*overlap
+        p2.y += math.cos(angle)*overlap
     return  collision_occurs
 
 
@@ -75,4 +75,14 @@ def segment_particle(seg, particle):
     """
     dist_v = closest_point_on_seg(seg, particle.pos)-particle.pos
     distsq = dist_v.dot(dist_v)
+
     return particle.size**2 >= distsq
+
+def correct_seg_overlap(seg, ball, angle):
+    dist_v = closest_point_on_seg(seg, ball.pos)-ball.pos
+    distsq = dist_v.dot(dist_v)
+    overlap = 0.5*(ball.size**2 - distsq+1)# + distsq - dist+1)
+    print(overlap)
+    ball.x += math.sin(angle)*overlap
+    ball.y -= math.cos(angle)*overlap
+    # return ball.pos.x,ball.pos.y

@@ -79,7 +79,7 @@ class Particle:
         self.thickness = 0
         self.speed = 1
         self.angle = math.pi/2
-        self.mass = 1
+        self.mass = 10
         self.drag = 1
         self.elasticity = 0.9
         self.gravity = (3/2*math.pi, .25)
@@ -152,6 +152,7 @@ class Particle:
             if collision.segment_particle(seg, self):
                 self.score += seg.value
                 self.angle = 2*seg.angle - self.angle
+                collision.correct_seg_overlap(seg, self, self.angle)
                 if isinstance(seg,Flipper):
                     if seg.flip_up or seg.flip_down:
                         self.speed *= 2
@@ -217,7 +218,7 @@ class Flipper():
         self.rot = 1 if side == 'l' else -1
         self.len = math.hypot(self.b.x - self.a.x, self.b.y - self.a.y)
         self.angle = (math.atan2(a.x-b.x, a.y-b.y) + math.pi/2) % (2*math.pi)
-        print(self.angle)
+        # print(self.angle)
         self.off_angle = self.angle
         self.flip_up = False
         self.flip_down = False
