@@ -26,15 +26,15 @@ class Model():
         self.segment_list = []
         self.particle_list = []
         # self.ball = Particle(599-16,1000-16,15)
-        self.ball = Particle(150,233,15)
+        self.ball = Particle(275,233,15) #gets stuck in x = 300-303
         self.ball.speed = 5
         self.ball.mass = 1
 
         self.flipper_left = Flipper(Point(125, 900),
                                     Point(210, 925),
                                     1.57)
-        self.flipper_right = Flipper(Point(325, 700),
-                                     Point(275, 730),
+        self.flipper_right = Flipper(Point(410, 900),
+                                     Point(325, 925),
                                      1.57, 'r')
 
         self.event = None

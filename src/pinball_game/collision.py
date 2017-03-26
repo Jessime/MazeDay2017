@@ -8,6 +8,7 @@ def circle_circle(ball, p2):
     dy = ball.y - p2.y
 
     dist = math.hypot(dx, dy)
+    print(dist)
     collision_occurs = dist < ball.size + p2.size
     if collision_occurs:
         angle = (math.atan2(dy, dx) + 0.5 * math.pi) % (2*math.pi)
@@ -22,9 +23,9 @@ def circle_circle(ball, p2):
                                               2*p2.speed*p2.mass/total_mass)
         # print(ball.angle,ball.speed)
         # 1/0
-        (p2.angle, p2.speed) = ball.addVectors(p2.angle, p2.speed*(p2.mass-ball.mass)/total_mass, angle+math.pi, 2*ball.speed*ball.mass/total_mass)
+        # (p2.angle, p2.speed) = ball.addVectors(p2.angle, p2.speed*(p2.mass-ball.mass)/total_mass, angle+math.pi, 2*ball.speed*ball.mass/total_mass)
         # print(ball.speed)
-        elasticity = ball.elasticity * p2.elasticity
+        # elasticity = ball.elasticity * p2.elasticity
         ball.speed *= elasticity
         p2.speed *= elasticity
         # print(ball.speed)
@@ -35,6 +36,28 @@ def circle_circle(ball, p2):
         p2.x -= math.sin(angle)*overlap
         p2.y += math.cos(angle)*overlap
     return  collision_occurs
+
+def ball_circle(ball, p2):
+    # if ball.x <= p2.x:
+    dx = ball.x - p2.x
+        # dy = ball.y - p2.y
+    # else:
+        # dx = -ball.x + p2.x
+
+    if ball.y <= p2.y:
+        dy = ball.y - p2.y
+    else:
+        dy = -ball.y + p2.y
+
+    dist = math.hypot(dx, dy)
+    collision_occurs = dist < ball.size + p2.size
+    if collision_occurs:
+        ball.angle = (math.atan2(dy, dx))# + 0.5 * math.pi) # % (2*math.pi)
+        overlap = 0.5*(ball.size + p2.size - dist+1)
+        ball.x += math.sin(ball.angle)*overlap
+        ball.y -= math.cos(ball.angle)*overlap
+        # self.angle =
+        # total_mass = ball.mass + p2.mass
 
 
 def closest_point_on_seg(seg, pt):
@@ -82,7 +105,7 @@ def correct_seg_overlap(seg, ball, angle):
     dist_v = closest_point_on_seg(seg, ball.pos)-ball.pos
     distsq = dist_v.dot(dist_v)
     overlap = 0.5*(ball.size**2 - distsq+1)# + distsq - dist+1)
-    print(overlap)
+    # print(overlap)
     ball.x += math.sin(angle)*overlap
     ball.y -= math.cos(angle)*overlap
     # return ball.pos.x,ball.pos.y

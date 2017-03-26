@@ -82,7 +82,7 @@ class Particle:
         self.mass = 10
         self.drag = 1
         self.elasticity = 0.9
-        self.gravity = (3/2*math.pi, .25)
+        self.gravity = (3/2*math.pi, 0.25)
         self.score = 0
 
     def move(self):
@@ -152,14 +152,15 @@ class Particle:
             if collision.segment_particle(seg, self):
                 self.score += seg.value
                 self.angle = 2*seg.angle - self.angle
-                collision.correct_seg_overlap(seg, self, self.angle)
+                # collision.correct_seg_overlap(seg, self, self.angle)
                 if isinstance(seg,Flipper):
                     if seg.flip_up or seg.flip_down:
                         self.speed *= 2
 
     def particle_bounce(self, particle_list):
         for particle in particle_list:
-            collision_occurs = collision.circle_circle(self, particle)
+            # collision_occurs = collision.circle_circle(self, particle)
+            collision_occurs = collision.ball_circle(self,particle)
             if collision_occurs:
                 break
 
