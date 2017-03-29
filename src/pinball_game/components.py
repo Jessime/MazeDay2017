@@ -1,5 +1,6 @@
 import math
 import pygame
+from time import sleep
 
 import collision
 
@@ -82,8 +83,17 @@ class Particle:
         self.mass = 10
         self.drag = 1
         self.elasticity = 0.9
-        self.gravity = (3/2*math.pi, 0.25)
+        self.gravity = (3/2*math.pi, 0.)
         self.score = 0
+
+    @property
+    def speed(self):
+        return self._speed
+
+    @speed.setter
+    def speed(self, val):
+        """Limit speed so  ball can't pass through objects or move too fast"""
+        self._speed = min(self.size-1, val)
 
     def move(self):
         self.angle, self.speed = self.addVectors(self.angle,
@@ -95,46 +105,16 @@ class Particle:
         self.pos = Point(self.x, self.y)
         self.speed *= self.drag
 
-    def experienceDrag(self):
-        self.speed *= self.drag
-
-    def mouseMove(self, x, y):
-        """ Change angle and speed to move towards a given point """
-
-        dx = x - self.x
-        dy = y - self.y
-        self.angle = 0.5*math.pi + math.atan2(dy, dx)
-        self.speed = math.hypot(dx, dy) * 0.1
-
-    def accelerate(self, vector):
-        """ Change angle and speed by a given vector """
-        self.angle, self.speed = self.addVectors(self.angle, self.speed, *vector)
-
-    def attract(self, other):
-        """" Change velocity based on gravatational attraction between two particle"""
-
-        dx = (self.x - other.x)
-        dy = (self.y - other.y)
-        dist  = math.hypot(dx, dy)
-
-        if dist < self.size + self.size:
-            return True
-
-        theta = math.atan2(dy, dx)
-        force = 0.2 * self.mass * other.mass / dist**2
-        self.accelerate((theta- 0.5 * math.pi, force/self.mass))
-        other.accelerate((theta+ 0.5 * math.pi, force/other.mass))
-
     def wall_bounce(self, width, height):
         if self.x > width - self.size:
             self.x = 2*(width - self.size) - self.x
             self.angle = (math.pi - self.angle) % (2*math.pi)
-            self.speed *= self.elasticity
+            # self.speed *= self.elasticity
 
         elif self.x < self.size:
             self.x = 2*self.size - self.x
             self.angle = (math.pi - self.angle) % (2*math.pi)
-            self.speed *= self.elasticity
+            # self.speed *= self.elasticity
 
         if self.y > height - self.size:
             self.y = 2*(height - self.size) - self.y
@@ -144,22 +124,26 @@ class Particle:
         elif self.y < self.size:
             self.y = 2*self.size - self.y
             self.angle = - self.angle % (2*math.pi)
-            self.speed *= self.elasticity
+            # self.speed *= self.elasticity
 
     def seg_bounce(self, segment_list):
         for seg in segment_list:
-
-            if collision.segment_particle(seg, self):
+            did_collide = collision.segment_particle(seg, self)
+            if did_collide:
                 self.score += seg.value
-                self.angle = 2*seg.angle - self.angle
-                # collision.correct_seg_overlap(seg, self, self.angle)
+                self.angle = (2*seg.angle - self.angle) % (2*math.pi)
+
+                while collision.segment_particle(seg, self):
+                    self.x += math.cos(self.angle)
+                    self.y -= math.sin(self.angle)
+                    self.pos = Point(self.x, self.y)
+
                 if isinstance(seg,Flipper):
                     if seg.flip_up or seg.flip_down:
                         self.speed *= 2
 
     def particle_bounce(self, particle_list):
         for particle in particle_list:
-            # collision_occurs = collision.circle_circle(self, particle)
             collision_occurs = collision.ball_circle(self,particle)
             if collision_occurs:
                 break
@@ -219,7 +203,6 @@ class Flipper():
         self.rot = 1 if side == 'l' else -1
         self.len = math.hypot(self.b.x - self.a.x, self.b.y - self.a.y)
         self.angle = (math.atan2(a.x-b.x, a.y-b.y) + math.pi/2) % (2*math.pi)
-        # print(self.angle)
         self.off_angle = self.angle
         self.flip_up = False
         self.flip_down = False

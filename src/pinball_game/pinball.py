@@ -25,9 +25,11 @@ class Model():
 
         self.segment_list = []
         self.particle_list = []
-        # self.ball = Particle(599-16,1000-16,15)
-        self.ball = Particle(275,233,15) #gets stuck in x = 300-303
-        self.ball.speed = 5
+        # self.ball = Particle(599-16,1000-16,15) # real
+        # self.ball = Particle(23,853,15) #test roll
+        self.ball = Particle(290, 153, 15)
+        self.angle = 3*math.pi/2
+        self.ball.speed = 14
         self.ball.mass = 1
 
         self.flipper_left = Flipper(Point(125, 900),
