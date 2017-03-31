@@ -12,7 +12,6 @@ class Init():
     def __str__(self): return 'Starting app.'
 
 class LoopEnd():
-
     def __init__(self):
         self.name = 'LoopEnd'
 
@@ -23,6 +22,14 @@ class UserQuit():
 class Flip():
     def __init__(self, side):
         self.side = side
+
+class GameOver():
+    def __init__(self): pass
+    def __str__(self): return 'Game over, better luck next time!'
+
+class PowerLaunch():
+    def __init__(self, power):
+        self.power = power
 
 class EventManager():
     def __init__(self):

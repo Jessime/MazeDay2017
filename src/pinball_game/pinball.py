@@ -17,6 +17,10 @@ class Model():
     def __init__(self, ev_manager):
         self.ev_manager = ev_manager
 
+        self.player_score = 0
+        self.player_lives = 3
+        self.islaunched = False
+
         self.loop_start = time.time()
         self.loop_time = 0
         self.running = True
@@ -25,11 +29,10 @@ class Model():
 
         self.segment_list = []
         self.particle_list = []
-        # self.ball = Particle(599-16,1000-16,15) # real
+        self.ball = Particle(599-16,1000-15,15) # real
         # self.ball = Particle(23,853,15) #test roll
-        self.ball = Particle(290, 153, 15)
-        self.angle = 3*math.pi/2
-        self.ball.speed = 14
+        # self.ball = Particle(290, 153, 15)
+        self.ball.speed = 0
         self.ball.mass = 1
 
         self.flipper_left = Flipper(Point(125, 900),
@@ -54,6 +57,9 @@ class Model():
         self.segment_list.append(Segment(Point(75, 0),
                                          Point(0,100),1))
 
+        self.segment_list.append(Segment(Point(self.width-1-40,863.2),
+                                         Point(410,900)))
+
         self.segment_list.append(Segment(Point(0,863.2),
                                          Point(125,900)))
 
@@ -77,6 +83,8 @@ class Model():
             self.exit_game()
         elif isinstance(event, events.Flip):
             self.flip()
+        elif isinstance(event, events.PowerLaunch):
+            self.launch()
 
     def update(self):
         '''All game logic.'''
@@ -84,12 +92,33 @@ class Model():
         self.ball.bounce(self.width, self.height, self.segment_list, self.particle_list)
         self.flipper_left.update()
         self.flipper_right.update()
+        self.check_dying()
+        self.check_gameover()
 
     def run(self):
         self.ev_manager.post(events.Init())
         while self.running:
             self.update()
             self.ev_manager.post(events.LoopEnd())
+
+    def launch(self):
+        self.ball.speed = self.event.power*.5  +1
+        self.islaunched = True
+
+    def check_dying(self):
+        if self.ball.y > self.height - 30 and self.ball.x < self.width - 40 -1:
+            self.player_lives -= 1
+            self.reset()
+
+    def check_gameover(self):
+        if self.player_lives == 0:
+            #sad noises
+            self.running = False
+
+    def reset(self):
+        self.ball = Particle(599-16,1000-15,15)
+        self.speed = 0
+        self.islaunched = False
 
 class App():
     def __init__(self, print_only=False, no_printing=False):

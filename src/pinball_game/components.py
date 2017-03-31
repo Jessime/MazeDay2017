@@ -78,12 +78,12 @@ class Particle:
         self.size = size
         self.color = (0, 0, 255)
         self.thickness = 0
-        self.speed = 1
+        self._speed = 0
         self.angle = math.pi/2
         self.mass = 10
-        self.drag = 1
+        self.drag = 1 #.998
         self.elasticity = 0.9
-        self.gravity = (3/2*math.pi, 0.)
+        self.gravity = (3/2*math.pi, 0.25)
         self.score = 0
 
     @property
@@ -93,7 +93,7 @@ class Particle:
     @speed.setter
     def speed(self, val):
         """Limit speed so  ball can't pass through objects or move too fast"""
-        self._speed = min(self.size-1, val)
+        self._speed = min(2*self.size-1, val)
 
     def move(self):
         self.angle, self.speed = self.addVectors(self.angle,
@@ -109,12 +109,12 @@ class Particle:
         if self.x > width - self.size:
             self.x = 2*(width - self.size) - self.x
             self.angle = (math.pi - self.angle) % (2*math.pi)
-            # self.speed *= self.elasticity
+            self.speed *= self.elasticity
 
         elif self.x < self.size:
             self.x = 2*self.size - self.x
             self.angle = (math.pi - self.angle) % (2*math.pi)
-            # self.speed *= self.elasticity
+            self.speed *= self.elasticity
 
         if self.y > height - self.size:
             self.y = 2*(height - self.size) - self.y
@@ -124,7 +124,7 @@ class Particle:
         elif self.y < self.size:
             self.y = 2*self.size - self.y
             self.angle = - self.angle % (2*math.pi)
-            # self.speed *= self.elasticity
+            self.speed *= self.elasticity
 
     def seg_bounce(self, segment_list):
         for seg in segment_list:
