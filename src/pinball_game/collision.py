@@ -1,6 +1,22 @@
 import math
 
 def ball_circle(ball, p2):
+    """Determines if ball collides with any circular objects
+
+    If collision is detected, angle and position of ball are appropriately updated.
+
+    Parameters
+    ----------
+    ball : Particle
+        Players ball
+    p2 : Particle
+        Stationary object with which ball might collides
+
+    Returns
+    -------
+    collision_occurs : bool
+        True if ball's position overlaps with p2's position
+    """
     dx = ball.x - p2.x
     dy = -ball.y + p2.y
 

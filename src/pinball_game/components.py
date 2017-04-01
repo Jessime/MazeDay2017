@@ -227,6 +227,7 @@ class Flipper():
         pass
 
     def update(self):
+        """Check flipping state and adjust angle and state accordingly"""
         delta = .15
         if self.flip_up:
             self.move()
@@ -239,6 +240,20 @@ class Flipper():
                 self.flip_down = False
 
 def init_components(width, height):
+    """Set all the pieces of the game board to their proper locations
+
+    Parameters
+    ----------
+    width : int
+        width of screen
+    height : int
+        height of screen
+
+    Returns
+    -------
+    components_dict : dict
+        wrapper around all different types of components
+    """
     components_dict = {}
 
     ball = Particle(599-16,1000-15,15) # real
