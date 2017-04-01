@@ -11,7 +11,8 @@ import math
 import events
 from controller import Controller
 from view import BasicView
-from components import Flipper, Particle, Segment, Point
+from components import init_components, Particle
+
 
 class Model():
     def __init__(self, ev_manager):
@@ -27,43 +28,15 @@ class Model():
         self.width = 600
         self.height = 1000
 
-        self.segment_list = []
-        self.particle_list = []
-        self.ball = Particle(599-16,1000-15,15) # real
-        # self.ball = Particle(23,853,15) #test roll
-        # self.ball = Particle(290, 153, 15)
-        self.ball.speed = 0
-        self.ball.mass = 1
-
-        self.flipper_left = Flipper(Point(125, 900),
-                                    Point(210, 925),
-                                    1.57)
-        self.flipper_right = Flipper(Point(410, 900),
-                                     Point(325, 925),
-                                     1.57, 'r')
+        components_dict = init_components(self.width, self.height)
+        self.ball = components_dict['ball']
+        self.segment_list = components_dict['segment_list']
+        self.particle_list = components_dict['particle_list']
+        self.flipper_left = components_dict['flipper_left']
+        self.flipper_right = components_dict['flipper_right']
 
         self.event = None
         self.ev_manager.register(self)
-        self.segment_list.append(self.flipper_left)
-        self.segment_list.append(self.flipper_right)
-
-        # shooter line
-        self.segment_list.append(Segment(Point(self.width-1-40, self.height-1),
-                                         Point(self.width-1-40,150)))
-        # shooter angled line
-        self.segment_list.append(Segment(Point(self.width-1, 25),
-                                         Point(self.width-1-25,0)))
-
-        self.segment_list.append(Segment(Point(75, 0),
-                                         Point(0,100),1))
-
-        self.segment_list.append(Segment(Point(self.width-1-40,863.2),
-                                         Point(410,900)))
-
-        self.segment_list.append(Segment(Point(0,863.2),
-                                         Point(125,900)))
-
-        self.particle_list.append(Particle(300, 333,30))
 
     def exit_game(self):
         self.running = False

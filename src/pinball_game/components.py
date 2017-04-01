@@ -80,7 +80,7 @@ class Particle:
         self.thickness = 0
         self._speed = 0
         self.angle = math.pi/2
-        self.mass = 10
+        self.mass = 1
         self.drag = 1 #.998
         self.elasticity = 0.9
         self.gravity = (3/2*math.pi, 0.25)
@@ -237,3 +237,46 @@ class Flipper():
             self.move()
             if self.off_angle - delta <= self.angle <= self.off_angle + delta:
                 self.flip_down = False
+
+def init_components(width, height):
+    components_dict = {}
+
+    ball = Particle(599-16,1000-15,15) # real
+    # self.ball = Particle(23,853,15) #test roll
+    # self.ball = Particle(290, 153, 15)
+    #ball.speed = 0
+    #ball.mass = 1
+    components_dict['ball'] = ball
+
+    flipper_left = Flipper(Point(125, 900),
+                           Point(210, 925),
+                           1.57)
+    flipper_right = Flipper(Point(410, 900),
+                            Point(325, 925),
+                            1.57, 'r')
+    components_dict['flipper_left'] = flipper_left
+    components_dict['flipper_right'] = flipper_right
+
+    segment_points = [(Point(width-1-40, height-1), Point(width-1-40,150)), #shooter line
+                      (Point(width-1, 25), Point(width-1-25,0)), #top right corner
+                      (Point(75, 0), Point(0,100),1), #top left corner
+                      (Point(width-1-40,863.2), Point(410,900)), #left funnel
+                      (Point(0,863.2), Point(125,900)), #right funnel
+                      (Point(260, 400), Point(310, 410)) #Middle
+                     ]
+    segment_list = [Segment(*points) for points in segment_points]
+    segment_list.append(flipper_left)
+    segment_list.append(flipper_right)
+    components_dict['segment_list'] = segment_list
+
+    particle_list = [Particle(380, 333, 25),
+                     Particle(325, 300, 25),
+                     Particle(440, 245, 25),
+                     Particle(50, 750, 10),
+                     Particle(100, 750, 10),
+                     Particle(75, 800, 10)
+                    ]
+
+    components_dict['particle_list'] = particle_list
+
+    return components_dict
