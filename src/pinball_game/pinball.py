@@ -10,7 +10,7 @@ import math
 
 import events
 from controller import Controller
-from view import BasicView
+from view import BasicView, AudioView
 from components import init_components, Particle
 
 
@@ -85,7 +85,7 @@ class Model():
 
     def check_gameover(self):
         if self.player_lives == 0:
-            #sad noises
+            #TODO sad noises
             self.running = False
 
     def reset(self):
@@ -94,11 +94,14 @@ class Model():
         self.islaunched = False
 
 class App():
-    def __init__(self, print_only=False, no_printing=False):
+    def __init__(self, sound=True, printing=True):
         self.ev_manager = events.EventManager()
         self.model = Model(self.ev_manager)
         self.controller = Controller(self.ev_manager, self.model)
-        self.basic_view = BasicView(self.ev_manager, self.model)
+        if sound:
+            self.audio_view = AudioView(self.ev_manager, self.model)
+        if printing:
+            self.basic_view = BasicView(self.ev_manager, self.model)
 
 if __name__ == '__main__':
     os.environ['SDL_VIDEO_CENTERED'] = '1'

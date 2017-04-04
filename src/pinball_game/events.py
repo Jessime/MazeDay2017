@@ -6,7 +6,10 @@ Created on Sat Sep 10 15:25:02 2016
 
 These Events are in alphabetical order.
 """
-
+class Collision():
+    def __init__(self, mp3):
+        self.mp3 = mp3
+        
 class Init():
     def __init__(self): pass
     def __str__(self): return 'Starting app.'

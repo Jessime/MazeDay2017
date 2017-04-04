@@ -85,6 +85,7 @@ class Particle:
         self.elasticity = 0.9
         self.gravity = (3/2*math.pi, 0.25)
         self.score = 0
+        self.collision_partner = None
 
     @property
     def speed(self):
@@ -130,6 +131,7 @@ class Particle:
         for seg in segment_list:
             did_collide = collision.segment_particle(seg, self)
             if did_collide:
+                self.collision_partner = seg
                 self.score += seg.value
                 self.angle = (2*seg.angle - self.angle) % (2*math.pi)
 
@@ -141,12 +143,18 @@ class Particle:
                 if isinstance(seg,Flipper):
                     if seg.flip_up or seg.flip_down:
                         self.speed *= 2
+                break
+        else:
+            self.collision_partner = None
 
     def particle_bounce(self, particle_list):
         for particle in particle_list:
             collision_occurs = collision.ball_circle(self,particle)
             if collision_occurs:
+                self.collision_partner = particle
                 break
+        else:
+            self.collision_partner = None
 
     def bounce(self, width, height, segment_list, particle_list):
         self.wall_bounce(width, height)
@@ -272,26 +280,26 @@ def init_components(width, height):
     components_dict['flipper_left'] = flipper_left
     components_dict['flipper_right'] = flipper_right
 
-    segment_points = [(Point(width-1-40, height-1), Point(width-1-40,150)), #shooter line
-                      (Point(width-1, 25), Point(width-1-25,0)), #top right corner
-                      (Point(75, 0), Point(0,100),1), #top left corner
-                      (Point(width-1-40,863.2), Point(410,900)), #left funnel
-                      (Point(0,863.2), Point(125,900)), #right funnel
-                      (Point(260, 400), Point(310, 410)) #Middle
+    segment_data = [((width-1-40, height-1), (width-1-40,150)), #shooter line
+                      ((width-1, 25), (width-1-25,0)), #top right corner
+                      ((75, 0), (0,100)), #top left corner
+                      ((width-1-40,863.2), (410,900)), #left funnel
+                      ((0,863.2), (125,900)), #right funnel
+                      ((260, 400), (310, 410)) #Middle
                      ]
-    segment_list = [Segment(*points) for points in segment_points]
+    segment_list = [Segment(Point(*p1), Point(*p2)) for p1, p2 in segment_data]
     segment_list.append(flipper_left)
     segment_list.append(flipper_right)
     components_dict['segment_list'] = segment_list
 
-    particle_list = [Particle(380, 333, 25),
-                     Particle(325, 300, 25),
-                     Particle(440, 245, 25),
-                     Particle(50, 750, 10),
-                     Particle(100, 750, 10),
-                     Particle(75, 800, 10)
+    particle_data = [(380, 333, 25),
+                     (325, 300, 25),
+                     (440, 245, 25),
+                     (50, 750, 10),
+                     (100, 750, 10),
+                     (75, 800, 10)
                     ]
-
+    particle_list = [Particle(*d) for d in particle_data]
     components_dict['particle_list'] = particle_list
 
     return components_dict

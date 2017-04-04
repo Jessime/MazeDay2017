@@ -81,3 +81,22 @@ class BasicView(View):
 
     def show(self):
         print('\n', self.event, '\n')
+
+class AudioView(View):
+    def __init__(self, ev_manager, model):
+        super().__init__(ev_manager, model)
+        self.event_func_dict = {}
+        
+    def play(self, filename=None):
+        """Play the event mp3.
+
+        Paramters
+        ---------
+        filename : str
+            If filename is past, the corresponding mp3 file will be played instead of self.event.mp3.
+        """
+        if filename is None:
+            filename = self.event.mp3
+        template = pkg_resources.resource_filename('pinball_game', 'data/{}.mp3'.format(filename))
+        pygame.mixer.music.load(template)
+        pygame.mixer.music.play()
