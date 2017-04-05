@@ -73,6 +73,10 @@ class Model():
     def update(self):
         '''All game logic.'''
         self.ball_collisions()
+        # self.flipper_left.update()
+        # self.flipper_right.update()
+        self.ball.move()
+        self.ball.bounce(self.width, self.height, self.segment_list, self.particle_list)
         self.flipper_left.update()
         self.flipper_right.update()
         self.check_dying()

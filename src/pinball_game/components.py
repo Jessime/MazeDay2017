@@ -87,8 +87,8 @@ class Particle:
         self._speed = 0
         self.angle = math.pi/2
         self.mass = 1
-        self.drag = 1 #.998
-        self.elasticity = 0.9
+        self.drag = .998
+        self.elasticity = 0.8
         self.gravity = (3/2*math.pi, 0.25)
         self.score = 0
         self.collision_partner = None
@@ -273,11 +273,11 @@ def init_components(width, height):
     #ball.mass = 1
     components_dict['ball'] = ball
 
-    flipper_left = Flipper(Point(125, 900),
-                           Point(210, 925),
+    flipper_left = Flipper(Point(150, 912),
+                           Point(245, 960),
                            1.57)
-    flipper_right = Flipper(Point(410, 900),
-                            Point(325, 925),
+    flipper_right = Flipper(Point(410, 912),
+                            Point(315, 960),
                             1.57, 'r')
     components_dict['flipper_left'] = flipper_left
     components_dict['flipper_right'] = flipper_right
@@ -285,21 +285,27 @@ def init_components(width, height):
     segment_data = [((width-1-40, height-1), (width-1-40,150)), #shooter line
                       ((width-1, 25), (width-1-25,0)), #top right corner
                       ((75, 0), (0,100)), #top left corner
-                      ((width-1-40,863.2), (410,900)), #left funnel
-                      ((0,863.2), (125,900)), #right funnel
-                      ((260, 400), (310, 410)) #Middle
+                      ((width-1-40,837), (410,912)), #right funnel
+                      ((0,837), (150,912)), #left funnel
+                      ((260, 370), (310, 390)), #Middle
+                      ((60,825), (100,700)), #eft triangle pt1
+                      ((60,825), (145,865)), #left triangle pt2
+                      ((100,700), (145,865)), #left triangle pt3
+                      ((415,865),(455,700)), #right triangle pt1
+                      ((415,865), (width-1-100,825)), #right triangle pt2
+                      ((width-1-140,700), (width-1-100,825)) #right triangle pt3
                      ]
     segment_list = [Segment(Point(*p1), Point(*p2)) for p1, p2 in segment_data]
     segment_list.append(flipper_left)
     segment_list.append(flipper_right)
     components_dict['segment_list'] = segment_list
 
-    particle_data = [(380, 333, 25),
-                     (325, 300, 25),
-                     (440, 245, 25),
-                     (50, 750, 10),
-                     (100, 750, 10),
-                     (75, 800, 10)
+    particle_data = [(295, 355, 25), #2
+                     (245, 285, 25), #1
+                     (345, 270, 25), #3
+                     (50, 520, 10),  #1
+                     (100, 550, 10), #3
+                     (55, 585, 10)   #2
                     ]
     particle_list = [Particle(*d) for d in particle_data]
     components_dict['particle_list'] = particle_list
