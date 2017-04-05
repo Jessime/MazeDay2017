@@ -75,11 +75,12 @@ class Segment():
 class Particle:
     """ A circular object with a velocity, size and mass """
 
-    def __init__(self, x, y, size, noise='particle'):
+    def __init__(self, x, y, size, value=0, noise='particle'):
         self.x = x
         self.y = y
         self.size = size
         self.noise = noise
+        self.value = value
 
         self.pos = Point(x, y)
         self.color = (0, 0, 255)
@@ -87,11 +88,12 @@ class Particle:
         self._speed = 0
         self.angle = math.pi/2
         self.mass = 1
-        self.drag = .998
+        self.drag = .995
         self.elasticity = 0.8
-        self.gravity = (3/2*math.pi, 0.25)
+        self.gravity = (3/2*math.pi, 0.20)
         self.score = 0
         self.collision_partner = None
+        self.player_score = 0
 
     def __repr__(self):
         return 'Particle({})'.format(self.pos)
@@ -136,12 +138,13 @@ class Particle:
             self.angle = - self.angle % (2*math.pi)
             self.speed *= self.elasticity
 
-    def seg_bounce(self, segment_list):
+    def seg_bounce(self, segment_list):#, player_score):
         for seg in segment_list:
             did_collide = collision.segment_particle(seg, self)
             if did_collide:
                 self.collision_partner = seg
-                self.score += seg.value
+                # player_score += seg.value
+                self.player_score += seg.value
                 self.angle = (2*seg.angle - self.angle) % (2*math.pi)
 
                 while collision.segment_particle(seg, self):
@@ -154,17 +157,19 @@ class Particle:
                         self.speed *= 2
                 break
 
-    def particle_bounce(self, particle_list):
+    def particle_bounce(self, particle_list):#, player_score):
         for particle in particle_list:
             collision_occurs = collision.ball_circle(self,particle)
             if collision_occurs:
                 self.collision_partner = particle
+                # player_score += particle.value
+                self.player_score += particle.value
                 break
 
-    def bounce(self, width, height, segment_list, particle_list):
+    def bounce(self, width, height, segment_list, particle_list):#, player_score):
         self.wall_bounce(width, height)
-        self.seg_bounce(segment_list)
-        self.particle_bounce(particle_list)
+        self.seg_bounce(segment_list)#, player_score)
+        self.particle_bounce(particle_list)#, player_score)
 
     def addVectors(self,angle1, length1, angle2, length2):
         """ Returns the sum of two vectors """
@@ -300,12 +305,12 @@ def init_components(width, height):
     segment_list.append(flipper_right)
     components_dict['segment_list'] = segment_list
 
-    particle_data = [(295, 355, 25), #2
-                     (245, 285, 25), #1
-                     (345, 270, 25), #3
-                     (50, 520, 10),  #1
-                     (100, 550, 10), #3
-                     (55, 585, 10)   #2
+    particle_data = [(295, 355, 25,1), #2
+                     (245, 285, 25,1), #1
+                     (345, 270, 25,1), #3
+                     (50, 520, 10,1),  #1
+                     (100, 550, 10,1), #3
+                     (55, 585, 10,1)   #2
                     ]
     particle_list = [Particle(*d) for d in particle_data]
     components_dict['particle_list'] = particle_list
