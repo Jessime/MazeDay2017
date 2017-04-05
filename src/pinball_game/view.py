@@ -6,6 +6,7 @@ Created on Sat Sep 10 15:25:02 2016
 """
 
 import pygame
+import pkg_resources
 
 class View:
     def __init__(self, ev_manager, model):
@@ -85,8 +86,8 @@ class BasicView(View):
 class AudioView(View):
     def __init__(self, ev_manager, model):
         super().__init__(ev_manager, model)
-        self.event_func_dict = {}
-        
+        self.event_func_dict = {'Collision':self.play}
+
     def play(self, filename=None):
         """Play the event mp3.
 
@@ -97,6 +98,9 @@ class AudioView(View):
         """
         if filename is None:
             filename = self.event.mp3
-        template = pkg_resources.resource_filename('pinball_game', 'data/{}.mp3'.format(filename))
+        #template = pkg_resources.resource_filename('pinball_game', 'data/{}.mp3'.format(filename))
+        if filename == '': #TODO fix this
+            return
+        template = 'data/{}.mp3'.format(filename)
         pygame.mixer.music.load(template)
         pygame.mixer.music.play()

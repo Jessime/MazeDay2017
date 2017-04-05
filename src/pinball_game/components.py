@@ -59,7 +59,7 @@ class Segment():
     angle : float
         angle of segment in radians, where a horizontal segment is 0 or pi
     """
-    def __init__(self, a, b, value=0, noise=''):
+    def __init__(self, a, b, value=0, noise='seg'):
         self.a = a
         self.b = b
         self.angle = (math.atan2(b.x-a.x, b.y-a.y) + math.pi/2) % (2*math.pi)
@@ -68,14 +68,20 @@ class Segment():
         self.noise = noise
         self.thickness = 10
 
+    def __repr__(self):
+        base = '{}({}\n{}\nAngle: {:.2f})\n'
+        return base.format(self.__class__.__name__, self.a, self.b, self.angle)
+
 class Particle:
     """ A circular object with a velocity, size and mass """
 
-    def __init__(self, x, y, size):
+    def __init__(self, x, y, size, noise='particle'):
         self.x = x
         self.y = y
-        self.pos = Point(x, y)
         self.size = size
+        self.noise = noise
+
+        self.pos = Point(x, y)
         self.color = (0, 0, 255)
         self.thickness = 0
         self._speed = 0
@@ -86,6 +92,9 @@ class Particle:
         self.gravity = (3/2*math.pi, 0.25)
         self.score = 0
         self.collision_partner = None
+
+    def __repr__(self):
+        return 'Particle({})'.format(self.pos)
 
     @property
     def speed(self):
@@ -144,8 +153,6 @@ class Particle:
                     if seg.flip_up or seg.flip_down:
                         self.speed *= 2
                 break
-        else:
-            self.collision_partner = None
 
     def particle_bounce(self, particle_list):
         for particle in particle_list:
@@ -153,8 +160,6 @@ class Particle:
             if collision_occurs:
                 self.collision_partner = particle
                 break
-        else:
-            self.collision_partner = None
 
     def bounce(self, width, height, segment_list, particle_list):
         self.wall_bounce(width, height)
@@ -216,10 +221,7 @@ class Flipper():
         self.flip_down = False
         self.thickness = 1
         self.value = 0
-
-    def __repr__(self):
-        base = 'Flipper({}\n{}\nAngle: {:.2f})\n'
-        return base.format(self.a, self.b, self.angle)
+        self.noise = 'flipper'
 
     def move(self):
         """change flipper end position while flipping"""

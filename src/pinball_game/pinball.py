@@ -59,10 +59,20 @@ class Model():
         elif isinstance(event, events.PowerLaunch):
             self.launch()
 
+    def ball_collisions(self):
+        self.ball.move()
+        self.ball.bounce(self.width,
+                         self.height,
+                         self.segment_list,
+                         self.particle_list)
+        if self.ball.collision_partner is not None:
+            mp3 = self.ball.collision_partner.noise
+            self.ev_manager.post(events.Collision(mp3))
+            self.ball.collision_partner = None
+
     def update(self):
         '''All game logic.'''
-        self.ball.move()
-        self.ball.bounce(self.width, self.height, self.segment_list, self.particle_list)
+        self.ball_collisions()
         self.flipper_left.update()
         self.flipper_right.update()
         self.check_dying()
