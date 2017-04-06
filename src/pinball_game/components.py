@@ -87,9 +87,9 @@ class Particle:
         self._speed = 0
         self.angle = math.pi/2
         self.mass = 1
-        self.drag = .998
+        self.drag = 1#.998
         self.elasticity = 0.8
-        self.gravity = (3/2*math.pi, 0.25)
+        self.gravity = (3/2*math.pi, 0.065)
         self.score = 0
         self.collision_partner = None
 
@@ -103,7 +103,8 @@ class Particle:
     @speed.setter
     def speed(self, val):
         """Limit speed so  ball can't pass through objects or move too fast"""
-        self._speed = min(2*self.size-1, val)
+        #self._speed = min(.5*self.size-1, val)
+        self._speed = min(15, val)
 
     def move(self):
         self.angle, self.speed = self.addVectors(self.angle,
@@ -114,6 +115,7 @@ class Particle:
         self.y -= math.sin(self.angle) * self.speed
         self.pos = Point(self.x, self.y)
         self.speed *= self.drag
+        # print(self.speed)
 
     def wall_bounce(self, width, height):
         if self.x > width - self.size:
@@ -143,6 +145,7 @@ class Particle:
                 self.collision_partner = seg
                 self.score += seg.value
                 self.angle = (2*seg.angle - self.angle) % (2*math.pi)
+                self.speed *= self.elasticity
 
                 while collision.segment_particle(seg, self):
                     self.x += math.cos(self.angle)
@@ -159,6 +162,7 @@ class Particle:
             collision_occurs = collision.ball_circle(self,particle)
             if collision_occurs:
                 self.collision_partner = particle
+                self.speed *= self.elasticity
                 break
 
     def bounce(self, width, height, segment_list, particle_list):
@@ -226,9 +230,9 @@ class Flipper():
     def move(self):
         """change flipper end position while flipping"""
         if self.flip_up:
-            self.angle += (.2 * self.rot)
+            self.angle += (.09 * self.rot)
         elif self.flip_down:
-            self.angle -= (.2 * self.rot)
+            self.angle -= (.09 * self.rot)
         self.angle %= 2*math.pi
         self.b.x = self.a.x + math.cos(self.angle) * self.len
         self.b.y = self.a.y - math.sin(self.angle) * self.len
