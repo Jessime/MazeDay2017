@@ -138,13 +138,13 @@ class Particle:
             self.angle = - self.angle % (2*math.pi)
             self.speed *= self.elasticity
 
-    def seg_bounce(self, segment_list):#, player_score):
+    def seg_bounce(self, segment_list, player_score):
         for seg in segment_list:
             did_collide = collision.segment_particle(seg, self)
             if did_collide:
                 self.collision_partner = seg
-                # player_score += seg.value
-                self.player_score += seg.value
+                player_score += seg.value
+                # self.player_score += seg.value
                 self.angle = (2*seg.angle - self.angle) % (2*math.pi)
 
                 while collision.segment_particle(seg, self):
@@ -157,19 +157,19 @@ class Particle:
                         self.speed *= 2
                 break
 
-    def particle_bounce(self, particle_list):#, player_score):
+    def particle_bounce(self, particle_list, player_score):
         for particle in particle_list:
             collision_occurs = collision.ball_circle(self,particle)
             if collision_occurs:
                 self.collision_partner = particle
-                # player_score += particle.value
-                self.player_score += particle.value
+                player_score += self.value
+                # self.player_score += particle.value
                 break
 
-    def bounce(self, width, height, segment_list, particle_list):#, player_score):
+    def bounce(self, width, height, segment_list, particle_list, player_score):
         self.wall_bounce(width, height)
-        self.seg_bounce(segment_list)#, player_score)
-        self.particle_bounce(particle_list)#, player_score)
+        self.seg_bounce(segment_list, player_score)
+        self.particle_bounce(particle_list, player_score)
 
     def addVectors(self,angle1, length1, angle2, length2):
         """ Returns the sum of two vectors """

@@ -91,7 +91,7 @@ class AudioView(View):
     def play(self, filename=None):
         """Play the event mp3.
 
-        Paramters
+        Parameters
         ---------
         filename : str
             If filename is past, the corresponding mp3 file will be played instead of self.event.mp3.
