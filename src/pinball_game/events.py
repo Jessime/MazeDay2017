@@ -9,7 +9,7 @@ These Events are in alphabetical order.
 class Collision():
     def __init__(self, mp3):
         self.mp3 = mp3
-        
+
 class Init():
     def __init__(self): pass
     def __str__(self): return 'Starting app.'
@@ -30,9 +30,12 @@ class GameOver():
     def __init__(self): pass
     def __str__(self): return 'Game over, better luck next time!'
 
+class Launch():
+    def __init__(self): pass
+
 class PowerLaunch():
-    def __init__(self, power):
-        self.power = power
+    def __init__(self):
+        pass
 
 class EventManager():
     def __init__(self):

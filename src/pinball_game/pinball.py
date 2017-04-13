@@ -11,7 +11,7 @@ import math
 import events
 from controller import Controller
 from view import BasicView, AudioView
-from components import init_components, Particle
+from components import init_components, Particle, cap
 
 
 class Model():
@@ -20,7 +20,10 @@ class Model():
 
         self.player_score = 0
         self.player_lives = 3
+        self.launch_power = 0
         self.islaunched = False
+        self.successful_launch = False
+        self.failed_launch = False
 
         self.loop_start = time.time()
         self.loop_time = 0
@@ -34,6 +37,7 @@ class Model():
         self.particle_list = components_dict['particle_list']
         self.flipper_left = components_dict['flipper_left']
         self.flipper_right = components_dict['flipper_right']
+        self.starter_segs_len = len(self.segment_list) #TODO hack
 
         self.event = None
         self.ev_manager.register(self)
@@ -57,6 +61,9 @@ class Model():
         elif isinstance(event, events.Flip):
             self.flip()
         elif isinstance(event, events.PowerLaunch):
+            #print('re?')
+            self.power_launch()
+        elif isinstance(event, events.Launch):
             self.launch()
 
     def ball_collisions(self):
@@ -74,8 +81,9 @@ class Model():
 
     def update(self):
         '''All game logic.'''
+        self.failure_to_launch()
         self.ball_collisions()
-        print(self.player_score)
+        # print(self.player_score)
         self.flipper_left.update()
         self.flipper_right.update()
         self.check_dying()
@@ -87,9 +95,16 @@ class Model():
             self.update()
             self.ev_manager.post(events.LoopEnd())
 
+    def power_launch(self):
+        #print(1, self.launch_power)
+        if not self.islaunched:
+            self.launch_power += 1
+
     def launch(self):
-        self.ball.speed = self.event.power*.5  +1
-        self.islaunched = True
+        if not self.islaunched:
+            self.ball.angle = .5*math.pi
+            self.ball.speed = self.launch_power*.5  + 1
+            self.islaunched = True
 
     def check_dying(self):
         if self.ball.y > self.height - 30 and self.ball.x < self.width - 40 -1:
@@ -103,8 +118,24 @@ class Model():
 
     def reset(self):
         self.ball = Particle(599-16,1000-15,15)
-        self.speed = 0
+        self.ball.speed = 0
         self.islaunched = False
+        self.successful_launch = False
+        self.failed_launch = False
+        self.launch_power = 0
+        if len(self.segment_list) > self.starter_segs_len: #TODO hack
+            del self.segment_list[-1]
+
+    def failure_to_launch(self):
+        if not self.successful_launch and not self.failed_launch and self.islaunched:
+            print(self.ball.angle)
+            print(3/2*math.pi - 0.1 < self.ball.angle < 3/2*math.pi + 0.1)
+            if self.ball.x < self.width-41:
+                self.successful_launch = True
+                self.segment_list.append(cap(self.width))
+            elif 3/2*math.pi - 0.1 < self.ball.angle < 3/2*math.pi + 0.1:
+                self.failed_launch = True
+                self.reset()
 
 class App():
     def __init__(self, sound=True, printing=True):

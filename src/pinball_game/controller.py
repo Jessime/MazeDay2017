@@ -16,8 +16,6 @@ class Controller():
         self.ev_manager.register(self)
         self.key_event_checks = [self.down_keys]
 
-        self.power = 0
-
     def down_keys(self, message, event):
         if event.key == pygame.K_ESCAPE:
             message = events.UserQuit()
@@ -29,20 +27,22 @@ class Controller():
 
     def up_keys(self, message, event):
         if event.key == pygame.K_SPACE:
-            if not self.model.islaunched:
-                message = events.PowerLaunch(self.power)
+            message = events.Launch()
         return message
 
-    def pressed_keys(self, keys):
+    def pressed_keys(self, message, keys):
         if keys[pygame.K_SPACE]:
-            if not self.model.islaunched:
-                self.power += 1
+            message = events.PowerLaunch()
+        return message
 
     def notify(self, event):
         if isinstance(event, events.LoopEnd):
             message = None
             keys = pygame.key.get_pressed()
-            self.pressed_keys(keys)
+            message = self.pressed_keys(message, keys)
+            if message:
+                self.ev_manager.post(message)
+            
             for pygame_event in pygame.event.get():
                 message = None
                 if pygame_event.type == pygame.KEYDOWN:

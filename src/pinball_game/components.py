@@ -90,7 +90,7 @@ class Particle:
         self.mass = 1
         self.drag = 1#.998
         self.elasticity = 0.8
-        self.gravity = (3/2*math.pi, 0.065)
+        self.gravity = (3/2*math.pi, 0.0625)
         self.score = 0
         self.collision_partner = None
 
@@ -317,3 +317,7 @@ def init_components(width, height):
     components_dict['particle_list'] = particle_list
 
     return components_dict
+
+def cap(width):
+    launch_cap = Segment((width-1-40,150),(width-1,125))
+    return launch_cap
