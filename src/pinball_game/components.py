@@ -88,15 +88,9 @@ class Particle:
         self._speed = 0
         self.angle = math.pi/2
         self.mass = 1
-<<<<<<< HEAD
         self.drag = 1#.998
         self.elasticity = 0.8
         self.gravity = (3/2*math.pi, 0.065)
-=======
-        self.drag = .995
-        self.elasticity = 0.8
-        self.gravity = (3/2*math.pi, 0.20)
->>>>>>> scoring
         self.score = 0
         self.collision_partner = None
 
@@ -170,12 +164,7 @@ class Particle:
             collision_occurs = collision.ball_circle(self,particle)
             if collision_occurs:
                 self.collision_partner = particle
-<<<<<<< HEAD
                 self.speed *= self.elasticity
-=======
-                # player_score += self.value
-                # self.player_score += particle.value
->>>>>>> scoring
                 break
 
     def bounce(self, width, height, segment_list, particle_list):
