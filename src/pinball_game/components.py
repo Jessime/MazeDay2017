@@ -49,9 +49,9 @@ class Segment():
 
     Parameters
     ----------
-    a : Point
+    a : tuple
         Location of beginning of segment
-    b : Point
+    b : tuple
         Location of ending of segment
 
     Attributes
@@ -60,9 +60,9 @@ class Segment():
         angle of segment in radians, where a horizontal segment is 0 or pi
     """
     def __init__(self, a, b, value=0, noise='seg'):
-        self.a = a
-        self.b = b
-        self.angle = (math.atan2(b.x-a.x, b.y-a.y) + math.pi/2) % (2*math.pi)
+        self.a = Point(*a)
+        self.b = Point(*b)
+        self.angle = (math.atan2(self.b.x-self.a.x, self.b.y-self.a.y) + math.pi/2) % (2*math.pi)
 
         self.value = value
         self.noise = noise
@@ -75,11 +75,12 @@ class Segment():
 class Particle:
     """ A circular object with a velocity, size and mass """
 
-    def __init__(self, x, y, size, noise='particle'):
+    def __init__(self, x, y, size, value=0, noise='particle'):
         self.x = x
         self.y = y
         self.size = size
         self.noise = noise
+        self.value = value
 
         self.pos = Point(x, y)
         self.color = (0, 0, 255)
@@ -87,9 +88,15 @@ class Particle:
         self._speed = 0
         self.angle = math.pi/2
         self.mass = 1
+<<<<<<< HEAD
         self.drag = 1#.998
         self.elasticity = 0.8
         self.gravity = (3/2*math.pi, 0.065)
+=======
+        self.drag = .995
+        self.elasticity = 0.8
+        self.gravity = (3/2*math.pi, 0.20)
+>>>>>>> scoring
         self.score = 0
         self.collision_partner = None
 
@@ -143,7 +150,8 @@ class Particle:
             did_collide = collision.segment_particle(seg, self)
             if did_collide:
                 self.collision_partner = seg
-                self.score += seg.value
+                # player_score += seg.value
+                # self.player_score += seg.value
                 self.angle = (2*seg.angle - self.angle) % (2*math.pi)
                 self.speed *= self.elasticity
 
@@ -162,7 +170,12 @@ class Particle:
             collision_occurs = collision.ball_circle(self,particle)
             if collision_occurs:
                 self.collision_partner = particle
+<<<<<<< HEAD
                 self.speed *= self.elasticity
+=======
+                # player_score += self.value
+                # self.player_score += particle.value
+>>>>>>> scoring
                 break
 
     def bounce(self, width, height, segment_list, particle_list):
@@ -287,11 +300,11 @@ def init_components(width, height):
     components_dict['flipper_right'] = flipper_right
 
     segment_data = [((width-1-40, height-1), (width-1-40,150)), #shooter line
-                      ((width-1, 25), (width-1-25,0)), #top right corner
-                      ((75, 0), (0,100)), #top left corner
+                      ((width-1, 25), (width-1-25,0),1), #top right corner
+                      ((75, 0), (0,100),10), #top left corner
                       ((width-1-40,837), (410,912)), #right funnel
                       ((0,837), (150,912)), #left funnel
-                      ((260, 370), (310, 390)), #Middle
+                      ((260, 370), (310, 390),20), #Middle
                       ((60,825), (100,700)), #eft triangle pt1
                       ((60,825), (145,865)), #left triangle pt2
                       ((100,700), (145,865)), #left triangle pt3
@@ -299,17 +312,17 @@ def init_components(width, height):
                       ((415,865), (width-1-100,825)), #right triangle pt2
                       ((width-1-140,700), (width-1-100,825)) #right triangle pt3
                      ]
-    segment_list = [Segment(Point(*p1), Point(*p2)) for p1, p2 in segment_data]
+    segment_list = [Segment(*d) for d in segment_data]
     segment_list.append(flipper_left)
     segment_list.append(flipper_right)
     components_dict['segment_list'] = segment_list
 
-    particle_data = [(295, 355, 25), #2
-                     (245, 285, 25), #1
-                     (345, 270, 25), #3
-                     (50, 520, 10),  #1
-                     (100, 550, 10), #3
-                     (55, 585, 10)   #2
+    particle_data = [(295, 355, 25,10), #2
+                     (245, 285, 25,10), #1
+                     (345, 270, 25,10), #3
+                     (50, 520, 10,10),  #1
+                     (100, 550, 10,10), #3
+                     (55, 585, 10,10)   #2
                     ]
     particle_list = [Particle(*d) for d in particle_data]
     components_dict['particle_list'] = particle_list
