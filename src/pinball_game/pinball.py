@@ -13,6 +13,7 @@ from controller import Controller
 from view import BasicView, AudioView
 from components import init_components, Particle, cap
 
+import argparse
 
 class Model():
     def __init__(self, ev_manager):
@@ -61,7 +62,6 @@ class Model():
         elif isinstance(event, events.Flip):
             self.flip()
         elif isinstance(event, events.PowerLaunch):
-            #print('re?')
             self.power_launch()
         elif isinstance(event, events.Launch):
             self.launch()
@@ -74,7 +74,6 @@ class Model():
                          self.particle_list)
         if self.ball.collision_partner is not None:
             self.player_score += self.ball.collision_partner.value
-            print(self.player_score)
             mp3 = self.ball.collision_partner.noise
             self.ev_manager.post(events.Collision(mp3))
             self.ball.collision_partner = None
@@ -83,7 +82,6 @@ class Model():
         '''All game logic.'''
         self.failure_to_launch()
         self.ball_collisions()
-        # print(self.player_score)
         self.flipper_left.update()
         self.flipper_right.update()
         self.check_dying()
@@ -96,7 +94,6 @@ class Model():
             self.ev_manager.post(events.LoopEnd())
 
     def power_launch(self):
-        #print(1, self.launch_power)
         if not self.islaunched:
             self.launch_power += 1
 
@@ -128,8 +125,6 @@ class Model():
 
     def failure_to_launch(self):
         if not self.successful_launch and not self.failed_launch and self.islaunched:
-            print(self.ball.angle)
-            print(3/2*math.pi - 0.1 < self.ball.angle < 3/2*math.pi + 0.1)
             if self.ball.x < self.width-41:
                 self.successful_launch = True
                 self.segment_list.append(cap(self.width))
@@ -149,5 +144,8 @@ class App():
 
 if __name__ == '__main__':
     os.environ['SDL_VIDEO_CENTERED'] = '1'
-    app = App()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-ns', '--no_sound', action='store_false')
+    args = parser.parse_args()
+    app = App(sound=args.no_sound)
     app.model.run()
