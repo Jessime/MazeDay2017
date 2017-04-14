@@ -11,7 +11,7 @@ import math
 import events
 from controller import Controller
 from view import BasicView, AudioView
-from components import init_components, Particle, cap
+from components import Particle, init_components, cap
 
 import argparse
 
@@ -47,11 +47,11 @@ class Model():
     def exit_game(self):
         self.running = False
 
-    def flip(self):
-        if self.event.side == 'l':
-            self.flipper_left.flip_up = True
-        elif self.event.side == 'r':
-            self.flipper_right.flip_up = True
+    # def flip(self):
+    #     if self.event.side == 'l':
+    #         self.flipper_left.flip_up = True
+    #     elif self.event.side == 'r':
+    #         self.flipper_right.flip_up = True
 
     def notify(self, event):
         self.event = event
@@ -60,16 +60,14 @@ class Model():
             self.loop_start = time.time()
         elif isinstance(event, events.UserQuit):
             self.exit_game()
-        elif isinstance(event, events.Flip):
-            self.flip()
+        # elif isinstance(event, events.Flip):
+        #     self.flip()
         elif isinstance(event, events.PowerLaunch):
             self.power_launch()
         elif isinstance(event, events.Launch):
             self.launch()
         elif isinstance(event, events.PressedBin):
             message = self.bin_list[self.event.num].pressed_event(self.ball)
-            print('m1: ', self.ball.pos)
-            print('m2: ', message.result)
             self.ev_manager.post(message)
 
     def ball_collisions(self):
@@ -84,23 +82,6 @@ class Model():
             self.ev_manager.post(events.Collision(mp3))
             self.ball.collision_partner = None
 
-    def update(self):
-        '''All game logic.'''
-        print(self.ball.speed)
-        self.failure_to_launch()
-        self.ball_collisions()
-        #self.bin_0.update()
-        #self.bin_1.update()
-        self.check_in_bins()
-        self.check_dying()
-        self.check_gameover()
-
-    def run(self):
-        self.ev_manager.post(events.Init())
-        while self.running:
-            self.update()
-            self.ev_manager.post(events.LoopEnd())
-
     def power_launch(self):
         if not self.islaunched:
             self.launch_power += 1
@@ -108,7 +89,7 @@ class Model():
     def launch(self):
         if not self.islaunched:
             self.ball.angle = .5*math.pi
-            self.ball.speed = 1.5*self.launch_power**.5  + 1
+            self.ball.speed = 1.5*self.launch_power**.5 + 1
             self.islaunched = True
 
     def in_play(self):
@@ -118,7 +99,9 @@ class Model():
     def check_in_bins(self):
         ball_in_bin = self.ball.y >= self.bin_list[0].rekt.top
         if ball_in_bin and self.in_play():
-            self.ball.speed = 0
+            self.ball.angle = 1.5*math.pi
+            self.ball.speed = 1
+            #noise
 
     def check_dying(self):
         if self.ball.y > self.height - 30 and self.in_play():
@@ -141,6 +124,10 @@ class Model():
             del self.segment_list[-1]
 
     def failure_to_launch(self):
+        """Evaluate sucess of launch.
+
+        If sucessful, cap the launch ramp with a seg; otherwise, reset the ball.
+        """
         if not self.successful_launch and not self.failed_launch and self.islaunched:
             if self.ball.x < self.width-41:
                 self.successful_launch = True
@@ -148,6 +135,22 @@ class Model():
             elif 3/2*math.pi - 0.1 < self.ball.angle < 3/2*math.pi + 0.1:
                 self.failed_launch = True
                 self.reset()
+
+    def update(self):
+        '''Main game logic.'''
+        self.failure_to_launch()
+        self.ball_collisions()
+        #self.bin_0.update()
+        #self.bin_1.update()
+        self.check_in_bins()
+        self.check_dying()
+        self.check_gameover()
+
+    def run(self):
+        self.ev_manager.post(events.Init())
+        while self.running:
+            self.update()
+            self.ev_manager.post(events.LoopEnd())
 
 class App():
     def __init__(self, sound=True, printing=True):

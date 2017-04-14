@@ -62,7 +62,7 @@ class BasicView(View):
 
     def draw_bins(self):
         for bin_ in self.model.bin_list:
-            pygame.draw.rect(self.screen, (0, 255, 0), bin_.rekt)
+            pygame.draw.rect(self.screen, bin_.color, bin_.rekt)
 
     def render(self):
         self.draw_bins()
@@ -83,8 +83,16 @@ class BasicView(View):
 class AudioView(View):
     def __init__(self, ev_manager, model):
         super().__init__(ev_manager, model)
-        self.event_func_dict = {'Collision':self.play}
+        self.event_func_dict = {'Collision':self.play,
+                                'PressedBinEval': self.eval_bin}
+        self.bin_noise_dict = {True:'norm',
+                               False:'error',
+                               'collide':'flipper'}
 
+    def eval_bin(self):
+        """Decide which noise to play for bin press."""
+        self.play(self.bin_noise_dict[self.event.result])
+        
     def play(self, filename=None):
         """Play the event mp3.
 

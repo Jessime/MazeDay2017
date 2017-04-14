@@ -142,12 +142,17 @@ class Particle:
             self.speed *= self.elasticity
 
     def seg_bounce(self, segment_list):
+        """Check for collision with all segments. Update attributes appropriately.
+
+        Parameters
+        ----------
+        segment_list : [Segment]
+            All segments in the model
+        """
         for seg in segment_list:
             did_collide = collision.segment_particle(seg, self)
             if did_collide:
                 self.collision_partner = seg
-                # player_score += seg.value
-                # self.player_score += seg.value
                 self.angle = (2*seg.angle - self.angle) % (2*math.pi)
                 self.speed *= self.elasticity
 
@@ -156,11 +161,18 @@ class Particle:
                     self.y -= math.sin(self.angle)
                     self.pos = Point(self.x, self.y)
 
-                if isinstance(seg,Flipper):
-                    if seg.flip_up or seg.flip_down:
-                        self.speed *= 2
+                # if isinstance(seg,Flipper):
+                #     if seg.flip_up or seg.flip_down:
+                #         self.speed *= 2
 
     def particle_bounce(self, particle_list):
+        """Check for collision with all particles. Update attributes appropriately.
+
+        Parameters
+        ----------
+        segment_list : [Particle]
+            All particles in the model
+        """
         for particle in particle_list:
             collision_occurs = collision.ball_circle(self,particle)
             if collision_occurs:
@@ -187,9 +199,11 @@ class Bin():
     reload_time = 3
     last_pressed = None
 
-    def __init__(self, num, rekt):
+    def __init__(self, num, rekt, color, noise):
         self.num = num
         self.rekt = rekt
+        self.color = color
+        self.noise = noise
 
     def pressed_event(self, ball):
         message = None
@@ -213,9 +227,6 @@ class Bin():
             ball.speed = ball.max_speed * .75
             ball.angle = uniform(.25,.75)*math.pi
             ball.y = self.rekt.top - 15
-            print(ball.pos)
-            print(ball.angle)
-            print(ball.speed)
 
         return message
 
@@ -315,8 +326,8 @@ def init_components(width, height):
     ball = Particle(599-16,1000-15,15) # real
     components_dict['ball'] = ball
 
-    bin_0 = Bin(0, pygame.Rect(150,912,95,48))
-    bin_1 = Bin(1, pygame.Rect(315,912,95,48))
+    bin_0 = Bin(0, pygame.Rect(150,912,95,48), (0, 255, 0), 'flipper')
+    bin_1 = Bin(1, pygame.Rect(315,912,95,48), (255, 0, 0), 'flipper')
     components_dict['bin_list'] = [bin_0, bin_1]
 
     # flipper_left = Flipper(Point(150, 912),
