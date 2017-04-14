@@ -159,7 +159,6 @@ class Particle:
                 if isinstance(seg,Flipper):
                     if seg.flip_up or seg.flip_down:
                         self.speed *= 2
-                break
 
     def particle_bounce(self, particle_list):
         for particle in particle_list:
@@ -167,7 +166,6 @@ class Particle:
             if collision_occurs:
                 self.collision_partner = particle
                 self.speed *= self.elasticity
-                break
 
     def bounce(self, width, height, segment_list, particle_list):
         self.wall_bounce(width, height)
@@ -337,12 +335,13 @@ def init_components(width, height):
                       ((0,837), (150,912)), #left funnel
                       ((260, 370), (310, 390),20), #Middle
                       ((60,825), (100,700)), #eft triangle pt1
-                      ((60,825), (145,865)), #left triangle pt2
-                      ((100,700), (145,865)), #left triangle pt3
-                      ((415,865),(455,700)), #right triangle pt1
-                      ((415,865), (width-1-100,825)), #right triangle pt2
-                      ((width-1-140,700), (width-1-100,825)) #right triangle pt3
+                      ((55,824), (150,860)), #left triangle pt2
+                      ((100,697), (145,865)), #left triangle pt3
+                      ((415,865),(460,697)), #right triangle pt1
+                      ((410,860), (width-100,820)), #right triangle pt2
+                      ((width-1-141,700), (width-1-100,825)) #right triangle pt3
                      ]
+
     segment_list = [Segment(*d) for d in segment_data]
     #segment_list.append(flipper_left)
     #segment_list.append(flipper_right)
