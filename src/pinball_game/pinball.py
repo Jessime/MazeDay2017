@@ -36,8 +36,10 @@ class Model():
         self.ball = components_dict['ball']
         self.segment_list = components_dict['segment_list']
         self.particle_list = components_dict['particle_list']
-        self.flipper_left = components_dict['flipper_left']
-        self.flipper_right = components_dict['flipper_right']
+        # self.flipper_left = components_dict['flipper_left']
+        # self.flipper_right = components_dict['flipper_right']
+        self.bin_0 = components_dict['bin_0']
+        self.bin_1 = components_dict['bin_1']
         self.starter_segs_len = len(self.segment_list) #TODO hack
 
         self.event = None
@@ -65,6 +67,9 @@ class Model():
             self.power_launch()
         elif isinstance(event, events.Launch):
             self.launch()
+        elif isinstance(event, events.PressedBin):
+            message = self.bin_list[self.event.num].pressed_event()
+            self.ev_manager.post(message)
 
     def ball_collisions(self):
         self.ball.move()
@@ -82,8 +87,8 @@ class Model():
         '''All game logic.'''
         self.failure_to_launch()
         self.ball_collisions()
-        self.flipper_left.update()
-        self.flipper_right.update()
+        self.bin_0.update()
+        self.bin_1.update()
         self.check_dying()
         self.check_gameover()
 

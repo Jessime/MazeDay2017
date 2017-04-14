@@ -37,6 +37,15 @@ class PowerLaunch():
     def __init__(self):
         pass
 
+class PressedBin():
+    def __init__(self, num):
+        self.num = num
+
+class PressedBinEval():
+    def __init__(self, num, result):
+        self.num = num
+        self.result = result
+
 class EventManager():
     def __init__(self):
         self.listeners = []

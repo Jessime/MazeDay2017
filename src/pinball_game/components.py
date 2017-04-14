@@ -1,8 +1,10 @@
 import math
 import pygame
-from time import sleep
+import time
+from random import uniform
 
 import collision
+import events
 
 class Point():
     def __init__(self, x, y=None):
@@ -183,6 +185,39 @@ class Particle:
 
         return (angle, length)
 
+class Bin():
+    reload_time = 3
+    last_pressed = None
+
+    def __init__(self, num, rekt):
+        self.num = num
+        self.rekt = rekt
+
+    def pressed_event(self, ball):
+        message = None
+        if Bin.last_pressed is None:
+            Bin.last_pressed = time.time()
+            message = self.do_key_press(ball)
+        reloaded = time.time() >= Bin.reload_time + Bin.last_pressed
+        if  reloaded:
+            last_pressed = time.time()
+            message = self.do_key_press(ball)
+        else:
+            message = events.PressedBinEval(self.num, False)
+        return message
+
+    def do_key_press(self, ball):
+        message = events.PressedBinEval(self.num, True)
+        if self.rect.collidepoint(ball.pos):
+            message = events.PressedBinEval(self.num, 'collide')
+            ball.angle = uniform(.25,.75)*math.pi
+            ball.y = self.rect.top + 1
+        return message
+
+    def update(self):
+        #TODO color
+        pass
+
 class Flipper():
     """Creates left and right flippers the player controls to hit the ball
 
@@ -279,14 +314,19 @@ def init_components(width, height):
     #ball.mass = 1
     components_dict['ball'] = ball
 
-    flipper_left = Flipper(Point(150, 912),
-                           Point(245, 960),
-                           1.57)
-    flipper_right = Flipper(Point(410, 912),
-                            Point(315, 960),
-                            1.57, 'r')
-    components_dict['flipper_left'] = flipper_left
-    components_dict['flipper_right'] = flipper_right
+    bin_0 = Bin(0, pygame.Rect(150,912,95,48))
+    bin_1 = Bin(1, pygame.Rect(315,912,95,48))
+    components_dict['bin_0'] = bin_0
+    components_dict['bin_1'] = bin_1
+
+    # flipper_left = Flipper(Point(150, 912),
+    #                        Point(245, 960),
+    #                        1.57)
+    # flipper_right = Flipper(Point(410, 912),
+    #                         Point(315, 960),
+    #                         1.57, 'r')
+    # components_dict['flipper_left'] = flipper_left
+    # components_dict['flipper_right'] = flipper_right
 
     segment_data = [((width-1-40, height-1), (width-1-40,150)), #shooter line
                       ((width-1, 25), (width-1-25,0),1), #top right corner
