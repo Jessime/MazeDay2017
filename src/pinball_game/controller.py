@@ -20,9 +20,9 @@ class Controller():
         if event.key == pygame.K_ESCAPE:
             message = events.UserQuit()
         elif event.key == pygame.K_f:
-            message = events.Flip('l')
+            message = events.PressedBin(0)
         elif event.key == pygame.K_j:
-            message = events.Flip('r')
+            message = events.PressedBin(1)
         return message
 
     def up_keys(self, message, event):
@@ -42,7 +42,7 @@ class Controller():
             message = self.pressed_keys(message, keys)
             if message:
                 self.ev_manager.post(message)
-            
+
             for pygame_event in pygame.event.get():
                 message = None
                 if pygame_event.type == pygame.KEYDOWN:

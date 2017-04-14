@@ -87,11 +87,12 @@ class Particle:
         self.pos = Point(x, y)
         self.color = (0, 0, 255)
         self.thickness = 0
+        self.max_speed = 20
         self._speed = 0
         self.angle = math.pi/2
         self.mass = 1
         self.drag = 1#.998
-        self.elasticity = 0.8
+        self.elasticity = 0.85
         self.gravity = (3/2*math.pi, 0.0625)
         self.score = 0
         self.collision_partner = None
@@ -107,7 +108,7 @@ class Particle:
     def speed(self, val):
         """Limit speed so  ball can't pass through objects or move too fast"""
         #self._speed = min(.5*self.size-1, val)
-        self._speed = min(15, val)
+        self._speed = min(self.max_speed, val)
 
     def move(self):
         self.angle, self.speed = self.addVectors(self.angle,
@@ -118,7 +119,6 @@ class Particle:
         self.y -= math.sin(self.angle) * self.speed
         self.pos = Point(self.x, self.y)
         self.speed *= self.drag
-        # print(self.speed)
 
     def wall_bounce(self, width, height):
         if self.x > width - self.size:
@@ -198,9 +198,11 @@ class Bin():
         if Bin.last_pressed is None:
             Bin.last_pressed = time.time()
             message = self.do_key_press(ball)
+            return message
+
         reloaded = time.time() >= Bin.reload_time + Bin.last_pressed
         if  reloaded:
-            last_pressed = time.time()
+            Bin.last_pressed = time.time()
             message = self.do_key_press(ball)
         else:
             message = events.PressedBinEval(self.num, False)
@@ -208,10 +210,15 @@ class Bin():
 
     def do_key_press(self, ball):
         message = events.PressedBinEval(self.num, True)
-        if self.rect.collidepoint(ball.pos):
+        if self.rekt.collidepoint(ball.x, ball.y):
             message = events.PressedBinEval(self.num, 'collide')
+            ball.speed = ball.max_speed * .75
             ball.angle = uniform(.25,.75)*math.pi
-            ball.y = self.rect.top + 1
+            ball.y = self.rekt.top - 15
+            print(ball.pos)
+            print(ball.angle)
+            print(ball.speed)
+
         return message
 
     def update(self):
@@ -308,16 +315,11 @@ def init_components(width, height):
     components_dict = {}
 
     ball = Particle(599-16,1000-15,15) # real
-    # self.ball = Particle(23,853,15) #test roll
-    # self.ball = Particle(290, 153, 15)
-    #ball.speed = 0
-    #ball.mass = 1
     components_dict['ball'] = ball
 
     bin_0 = Bin(0, pygame.Rect(150,912,95,48))
     bin_1 = Bin(1, pygame.Rect(315,912,95,48))
-    components_dict['bin_0'] = bin_0
-    components_dict['bin_1'] = bin_1
+    components_dict['bin_list'] = [bin_0, bin_1]
 
     # flipper_left = Flipper(Point(150, 912),
     #                        Point(245, 960),
@@ -342,8 +344,8 @@ def init_components(width, height):
                       ((width-1-140,700), (width-1-100,825)) #right triangle pt3
                      ]
     segment_list = [Segment(*d) for d in segment_data]
-    segment_list.append(flipper_left)
-    segment_list.append(flipper_right)
+    #segment_list.append(flipper_left)
+    #segment_list.append(flipper_right)
     components_dict['segment_list'] = segment_list
 
     particle_data = [(295, 355, 25,10), #2

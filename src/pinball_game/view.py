@@ -46,15 +46,8 @@ class BasicView(View):
         pygame.init()
         self.screen = pygame.display.set_mode([self.model.width, self.model.height])
 
-    def draw_ball(self, particle):
-        pygame.draw.circle(self.screen,
-                           particle.color,
-                           (int(particle.x), int(particle.y)),
-                           particle.size,
-                           particle.thickness)
-
     def draw_particle(self):
-        for particle in self.model.particle_list:
+        for particle in (*self.model.particle_list, self.model.ball):
             pygame.draw.circle(self.screen, particle.color,
                                (int(particle.x), int(particle.y)),
                                particle.size,
@@ -67,8 +60,12 @@ class BasicView(View):
                             [seg.b.x,seg.b.y],
                             seg.thickness)
 
+    def draw_bins(self):
+        for bin_ in self.model.bin_list:
+            pygame.draw.rect(self.screen, (0, 255, 0), bin_.rekt)
+
     def render(self):
-        self.draw_ball(self.model.ball)
+        self.draw_bins()
         self.draw_particle()
         self.draw_seg()
 

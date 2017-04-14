@@ -38,9 +38,8 @@ class Model():
         self.particle_list = components_dict['particle_list']
         # self.flipper_left = components_dict['flipper_left']
         # self.flipper_right = components_dict['flipper_right']
-        self.bin_0 = components_dict['bin_0']
-        self.bin_1 = components_dict['bin_1']
-        self.starter_segs_len = len(self.segment_list) #TODO hack
+        self.bin_list = components_dict['bin_list']
+        self.starter_segs_len = len(self.segment_list) #TODO hack. used to check if cap has been added to launcher.
 
         self.event = None
         self.ev_manager.register(self)
@@ -68,7 +67,9 @@ class Model():
         elif isinstance(event, events.Launch):
             self.launch()
         elif isinstance(event, events.PressedBin):
-            message = self.bin_list[self.event.num].pressed_event()
+            message = self.bin_list[self.event.num].pressed_event(self.ball)
+            print('m1: ', self.ball.pos)
+            print('m2: ', message.result)
             self.ev_manager.post(message)
 
     def ball_collisions(self):
@@ -85,10 +86,12 @@ class Model():
 
     def update(self):
         '''All game logic.'''
+        print(self.ball.speed)
         self.failure_to_launch()
         self.ball_collisions()
-        self.bin_0.update()
-        self.bin_1.update()
+        #self.bin_0.update()
+        #self.bin_1.update()
+        self.check_in_bins()
         self.check_dying()
         self.check_gameover()
 
@@ -105,11 +108,20 @@ class Model():
     def launch(self):
         if not self.islaunched:
             self.ball.angle = .5*math.pi
-            self.ball.speed = self.launch_power*.5  + 1
+            self.ball.speed = 1.5*self.launch_power**.5  + 1
             self.islaunched = True
 
+    def in_play(self):
+        """Make sure ball isn't in launcher"""
+        return self.ball.x < self.width - 40 - 1
+
+    def check_in_bins(self):
+        ball_in_bin = self.ball.y >= self.bin_list[0].rekt.top
+        if ball_in_bin and self.in_play():
+            self.ball.speed = 0
+
     def check_dying(self):
-        if self.ball.y > self.height - 30 and self.ball.x < self.width - 40 -1:
+        if self.ball.y > self.height - 30 and self.in_play():
             self.player_lives -= 1
             self.reset()
 
