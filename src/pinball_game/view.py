@@ -85,14 +85,14 @@ class AudioView(View):
         super().__init__(ev_manager, model)
         self.event_func_dict = {'Collision':self.play,
                                 'PressedBinEval': self.eval_bin}
-        self.bin_noise_dict = {True:'norm',
-                               False:'error',
+        self.bin_noise_dict = {True:'flipper',
+                               False:'flipper',
                                'collide':'flipper'}
 
     def eval_bin(self):
         """Decide which noise to play for bin press."""
         self.play(self.bin_noise_dict[self.event.result])
-        
+
     def play(self, filename=None):
         """Play the event mp3.
 

@@ -74,6 +74,29 @@ class Segment():
         base = '{}({}\n{}\nAngle: {:.2f})\n'
         return base.format(self.__class__.__name__, self.a, self.b, self.angle)
 
+class Coin():
+    value = 50
+    color = (255,215,0)
+    y_size = 10
+    x_size = 5
+
+    def __init__(self, pos, noise):
+        self.pos = Point(x,y)
+        self.noise = ''
+
+    def make_coin(self):
+        return pygame.Ellipse(self.pos.x,
+                       self.pos.y,
+                       Coin.y_size,
+                       Coin.x_size)
+
+    def coin_state(self, ball, player_score):
+        if ball.pos == self.pos: #plus some error range?
+            Coin.value += player_score
+            #kill coin
+            #self.pos = (0,0)
+
+
 class Particle:
     """ A circular object with a velocity, size and mass """
 
@@ -92,7 +115,7 @@ class Particle:
         self.angle = math.pi/2
         self.mass = 1
         self.drag = 1#.998
-        self.elasticity = 0.85
+        self.elasticity = 0.825
         self.gravity = (3/2*math.pi, 0.0625)
         self.score = 0
         self.collision_partner = None
@@ -345,12 +368,12 @@ def init_components(width, height):
                       ((width-1-40,837), (410,912)), #right funnel
                       ((0,837), (150,912)), #left funnel
                       ((260, 370), (310, 390),20), #Middle
-                      ((60,825), (100,700)), #eft triangle pt1
-                      ((55,824), (150,860)), #left triangle pt2
-                      ((100,697), (145,865)), #left triangle pt3
-                      ((415,865),(460,697)), #right triangle pt1
-                      ((410,860), (width-100,820)), #right triangle pt2
-                      ((width-1-141,700), (width-1-100,825)) #right triangle pt3
+                      ((60,825), (100,700)), #left triangle pt1
+                      ((60,825), (145,865)), #left triangle pt2
+                    #   ((100,700), (145,865)), #left triangle pt3
+                    #   ((415,865),(455,700)), #right triangle pt1
+                      ((415,865), (width-1-100,825)), #right triangle pt2
+                      ((width-1-140,700), (width-1-100,825)) #right triangle pt3
                      ]
 
     segment_list = [Segment(*d) for d in segment_data]
@@ -368,6 +391,11 @@ def init_components(width, height):
     particle_list = [Particle(*d) for d in particle_data]
     components_dict['particle_list'] = particle_list
 
+    coin_positions = [()
+
+                     ]
+    coin_list = [Coin(*d) for d in coin_list]
+    components_dict['coin_list'] = coin_list
     return components_dict
 
 def cap(width):
