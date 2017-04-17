@@ -22,6 +22,10 @@ class UserQuit():
     def __init__(self): pass
     def __str__(self): return 'Thanks for playing! We hope you enjoyed it.'
 
+class FailedLaunch():
+    def __init__(self):
+        self.mp3 = 'launch_error'
+
 class Flip():
     def __init__(self, side):
         self.side = side
@@ -31,11 +35,26 @@ class GameOver():
     def __str__(self): return 'Game over, better luck next time!'
 
 class Launch():
-    def __init__(self): pass
+    def __init__(self):
+        self.mp3 = 'launch'
+
+class LifeLost():
+    def __init__(self):
+        self.mp3 = 'lose1'
+        self.pause_gameplay = True
+
+class Lives():
+    def __init__(self, lives):
+        self.lives  = lives
+        self.mp3 = str(lives)
+
+    def __repr__(self):
+        return ('Lives: {}'.format(self.lives))
 
 class PowerLaunch():
     def __init__(self):
-        pass
+        self.mp3 = 'power2'
+        self.check_busy = True
 
 class PressedBin():
     def __init__(self, num):
@@ -46,6 +65,20 @@ class PressedBinEval():
         self.num = num
         self.result = result
 
+class Score():
+    def __init__(self, points):
+        self.points = points
+        self.string = 'Score is {}'.format(self.points)
+        self.pause_gameplay = True
+
+    def __repr__(self):
+        return('Score: {}'.format(self.points))
+
+class SpinnerCollide():
+    def __init__(self):
+        self.mp3 = 'spin'
+        self.pause_gameplay = True
+        
 class EventManager():
     def __init__(self):
         self.listeners = []

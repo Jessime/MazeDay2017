@@ -9,9 +9,10 @@ import os
 import math
 
 import events
+import collision
 from controller import Controller
 from view import BasicView, AudioView
-from components import Particle, init_components, cap
+from components import Particle, Bin, init_components, cap
 
 import argparse
 
@@ -34,11 +35,17 @@ class Model():
 
         components_dict = init_components(self.width, self.height)
         self.ball = components_dict['ball']
+        self.ball.x = 17
+        self.ball.y = 150
+        self.successful_launch = True
+        self.islaunched = True
         self.segment_list = components_dict['segment_list']
         self.particle_list = components_dict['particle_list']
         # self.flipper_left = components_dict['flipper_left']
         # self.flipper_right = components_dict['flipper_right']
         self.bin_list = components_dict['bin_list']
+        self.spinner_list = components_dict['spinner_list']
+
         self.starter_segs_len = len(self.segment_list) #TODO hack. used to check if cap has been added to launcher.
 
         self.event = None
@@ -103,14 +110,24 @@ class Model():
             self.ball.speed = 1
             #noise
 
+    def check_spinners(self):
+        for spinner in self.spinner_list:
+            contact = collision.ball_rect(self.ball, spinner.rekt)
+            if contact and not spinner.spinning:
+                self.player_score += spinner.value
+                spinner.spinning = True
+                self.ev_manager.post(events.SpinnerCollide())
+
     def check_dying(self):
         if self.ball.y > self.height - 30 and self.in_play():
             self.player_lives -= 1
             self.reset()
+            self.ev_manager.post(events.LifeLost())
+            self.ev_manager.post(events.Score(self.player_score))
 
     def check_gameover(self):
         if self.player_lives == 0:
-            #TODO sad noises
+            #TODO happy noises
             self.running = False
 
     def reset(self):
@@ -134,15 +151,20 @@ class Model():
                 self.segment_list.append(cap(self.width))
             elif 3/2*math.pi - 0.1 < self.ball.angle < 3/2*math.pi + 0.1:
                 self.failed_launch = True
+                self.ev_manager.post(events.FailedLaunch())
                 self.reset()
+
+    def update_bins_spinners(self):
+        _ = [b.update() for b in self.bin_list]
+        _ = [s.update() for s in self.spinner_list]
 
     def update(self):
         '''Main game logic.'''
         self.failure_to_launch()
         self.ball_collisions()
-        #self.bin_0.update()
-        #self.bin_1.update()
+        self.update_bins_spinners()
         self.check_in_bins()
+        self.check_spinners()
         self.check_dying()
         self.check_gameover()
 
@@ -153,19 +175,19 @@ class Model():
             self.ev_manager.post(events.LoopEnd())
 
 class App():
-    def __init__(self, sound=True, printing=True):
+    def __init__(self, sound=True, video=True):
         self.ev_manager = events.EventManager()
         self.model = Model(self.ev_manager)
         self.controller = Controller(self.ev_manager, self.model)
+        self.basic_view = BasicView(self.ev_manager, self.model, video)
         if sound:
             self.audio_view = AudioView(self.ev_manager, self.model)
-        if printing:
-            self.basic_view = BasicView(self.ev_manager, self.model)
 
 if __name__ == '__main__':
     os.environ['SDL_VIDEO_CENTERED'] = '1'
     parser = argparse.ArgumentParser()
     parser.add_argument('-ns', '--no_sound', action='store_false')
+    parser.add_argument('-nv', '--no_video', action='store_false')
     args = parser.parse_args()
-    app = App(sound=args.no_sound)
+    app = App(sound=args.no_sound, video=args.no_video)
     app.model.run()

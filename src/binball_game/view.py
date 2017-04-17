@@ -8,6 +8,9 @@ Created on Sat Sep 10 15:25:02 2016
 import pygame
 import pkg_resources
 
+from gtts import gTTS
+from time import sleep
+
 class View:
     def __init__(self, ev_manager, model):
         self.ev_manager = ev_manager
@@ -24,12 +27,15 @@ class View:
             self.event_func_dict[name]()
 
 class BasicView(View):
-    def __init__(self, ev_manager, model):
+    def __init__(self, ev_manager, model, video=True):
         super().__init__(ev_manager, model)
+        self.video = video
 
         self.clock = pygame.time.Clock()
         self.event_func_dict = {'Init': self.initialize,
                                 'LoopEnd': self.loop_end,
+                                'Lives': self.show,
+                                'Score': self.show,
                                 'UserQuit': self.exit_game}
 
         self.background_color = (255,255,255)
@@ -60,20 +66,21 @@ class BasicView(View):
                             [seg.b.x,seg.b.y],
                             seg.thickness)
 
-    def draw_bins(self):
-        for bin_ in self.model.bin_list:
-            pygame.draw.rect(self.screen, bin_.color, bin_.rekt)
+    def draw_bins_spinners(self):
+        for comp in (*self.model.bin_list, *self.model.spinner_list):
+            pygame.draw.rect(self.screen, comp.color, comp.rekt)
 
     def render(self):
-        self.draw_bins()
+        self.draw_bins_spinners()
         self.draw_particle()
         self.draw_seg()
 
     def loop_end(self):
         if not self.model.running:
             return
-        self.screen.fill(self.background_color)
-        self.render()
+        if self.video:
+            self.screen.fill(self.background_color)
+            self.render()
         pygame.display.flip()
         self.clock.tick(60)
 
@@ -83,29 +90,54 @@ class BasicView(View):
 class AudioView(View):
     def __init__(self, ev_manager, model):
         super().__init__(ev_manager, model)
-        self.event_func_dict = {'Collision':self.play,
-                                'PressedBinEval': self.eval_bin}
-        self.bin_noise_dict = {True:'norm',
+        self.event_func_dict = {'Collision' : self.play,
+                                'PressedBinEval' : self.eval_bin,
+                                'Launch' : self.play,
+                                'LifeLost' : self.play,
+                                'Lives' : self.play,
+                                'Score' : self.tts_and_play,
+                                'PowerLaunch' : self.play,
+                                'FailedLaunch' : self.play,
+                                'SpinnerCollide' : self.play}
+
+        self.bin_noise_dict = {True:'coins',
                                False:'error',
                                'collide':'flipper'}
 
     def eval_bin(self):
         """Decide which noise to play for bin press."""
         self.play(self.bin_noise_dict[self.event.result])
-        
+
     def play(self, filename=None):
         """Play the event mp3.
+
+        Event can also contain keyword attributes:
+        * check_busy - event mp3 will only play if no other noise is being played
+        * pause_gameplay - event mp3 will play until finished before returning
 
         Parameters
         ---------
         filename : str
             If filename is past, the corresponding mp3 file will be played instead of self.event.mp3.
         """
+
         if filename is None:
             filename = self.event.mp3
         #template = pkg_resources.resource_filename('pinball_game', 'data/{}.mp3'.format(filename))
         if filename == '': #TODO fix this
             return
+        if hasattr(self.event, 'check_busy'):
+            if pygame.mixer.music.get_busy():
+                return
         template = 'data/{}.mp3'.format(filename)
         pygame.mixer.music.load(template)
         pygame.mixer.music.play()
+
+        if hasattr(self.event, 'pause_gameplay'):
+            while pygame.mixer.music.get_busy():
+                sleep(.1)
+
+    def tts_and_play(self):
+        """Uses Google's text-to-speech to play an event's string"""
+        gTTS(self.event.string).save('data/temp.mp3')
+        self.play('temp')

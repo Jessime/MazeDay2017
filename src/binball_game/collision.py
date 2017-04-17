@@ -1,5 +1,25 @@
 import math
 
+def ball_rect(ball, rect):
+    """Determines if ball collides with any rectangular obects
+
+    Parameters
+    ----------
+    ball : Particle
+        Players ball
+    rect : rect
+        Pygame Rect object with which the ball might collide
+
+    Returns
+    -------
+    collision_occurs : bool
+        True if ball's position overlaps with rect
+    """
+    x_in = rect.left <= ball.x <= rect.right
+    y_in = rect.top <= ball.y <= rect.bottom
+    collision_occurs = x_in and y_in
+    return collision_occurs
+
 def ball_circle(ball, p2):
     """Determines if ball collides with any circular objects
 
@@ -10,7 +30,7 @@ def ball_circle(ball, p2):
     ball : Particle
         Players ball
     p2 : Particle
-        Stationary object with which ball might collides
+        Stationary object with which ball might collide
 
     Returns
     -------

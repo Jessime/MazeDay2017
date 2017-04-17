@@ -15,14 +15,18 @@ class Controller():
 
         self.ev_manager.register(self)
         self.key_event_checks = [self.down_keys]
+        bin_keys = [pygame.K_d, pygame.K_f, pygame.K_j, pygame.K_k]
+        self.bin_map = dict(zip(bin_keys, range(4)))
 
     def down_keys(self, message, event):
         if event.key == pygame.K_ESCAPE:
             message = events.UserQuit()
-        elif event.key == pygame.K_f:
-            message = events.PressedBin(0)
-        elif event.key == pygame.K_j:
-            message = events.PressedBin(1)
+        elif event.key in self.bin_map:
+            message = events.PressedBin(self.bin_map[event.key])
+        elif event.key == pygame.K_b:
+            message = events.Lives(self.model.player_lives)
+        else:
+            print(event.key)
         return message
 
     def up_keys(self, message, event):
