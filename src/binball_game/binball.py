@@ -35,10 +35,7 @@ class Model():
 
         components_dict = init_components(self.width, self.height)
         self.ball = components_dict['ball']
-        self.ball.x = 17
-        self.ball.y = 150
         self.successful_launch = True
-        self.islaunched = True
         self.segment_list = components_dict['segment_list']
         self.particle_list = components_dict['particle_list']
         # self.flipper_left = components_dict['flipper_left']
