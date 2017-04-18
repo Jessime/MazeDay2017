@@ -78,6 +78,11 @@ class SpinnerCollide():
     def __init__(self):
         self.mp3 = 'spin'
         self.pause_gameplay = True
+
+class TubeTravel():
+    def __init__(self):
+        self.mp3 = 'suck'
+        self.pause_gameplay = True
         
 class EventManager():
     def __init__(self):

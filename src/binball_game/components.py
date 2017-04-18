@@ -1,7 +1,7 @@
 import math
 import pygame
 import time
-from random import uniform
+from random import uniform, choice
 
 import collision
 import events
@@ -197,11 +197,71 @@ class Particle:
 
 class Tube(Particle):
 
-    def __init__(self, x, y, size, value=65, noise='suck'):
+    def __init__(self, x, y, size, drop_spot, ejection_angle,
+                 value=65, noise='suck'):
         super().__init__(x, y, size, value=65, noise='suck')
 
-        self.color = (0, 100, 200)
-        
+        self.drop_spot = drop_spot
+        self.ejection_angle = ejection_angle
+
+        self.color = (22, 153, 19)
+
+class TubeManager():
+    """Repsonsible for controlling and updating Tube components
+
+    Notes
+    -----
+    This departs from the style of the rest of the components.
+    Usually collision detection and updating is handled by the Model.
+    Because the tubes are 'connected', this is a good opportunity to test this style.
+
+    Parameters
+    ----------
+    tube_list
+
+    """
+    def __init__(self, tube_list):
+        self.tube_list = tube_list
+
+    def teleport_ball(self, ball, tube):
+        """Eject the ball from the drop spot of a different tube
+
+        Parameters
+        ----------
+        ball : Particle
+            Player ball
+        tube : Tube
+            Tube with which the ball originally collided
+        """
+        other_tubes = [t for t in self.tube_list if t is not tube]
+        new_tube = choice(other_tubes)
+        ball.x, ball.y = new_tube.drop_spot
+        ball.angle = new_tube.ejection_angle + uniform(-.05, .05)
+
+    def update(self, ball):
+        """Checks for ball collisions and updates state appropriately.
+
+        Parameters
+        ----------
+        ball : Particle
+            Player ball
+
+        Returns
+        -------
+        did_collide : bool
+            True if ball interacted with one of the tubes
+        points : int
+            Value of tube doing the transporting
+        """
+        points = 0
+        for tube in self.tube_list:
+            did_collide = collision.ball_circle(ball, tube)
+            if did_collide:
+                points = tube.value
+                self.teleport_ball(ball, tube)
+                print(points)
+                break
+        return did_collide, points
 
 class Bin():
     reload_time = 3
@@ -397,6 +457,11 @@ def init_components(width, height):
             Spinner(pygame.Rect(5, 275, 25, 25)),
             Spinner(pygame.Rect(88, 0, 25, 25))]
     components_dict['spinner_list'] = spin
+
+    tube_list = [Tube(17, 50, 7, (17, 20), .25*math.pi),
+                 Tube(width - 60, 425, 7, (width-75, 440), 1.4*math.pi)]
+    components_dict['tube_manager'] = TubeManager(tube_list)
+
     # flipper_left = Flipper(Point(150, 912),
     #                        Point(245, 960),
     #                        1.57)

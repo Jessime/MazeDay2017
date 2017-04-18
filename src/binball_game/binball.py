@@ -35,6 +35,12 @@ class Model():
 
         components_dict = init_components(self.width, self.height)
         self.ball = components_dict['ball']
+        # self.ball.x = self.width - 60
+        # self.ball.y = 600
+        # self.angle = .5*math.pi
+        #self.ball.y = 200
+        #self.ball.angle = 1.25*math.pi
+        # self.ball.speed = 10
         self.successful_launch = True
         self.segment_list = components_dict['segment_list']
         self.particle_list = components_dict['particle_list']
@@ -42,6 +48,7 @@ class Model():
         # self.flipper_right = components_dict['flipper_right']
         self.bin_list = components_dict['bin_list']
         self.spinner_list = components_dict['spinner_list']
+        self.tube_manager = components_dict['tube_manager']
 
         self.starter_segs_len = len(self.segment_list) #TODO hack. used to check if cap has been added to launcher.
 
@@ -115,6 +122,12 @@ class Model():
                 spinner.spinning = True
                 self.ev_manager.post(events.SpinnerCollide())
 
+    def check_tubes(self):
+        did_collide, points = self.tube_manager.update(self.ball)
+        self.player_score += points
+        if did_collide:
+            self.ev_manager.post(events.TubeTravel())
+
     def check_dying(self):
         if self.ball.y > self.height - 30 and self.in_play():
             self.player_lives -= 1
@@ -162,8 +175,10 @@ class Model():
         self.update_bins_spinners()
         self.check_in_bins()
         self.check_spinners()
+        self.check_tubes()
         self.check_dying()
         self.check_gameover()
+        # input('waiting :')
 
     def run(self):
         self.ev_manager.post(events.Init())

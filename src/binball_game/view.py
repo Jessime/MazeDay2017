@@ -53,7 +53,10 @@ class BasicView(View):
         self.screen = pygame.display.set_mode([self.model.width, self.model.height])
 
     def draw_particle(self):
-        for particle in (*self.model.particle_list, self.model.ball):
+        for particle in (*self.model.particle_list,
+                         *self.model.tube_manager.tube_list,
+                         self.model.ball):
+                         
             pygame.draw.circle(self.screen, particle.color,
                                (int(particle.x), int(particle.y)),
                                particle.size,
@@ -98,7 +101,8 @@ class AudioView(View):
                                 'Score' : self.tts_and_play,
                                 'PowerLaunch' : self.play,
                                 'FailedLaunch' : self.play,
-                                'SpinnerCollide' : self.play}
+                                'SpinnerCollide' : self.play,
+                                'TubeTravel' : self.play}
 
         self.bin_noise_dict = {True:'coins',
                                False:'error',

@@ -1,10 +1,10 @@
 # Binball
 
-This is a pinball game that isn't modeled off of Microsoft's *Space Catdet* game. 
+This is a pinball game that isn't modeled off of Microsoft's *Space Cadet* game.
 
 ## About
 
-Score as many points as possible by keeping the ball in play and scoring special bonuses. In binball, the ball eventually falls into a bin. When this occurs, a note sounds, and the player has a small amount of time to hit the corresponding key to set the ball back into play. If the player fails to do so, the ball falls through the bin and a life is lost. 
+Score as many points as possible by keeping the ball in play and scoring special bonuses. In binball, the ball eventually falls into a bin. When this occurs, a note sounds, and the player has a small amount of time to hit the corresponding key to set the ball back into play. If the player fails to do so, the ball falls through the bin and a life is lost.
 
 ## Usage
 
@@ -25,7 +25,7 @@ Flag | Full Flag | Default | Description
 
 ## Gameplay
 
-Gameplay is fairly straightforward. After launching the ball, your objective is to score as many points as possible by keeping the ball alive. 
+Gameplay is fairly straightforward. After launching the ball, your objective is to score as many points as possible by keeping the ball alive.
 
 ### Keys
 
@@ -58,9 +58,9 @@ Round bumpers are almost as common as segments, and also don't do anything speci
 
 These rectangles are hard to get to, as they're generally protected by tunnels of segments. You'll know if you hit a spinner because it'll freeze the ball for a while while it's spinning. This freeze is worth it, since it comes with a large score reward. Their noise is __.mp3
 
-#### Teleporters
+#### Tubes
 
-Teleporters are, as the name implies, components that send your ball to a different location. Maybe you'll get lucky and score a bunch of points this way!
+Tubes are, as the name may imply, components that send your ball to a different location. Maybe you'll get lucky and score a bunch of points this way!
 
 #### Coins
 
