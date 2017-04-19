@@ -102,12 +102,20 @@ class AudioView(View):
                                 'PowerLaunch' : self.play,
                                 'FailedLaunch' : self.play,
                                 'SpinnerCollide' : self.play,
+                                'TestNotes' : self. test_notes,
                                 'TogglePause' : self.toggle_pause,
                                 'TubeTravel' : self.play}
 
         self.bin_noise_dict = {True:'coins',
                                False:'error',
                                'collide':'flipper'}
+
+    def test_notes(self):
+        """Allows user to corresponding bins and key presses to proper notes."""
+        keys = 'DFJK'
+        for i, k in enumerate(keys):
+            self.play('{}_test'.format(k))
+            self.play('note{}'.format(i+1))
 
     def eval_bin(self):
         """Decide which noise to play for bin press."""

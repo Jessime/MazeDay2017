@@ -27,6 +27,8 @@ class Controller():
             message = events.Lives(self.model.player_lives)
         elif event.key == pygame.K_p:
             message = events.TogglePause()
+        elif event.key == pygame.K_t:
+            message = events.TestNotes()
         else:
             print(event.key)
         return message

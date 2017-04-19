@@ -79,6 +79,10 @@ class SpinnerCollide():
         self.mp3 = 'spin'
         self.pause_gameplay = True
 
+class TestNotes():
+    def __init__(self):
+        self.pause_gameplay = True
+        
 class TogglePause():
     def __init__(self):
         self.pause_gameplay = True
