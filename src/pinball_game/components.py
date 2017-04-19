@@ -80,8 +80,9 @@ class Coin():
     y_size = 10
     x_size = 5
 
-    def __init__(self, pos, noise):
+    def __init__(self, pos, coin, noise):
         self.pos = Point(x,y)
+        self.coin = coin
         self.noise = ''
 
     def make_coin(self):
@@ -250,7 +251,6 @@ class Bin():
             ball.speed = ball.max_speed * .75
             ball.angle = uniform(.25,.75)*math.pi
             ball.y = self.rekt.top - 15
-
         return message
 
     def update(self):

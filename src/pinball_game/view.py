@@ -59,6 +59,9 @@ class BasicView(View):
                             [seg.a.x,seg.a.y],
                             [seg.b.x,seg.b.y],
                             seg.thickness)
+    def draw_coins(self):
+        for coin in self.model.coin_list:
+            pygame.draw.ellipse(self.screen, coin.color, coin.coin)
 
     def draw_bins(self):
         for bin_ in self.model.bin_list:
@@ -68,6 +71,7 @@ class BasicView(View):
         self.draw_bins()
         self.draw_particle()
         self.draw_seg()
+        self.draw_coins()
 
     def loop_end(self):
         if not self.model.running:

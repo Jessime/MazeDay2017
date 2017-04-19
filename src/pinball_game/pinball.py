@@ -40,6 +40,7 @@ class Model():
         # self.flipper_right = components_dict['flipper_right']
         self.bin_list = components_dict['bin_list']
         self.starter_segs_len = len(self.segment_list) #TODO hack. used to check if cap has been added to launcher.
+        self.coin_list components_dict['coin_list']
 
         self.event = None
         self.ev_manager.register(self)
@@ -95,6 +96,16 @@ class Model():
     def in_play(self):
         """Make sure ball isn't in launcher"""
         return self.ball.x < self.width - 40 - 1
+
+    def check_coins(self):
+        for coin in self.coin_list:
+            if coin.collidepoint(self.ball.x, self.ball.y):
+                del coin
+        # ball_hits_coin = self.ball.pos >= self.bin_list[0].rekt.top
+        # if ball_hits_coin and self.in_play():
+            # self.ball.angle = 1.5*math.pi
+            # self.ball.speed = 1
+
 
     def check_in_bins(self):
         ball_in_bin = self.ball.y >= self.bin_list[0].rekt.top
