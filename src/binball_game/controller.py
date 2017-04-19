@@ -25,6 +25,8 @@ class Controller():
             message = events.PressedBin(self.bin_map[event.key])
         elif event.key == pygame.K_b:
             message = events.Lives(self.model.player_lives)
+        elif event.key == pygame.K_p:
+            message = events.TogglePause()
         else:
             print(event.key)
         return message
@@ -38,6 +40,17 @@ class Controller():
         if keys[pygame.K_SPACE]:
             message = events.PowerLaunch()
         return message
+
+    def toggle_pause(self):
+        """If game paused, send no events until game is unpaused"""
+        message = None
+        while self.model.paused:
+            for pygame_event in pygame.event.get():
+                print('event: ', pygame_event)
+                if pygame_event.type == pygame.KEYDOWN:
+                    message = self.down_keys(message, pygame_event)
+            if isinstance(message, events.TogglePause):
+                self.ev_manager.post(message)
 
     def notify(self, event):
         if isinstance(event, events.LoopEnd):
@@ -59,3 +72,6 @@ class Controller():
                 if message:
                     self.ev_manager.post(message)
                     break
+
+        elif isinstance(event, events.TogglePause):
+            self.toggle_pause()

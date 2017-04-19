@@ -27,8 +27,7 @@ class Model():
         self.successful_launch = False
         self.failed_launch = False
 
-        self.loop_start = time.time()
-        self.loop_time = 0
+        self.paused = False
         self.running = True
         self.width = 600
         self.height = 1000
@@ -41,7 +40,6 @@ class Model():
         #self.ball.y = 200
         #self.ball.angle = 1.25*math.pi
         # self.ball.speed = 10
-        self.successful_launch = True
         self.segment_list = components_dict['segment_list']
         self.particle_list = components_dict['particle_list']
         # self.flipper_left = components_dict['flipper_left']
@@ -55,9 +53,6 @@ class Model():
         self.event = None
         self.ev_manager.register(self)
 
-    def exit_game(self):
-        self.running = False
-
     # def flip(self):
     #     if self.event.side == 'l':
     #         self.flipper_left.flip_up = True
@@ -66,13 +61,12 @@ class Model():
 
     def notify(self, event):
         self.event = event
-        if isinstance(event, events.LoopEnd):
-            self.loop_time = time.time() - self.loop_start
-            self.loop_start = time.time()
-        elif isinstance(event, events.UserQuit):
+        if isinstance(event, events.UserQuit):
             self.exit_game()
         # elif isinstance(event, events.Flip):
         #     self.flip()
+        elif isinstance(event, events.TogglePause):
+            self.toggle_pause()
         elif isinstance(event, events.PowerLaunch):
             self.power_launch()
         elif isinstance(event, events.Launch):
@@ -80,6 +74,12 @@ class Model():
         elif isinstance(event, events.PressedBin):
             message = self.bin_list[self.event.num].pressed_event(self.ball)
             self.ev_manager.post(message)
+
+    def exit_game(self):
+        self.running = False
+
+    def toggle_pause(self):
+        self.paused = not self.paused
 
     def ball_collisions(self):
         self.ball.move()
@@ -181,6 +181,7 @@ class Model():
         # input('waiting :')
 
     def run(self):
+        #print(self.ev_manager.listeners); 1/0
         self.ev_manager.post(events.Init())
         while self.running:
             self.update()
@@ -190,10 +191,10 @@ class App():
     def __init__(self, sound=True, video=True):
         self.ev_manager = events.EventManager()
         self.model = Model(self.ev_manager)
-        self.controller = Controller(self.ev_manager, self.model)
         self.basic_view = BasicView(self.ev_manager, self.model, video)
         if sound:
             self.audio_view = AudioView(self.ev_manager, self.model)
+        self.controller = Controller(self.ev_manager, self.model)
 
 if __name__ == '__main__':
     os.environ['SDL_VIDEO_CENTERED'] = '1'

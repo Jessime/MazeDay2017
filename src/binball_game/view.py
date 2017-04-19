@@ -56,7 +56,7 @@ class BasicView(View):
         for particle in (*self.model.particle_list,
                          *self.model.tube_manager.tube_list,
                          self.model.ball):
-                         
+
             pygame.draw.circle(self.screen, particle.color,
                                (int(particle.x), int(particle.y)),
                                particle.size,
@@ -102,6 +102,7 @@ class AudioView(View):
                                 'PowerLaunch' : self.play,
                                 'FailedLaunch' : self.play,
                                 'SpinnerCollide' : self.play,
+                                'TogglePause' : self.toggle_pause,
                                 'TubeTravel' : self.play}
 
         self.bin_noise_dict = {True:'coins',
@@ -111,6 +112,12 @@ class AudioView(View):
     def eval_bin(self):
         """Decide which noise to play for bin press."""
         self.play(self.bin_noise_dict[self.event.result])
+
+    def toggle_pause(self):
+        if self.model.paused:
+            self.play('pause')
+        else:
+            self.play('resume')
 
     def play(self, filename=None):
         """Play the event mp3.
