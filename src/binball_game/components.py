@@ -174,7 +174,7 @@ class Particle:
             All particles in the model
         """
         for particle in particle_list:
-            collision_occurs = collision.ball_circle(self,particle)
+            collision_occurs = collision.ball_circle(self, particle, True)
             if collision_occurs:
                 self.collision_partner = particle
                 self.speed *= self.elasticity
@@ -199,8 +199,7 @@ class Tube(Particle):
 
     def __init__(self, x, y, size, drop_spot, ejection_angle,
                  value=65, noise='suck'):
-        super().__init__(x, y, size, value=65, noise='suck')
-
+        super().__init__(x, y, size, value=value, noise=noise)
         self.drop_spot = drop_spot
         self.ejection_angle = ejection_angle
 
@@ -452,6 +451,16 @@ class Flipper():
             if self.off_angle - delta <= self.angle <= self.off_angle + delta:
                 self.flip_down = False
 
+class CurveBall(Particle):
+    """Slowly increments the balls angle while in effect field
+
+    """
+    def __init__(self, x, y, size, curve=.075, value=2, noise='chimes'):
+        super().__init__(x, y, size, value=value, noise=noise)
+        self.curve = curve
+
+        self.color = (179, 189, 206)
+
 def init_components(width, height):
     """Set all the pieces of the game board to their proper locations
 
@@ -487,6 +496,8 @@ def init_components(width, height):
                  Tube(width - 60, 425, 7, (width-75, 440), 1.4*math.pi)]
     components_dict['tube_manager'] = TubeManager(tube_list)
 
+    curver_list = [CurveBall(250, 500, 50)]
+    components_dict['curver_list'] = curver_list
     # flipper_left = Flipper(Point(150, 912),
     #                        Point(245, 960),
     #                        1.57)
@@ -502,12 +513,12 @@ def init_components(width, height):
                       ((width-1-40,837), (410,912)), #right funnel
                       ((0,837), (150,912)), #left funnel
                       ((260, 370), (310, 390),20), #Middle
-                      ((60,825), (100,700)), #eft triangle pt1
-                      ((55,824), (150,860)), #left triangle pt2
+                      ((55,820), (100,700)), #eft triangle pt1
+                      ((55,820), (150,860)), #left triangle pt2
                       #((100,697), (145,865)), #left triangle pt3
                       #((415,865),(460,697)), #right triangle pt1
                       ((410,860), (width-100,820)), #right triangle pt2
-                      ((width-1-141,700), (width-1-100,825)),#right triangle pt3
+                      ((width-1-141,700), (width-100,820)),#right triangle pt3
                       ((width-1-40, 250), (width-1-150, 450)), #right tunnel top
                       ((width-1-40, 325), (width-1-150, 550)), #right tunnel bottom
                       ((35, 275), (100, 400)), #left tunnel top

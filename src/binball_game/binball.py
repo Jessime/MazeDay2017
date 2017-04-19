@@ -34,6 +34,9 @@ class Model():
 
         components_dict = init_components(self.width, self.height)
         self.ball = components_dict['ball']
+        # self.ball.x = 250
+        # self.ball.y = 700
+        # self.angle = 1.5*math.pi
         #self.ball.y = 200
         #self.ball.angle = 1.25*math.pi
         # self.ball.speed = 10
@@ -44,6 +47,7 @@ class Model():
         self.bin_list = components_dict['bin_list']
         self.spinner_list = components_dict['spinner_list']
         self.tube_manager = components_dict['tube_manager']
+        self.curver_list = components_dict['curver_list']
 
         self.starter_segs_len = len(self.segment_list) #TODO hack. used to check if cap has been added to launcher.
 
@@ -127,6 +131,14 @@ class Model():
         if did_collide:
             self.ev_manager.post(events.TubeTravel())
 
+    def check_curvers(self):
+        for curver in self.curver_list:
+            contact = collision.ball_circle(self.ball, curver)
+            if contact:
+                self.player_score += curver.value
+                self.ball.angle += curver.curve
+                self.ev_manager.post(events.Collision(curver.noise))
+
     def check_dying(self):
         if self.ball.y > self.height - 30 and self.in_play():
             self.player_lives -= 1
@@ -175,12 +187,12 @@ class Model():
         self.check_in_bins()
         self.check_spinners()
         self.check_tubes()
+        self.check_curvers()
         self.check_dying()
         self.check_gameover()
         # input('waiting :')
 
     def run(self):
-        #print(self.ev_manager.listeners); 1/0
         self.ev_manager.post(events.Init())
         while self.running:
             self.update()

@@ -20,10 +20,11 @@ def ball_rect(ball, rect):
     collision_occurs = x_in and y_in
     return collision_occurs
 
-def ball_circle(ball, p2):
+def ball_circle(ball, p2, update=False):
     """Determines if ball collides with any circular objects
 
-    If collision is detected, angle and position of ball are appropriately updated.
+    If collision is detected and update is True,
+    angle and position of ball are appropriately updated.
 
     Parameters
     ----------
@@ -31,6 +32,8 @@ def ball_circle(ball, p2):
         Players ball
     p2 : Particle
         Stationary object with which ball might collide
+    update : bool (default=False)
+        If True, update the state of the ball
 
     Returns
     -------
@@ -42,7 +45,7 @@ def ball_circle(ball, p2):
 
     dist = math.hypot(dx, dy)
     collision_occurs = dist < ball.size + p2.size
-    if collision_occurs:
+    if collision_occurs and update:
         ball.angle = (math.atan2(dy, dx)) % (2*math.pi)
         overlap = 0.5*(ball.size + p2.size - dist+1)
         ball.x += math.cos(ball.angle)*overlap
