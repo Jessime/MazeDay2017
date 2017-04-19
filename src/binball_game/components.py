@@ -274,9 +274,26 @@ class Bin():
         self.color = color
         self.noise = noise
 
+        self.out_noise = 'flipper'
+        self._active = False
+        self.active_color = (0, 0, 0)
+        self.locked_color = (255, 255, 255)
         self.original_color = color
 
+    @property
+    def active(self):
+        return self._active
+
+    @active.setter
+    def active(self, value):
+        self._active = value
+        if self.active:
+            self.color = self.active_color
+        else:
+            self.color = self.original_color
+
     def pressed_event(self, ball):
+        """Key press is only valid if the Bins are currently reloaded"""
         message = None
         if  Bin.reloaded:
             Bin.last_pressed = time.time()
@@ -293,15 +310,23 @@ class Bin():
             ball.speed = ball.max_speed * .75
             ball.angle = uniform(.25,.75)*math.pi
             ball.y = self.rekt.top - 15
+            self.active = False
 
         return message
 
-    def update(self):
+    def update(self, bin_list):
+        """Change the color if reload state changes"""
+        #TODO This can be cleaner.
+        #Not sure how to do this with @property since Bin.reloaded is a class attribute
+        old_state = Bin.reloaded
         Bin.reloaded = time.time() >= Bin.reload_time + Bin.last_pressed
-        if Bin.reloaded:
-            self.color = self.original_color
-        else:
-            self.color = (255, 255, 255)
+        switched = old_state != Bin.reloaded
+        if switched and Bin.reloaded:
+            for bin_ in bin_list:
+                bin_.color = bin_.original_color
+        elif switched:
+            for bin_ in bin_list:
+                bin_.color = bin_.locked_color
 
 class Spinner():
     """Component that spins and flashes when activated by ball.
@@ -447,11 +472,11 @@ def init_components(width, height):
     ball = Particle(599-16,1000-15,15) # real
     components_dict['ball'] = ball
 
-    bin_0 = Bin(0, pygame.Rect(150,912,40,48), (0, 255, 255), 'flipper')
-    bin_1 = Bin(1, pygame.Rect(150+40,912,80,48), (0, 255, 0), 'flipper')
-    bin_2 = Bin(2, pygame.Rect(290,912,80,48), (255, 0, 0), 'flipper')
-    bin_3 = Bin(3, pygame.Rect(290+80,912,40,48), (255, 0, 255), 'flipper')
-    components_dict['bin_list'] = [bin_0, bin_1, bin_2, bin_3]
+    bins = [Bin(0, pygame.Rect(150,912,40,48), (0, 255, 255), 'note1'),
+            Bin(1, pygame.Rect(150+40,912,80,48), (0, 255, 0), 'note2'),
+            Bin(2, pygame.Rect(290,912,80,48), (255, 0, 0), 'note3'),
+            Bin(3, pygame.Rect(290+80,912,40,48), (255, 0, 255), 'note4')]
+    components_dict['bin_list'] = bins
 
     spin = [Spinner(pygame.Rect(482, 400, 25, 25)),
             Spinner(pygame.Rect(5, 275, 25, 25)),

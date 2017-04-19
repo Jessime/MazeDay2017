@@ -34,9 +34,6 @@ class Model():
 
         components_dict = init_components(self.width, self.height)
         self.ball = components_dict['ball']
-        # self.ball.x = self.width - 60
-        # self.ball.y = 600
-        # self.angle = .5*math.pi
         #self.ball.y = 200
         #self.ball.angle = 1.25*math.pi
         # self.ball.speed = 10
@@ -108,11 +105,13 @@ class Model():
         return self.ball.x < self.width - 40 - 1
 
     def check_in_bins(self):
-        ball_in_bin = self.ball.y >= self.bin_list[0].rekt.top
-        if ball_in_bin and self.in_play():
-            self.ball.angle = 1.5*math.pi
-            self.ball.speed = 1
-            #noise
+        for bin_ in self.bin_list:
+            contact = collision.ball_rect(self.ball, bin_.rekt)
+            if contact and not bin_.active:
+                bin_.active = True
+                self.ball.angle = 1.5*math.pi
+                self.ball.speed = 0#1
+                self.ev_manager.post(events.Collision(bin_.noise, True))
 
     def check_spinners(self):
         for spinner in self.spinner_list:
@@ -165,7 +164,7 @@ class Model():
                 self.reset()
 
     def update_bins_spinners(self):
-        _ = [b.update() for b in self.bin_list]
+        _ = [b.update(self.bin_list) for b in self.bin_list]
         _ = [s.update() for s in self.spinner_list]
 
     def update(self):

@@ -127,6 +127,33 @@ class AudioView(View):
         else:
             self.play('resume')
 
+    def skip_on_busy(self):
+        """Decides if mp3 should play or not.
+
+        Returns
+        -------
+        skip : bool
+            If True, mp3 file will not play
+        """
+        skip = False
+        try:
+            check_busy = self.event.check_busy
+        except AttributeError:
+            check_busy = False
+        if check_busy and pygame.mixer.music.get_busy():
+            skip = True
+        return skip
+
+    def check_pause_gameplay(self):
+        """Decide if game should be slept until mp3 is finished"""
+        try:
+            pause = self.event.pause_gameplay
+        except AttributeError:
+            pause = False
+        if pause:
+            while pygame.mixer.music.get_busy():
+                sleep(.1)
+
     def play(self, filename=None):
         """Play the event mp3.
 
@@ -142,19 +169,18 @@ class AudioView(View):
 
         if filename is None:
             filename = self.event.mp3
-        #template = pkg_resources.resource_filename('pinball_game', 'data/{}.mp3'.format(filename))
         if filename == '': #TODO fix this
             return
-        if hasattr(self.event, 'check_busy'):
-            if pygame.mixer.music.get_busy():
-                return
+
+        if self.skip_on_busy():
+            return
+
+        #template = pkg_resources.resource_filename('pinball_game', 'data/{}.mp3'.format(filename))
         template = 'data/{}.mp3'.format(filename)
         pygame.mixer.music.load(template)
         pygame.mixer.music.play()
 
-        if hasattr(self.event, 'pause_gameplay'):
-            while pygame.mixer.music.get_busy():
-                sleep(.1)
+        self.check_pause_gameplay()
 
     def tts_and_play(self):
         """Uses Google's text-to-speech to play an event's string"""
