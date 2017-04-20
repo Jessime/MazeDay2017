@@ -34,12 +34,13 @@ class Model():
 
         components_dict = init_components(self.width, self.height)
         self.ball = components_dict['ball']
-        # self.ball.x = 250
-        # self.ball.y = 700
-        # self.angle = 1.5*math.pi
+        # self.ball.x = 490
+        # self.ball.y = 111
+        # self.ball.angle = 6*math.pi
         #self.ball.y = 200
         #self.ball.angle = 1.25*math.pi
-        # self.ball.speed = 10
+        # self.ball.speed = 0
+
         self.segment_list = components_dict['segment_list']
         self.particle_list = components_dict['particle_list']
         # self.flipper_left = components_dict['flipper_left']

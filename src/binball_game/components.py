@@ -505,7 +505,9 @@ def init_components(width, height):
     components_dict['tube_manager'] = TubeManager(tube_list)
 
     curver_list = [CurveBall(250, 500, 50),
-                   CurveBall(525, 250, 25)]
+                   CurveBall(525, 250, 25),
+                   CurveBall(520, 200, 20),
+                   CurveBall(490, 290, 20)]
     components_dict['curver_list'] = curver_list
 
     coin_list = [Coin(80,810,9,50),  #lt.1
