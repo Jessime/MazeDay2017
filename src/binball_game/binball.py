@@ -164,6 +164,10 @@ class Model():
             #TODO happy noises
             self.running = False
 
+    def reset_bins(self):
+        for bin_ in self.bin_list:
+            bin_.active = False
+
     def reset(self):
         self.ball = Particle(599-16,1000-15,15)
         self.ball.speed = 0
@@ -171,8 +175,10 @@ class Model():
         self.successful_launch = False
         self.failed_launch = False
         self.launch_power = 0
+        self.reset_bins()
         if len(self.segment_list) > self.starter_segs_len: #TODO hack
             del self.segment_list[-1]
+
 
     def failure_to_launch(self):
         """Evaluate sucess of launch.
