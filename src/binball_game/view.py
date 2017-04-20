@@ -56,6 +56,7 @@ class BasicView(View):
         for particle in (*self.model.particle_list,
                          *self.model.tube_manager.tube_list,
                          *self.model.curver_list,
+                         *self.model.coin_list,
                          self.model.ball):
 
             pygame.draw.circle(self.screen, particle.color,

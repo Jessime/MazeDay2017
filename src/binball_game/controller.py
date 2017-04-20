@@ -29,8 +29,8 @@ class Controller():
             message = events.TogglePause()
         elif event.key == pygame.K_t:
             message = events.TestNotes()
-        else:
-            print(event.key)
+        # else:
+            # print(event.key)
         return message
 
     def up_keys(self, message, event):

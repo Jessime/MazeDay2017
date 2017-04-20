@@ -195,6 +195,13 @@ class Particle:
 
         return (angle, length)
 
+class Coin(Particle):
+    """An circular object with a value """
+
+    def __init__(self,x ,y ,size, value, noise='coins'):
+        super().__init__(x, y, size, value=value, noise=noise)
+        self.color = (255,215,0)
+
 class Tube(Particle):
 
     def __init__(self, x, y, size, drop_spot, ejection_angle,
@@ -258,7 +265,7 @@ class TubeManager():
             if did_collide:
                 points = tube.value
                 self.teleport_ball(ball, tube)
-                print(points)
+                # print(points)
                 break
         return did_collide, points
 
@@ -498,6 +505,23 @@ def init_components(width, height):
 
     curver_list = [CurveBall(250, 500, 50)]
     components_dict['curver_list'] = curver_list
+
+    coin_list = [Coin(80,810,9,50),  #lt.1
+                 Coin(112,822,9,50), #lt.4
+                 Coin(95,777,9,50),  #lt.2
+                 Coin(110,740,9,50), #lt.3
+                 Coin(144,835,9,50), #lt.6
+                 Coin(125,790,9,50), #lt.5
+                 Coin(width-41-80,810,9,50),  #lrt.1
+                 Coin(width-41-112,822,9,50), #rt.4
+                 Coin(width-41-95,777,9,50),  #rt.2
+                 Coin(width-41-110,740,9,50), #rt.3
+                 Coin(width-41-144,835,9,50), #rt.6
+                 Coin(width-41-125,790,9,50), #rt.5
+                 Coin(30,20,15,200),
+                 Coin(540,323,12,200)
+                 ]
+    components_dict['coin_list'] = coin_list
     # flipper_left = Flipper(Point(150, 912),
     #                        Point(245, 960),
     #                        1.57)
@@ -513,7 +537,7 @@ def init_components(width, height):
                       ((width-1-40,837), (410,912)), #right funnel
                       ((0,837), (150,912)), #left funnel
                       ((260, 370), (310, 390),20), #Middle
-                      ((55,820), (100,700)), #eft triangle pt1
+                      ((55,820), (100,700)), #left triangle pt1
                       ((55,820), (150,860)), #left triangle pt2
                       #((100,697), (145,865)), #left triangle pt3
                       #((415,865),(460,697)), #right triangle pt1
