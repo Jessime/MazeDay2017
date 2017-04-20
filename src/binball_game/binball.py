@@ -43,6 +43,7 @@ class Model():
 
         self.segment_list = components_dict['segment_list']
         self.particle_list = components_dict['particle_list']
+        self.launch_runway = components_dict['launch_runway']
         # self.flipper_left = components_dict['flipper_left']
         # self.flipper_right = components_dict['flipper_right']
         self.bin_list = components_dict['bin_list']
@@ -50,6 +51,7 @@ class Model():
         self.tube_manager = components_dict['tube_manager']
         self.curver_list = components_dict['curver_list']
         self.coin_list = components_dict['coin_list']
+        self.platforms = components_dict['platforms']
 
         self.starter_segs_len = len(self.segment_list) #TODO hack. used to check if cap has been added to launcher.
 
@@ -152,6 +154,14 @@ class Model():
                 index = i
                 del self.coin_list[i]
         # print(i)
+    def check_launcher_error(self):    # TODO hack
+        if self.successful_launch:
+            contact = collision.ball_rect(self.ball, self.launch_runway)
+            if contact:
+                self.ball.x = 200
+                self.ball.y = 700
+                self.ball.angle = math.pi*1.5
+                self.ball.speed = 10
 
     def check_dying(self):
         if self.ball.y > self.height - 30 and self.in_play():
@@ -180,7 +190,6 @@ class Model():
         if len(self.segment_list) > self.starter_segs_len: #TODO hack
             del self.segment_list[-1]
 
-
     def failure_to_launch(self):
         """Evaluate sucess of launch.
 
@@ -204,14 +213,17 @@ class Model():
         self.failure_to_launch()
         self.ball_collisions()
         self.update_bins_spinners()
+        self.platforms.update()
         self.check_in_bins()
         self.check_spinners()
         self.check_tubes()
         self.check_curvers()
         self.check_coin()
+        self.check_launcher_error()
         self.check_dying()
         self.check_gameover()
-        # input('waiting :')
+            # print('')
+        # input('waiting :'
 
     def run(self):
         self.ev_manager.post(events.Init())

@@ -2,6 +2,7 @@ import math
 import pygame
 import time
 from random import uniform, choice
+from itertools import cycle
 
 import collision
 import events
@@ -74,7 +75,26 @@ class Segment():
         base = '{}({}\n{}\nAngle: {:.2f})\n'
         return base.format(self.__class__.__name__, self.a, self.b, self.angle)
 
-class Particle:
+class Platforms():
+    """ """
+
+    def __init__(self, start_pt1, start_pt2, noise='seg2'):
+        self.seg_1 = Segment(start_pt1,(start_pt1[0]+50,start_pt1[1]))
+        self.seg_2 = Segment(start_pt2,(start_pt2[0]+50,start_pt2[1]))
+        self.color = (25,235,123)
+        self.distance = 600-41-100-50
+        range_ = range(start_pt1[0], start_pt1[0]+self.distance, 2)
+        self.pos_gen = cycle((*range_, *range_[::-1]))
+
+    def update(self):
+        new_pos = next(self.pos_gen)
+        self.seg_1.a.x = new_pos
+        self.seg_1.b.x = new_pos + 50
+        self.seg_2.a.x = new_pos
+        self.seg_2.b.x = new_pos + 50
+
+
+class Particle():
     """ A circular object with a velocity, size and mass """
 
     def __init__(self, x, y, size, value=0, noise='jump'):
@@ -381,7 +401,7 @@ class Spinner():
                     self.color = (150, 100, 50)
                 else:
                     self.color = self.original_color
-                print(self.color)
+                # print(self.color)
         if self.spin_left == 0:
             self.spin_left = 100
             self.spinning = False
@@ -485,6 +505,8 @@ def init_components(width, height):
     """
     components_dict = {}
 
+    components_dict['launch_runway'] = pygame.Rect(width-1-40,150,40,height-150)
+
     ball = Particle(599-16,1000-15,15) # real
     components_dict['ball'] = ball
 
@@ -526,6 +548,8 @@ def init_components(width, height):
                  Coin(540,323,12,200)
                  ]
     components_dict['coin_list'] = coin_list
+
+    components_dict['platforms'] = Platforms((100,100),(100,650))
     # flipper_left = Flipper(Point(150, 912),
     #                        Point(245, 960),
     #                        1.57)

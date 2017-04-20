@@ -11,7 +11,7 @@ import pkg_resources
 from gtts import gTTS
 from time import sleep
 
-class View:
+class View():
     def __init__(self, ev_manager, model):
         self.ev_manager = ev_manager
         self.model = model
@@ -65,7 +65,9 @@ class BasicView(View):
                                particle.thickness)
 
     def draw_seg(self):
-        for seg in self.model.segment_list:
+        for seg in (*self.model.segment_list,
+                    self.model.platforms.seg_1,
+                    self.model.platforms.seg_2):
             pygame.draw.line(self.screen, self.seg_color,
                             [seg.a.x,seg.a.y],
                             [seg.b.x,seg.b.y],
