@@ -494,16 +494,18 @@ def init_components(width, height):
             Bin(3, pygame.Rect(290+80,912,40,48), (255, 0, 255), 'note4')]
     components_dict['bin_list'] = bins
 
-    spin = [Spinner(pygame.Rect(482, 400, 25, 25)),
-            Spinner(pygame.Rect(5, 275, 25, 25)),
-            Spinner(pygame.Rect(88, 0, 25, 25))]
+    spin = [Spinner(pygame.Rect(482, 400, 25, 25)), #left
+            Spinner(pygame.Rect(5, 275, 25, 25)), #top
+            Spinner(pygame.Rect(88, 0, 25, 25))] #right
     components_dict['spinner_list'] = spin
 
-    tube_list = [Tube(17, 50, 7, (17, 20), .25*math.pi),
-                 Tube(width - 60, 425, 7, (width-75, 440), 1.4*math.pi)]
+    tube_list = [Tube(17, 50, 7, (17, 20), .25*math.pi), #top left corner
+                 Tube(width - 60, 425, 7, (width-75, 440), 1.4*math.pi), # middle right
+                 Tube(140, 15, 7, (111, 35), 1.5*math.pi)]
     components_dict['tube_manager'] = TubeManager(tube_list)
 
-    curver_list = [CurveBall(250, 500, 50)]
+    curver_list = [CurveBall(250, 500, 50),
+                   CurveBall(525, 250, 25)]
     components_dict['curver_list'] = curver_list
 
     coin_list = [Coin(80,810,9,50),  #lt.1
@@ -548,7 +550,8 @@ def init_components(width, height):
                       ((35, 275), (100, 400)), #left tunnel top
                       ((0, 300), (75, 440)), #left tunnel bottom
                       ((80, 0), (78, 25)), # small top tunnel left
-                      ((120, 0), (122, 25)) # small top tunnel right
+                      ((120, 0), (122, 25)), # small top tunnel right
+                    #   ((185, 25), (200, 0)) # top tunnel 2
                      ]
 
     segment_list = [Segment(*d) for d in segment_data]
