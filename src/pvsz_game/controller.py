@@ -77,8 +77,12 @@ class Controller():
         """Presents information about current state of game."""
         if event.key == pygame.K_b:
             message = events.CheckBoard()
-        if event.key == pygame.K_m:
-            message = events.CheckPlayer()
+        elif event.key == pygame.K_m:
+            message = events.CheckPlayer(self.model.player.pos, self.model.player.gold)
+        elif event.key == pygame.K_d:
+            pass #TODO print plant Stats
+        elif event.key == pygame.K_h:
+            pass #TODO print health of plant on active square
         return message
 
     def notify(self, event):

@@ -67,6 +67,7 @@ class Sunflower(Plant):
         self.reload_time = 6
         self.time_til_reload = 6
         self.suns = 0
+        self.noise = 'chimes'
 
     def __str__(self):
         return 'Sunflower({})'.format(self.health)
@@ -89,6 +90,7 @@ class PeaShooter(Plant):
         self.reload_time = 2
         self.time_til_reload = 2
         self.damage = 10
+        self.noise = 'gun_load'
 
     def __str__(self):
         return 'PeaShooter({})'.format(self.health)
@@ -106,6 +108,7 @@ class CherryBomb(Plant):
         super().__init__(pos, board, cost=150)
         self.damage = 100
         self.time_to_detonate = 2
+        self.noise = 'tick_tock'
 
     def __str__(self):
         return 'CherryBomb'
@@ -139,7 +142,8 @@ class WallNut(Plant):
     def __init__(self, pos, board):
         super().__init__(pos, board, cost=50)
         self.health = 1200
-
+        self.noise = 'walnut'
+        
     def __str__(self):
         return 'WallNut({})'.format(self.health)
 
@@ -167,5 +171,3 @@ class SnowPea(Plant):
         zombie = self.base_produce(timedelta)
         if zombie is not None:
             zombie.freeze()
-
-

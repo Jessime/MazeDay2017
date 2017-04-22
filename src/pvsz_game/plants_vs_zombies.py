@@ -164,7 +164,10 @@ class Model():
             self.board[event.pos].append(new_plant)
             self.board.items['plants'].append(new_plant)
             self.player.gold -= new_plant.cost
-            ev = events.GrowPlant(event.plant, event.pos, self.player.gold)
+            ev = events.GrowPlant(new_plant.__class__.__name__,
+                                  event.pos,
+                                  self.player.gold,
+                                  new_plant.noise)
             self.ev_manager.post(ev)
 
     def try_planting(self, event):
@@ -216,8 +219,8 @@ class Model():
         #TODO refactor to dict
         if isinstance(event, events.MoveHome):
             self.move_home()
-        if isinstance(event, events.PlayerMoves):
-            event.obj.move(event.direction, event.step)
+        elif isinstance(event, events.PlayerMoves):
+            event.obj.move(event.direction, event.step)    
         elif isinstance(event, events.TogglePause):
             self.toggle_pause()
         elif isinstance(event, events.TryPlanting):

@@ -13,22 +13,27 @@ class CheckBoard():
     def __str__(self): return 'Board state check requested.'
 
 class CheckPlayer():
-    def __init__(self): pass
-    def __str__(self): return 'Player state check requested.'
-
+    def __init__(self, pos, gold):
+        base = 'Position is {}, {}.\nGold is {}.'
+        self.string = base.format(pos[0], pos[1], gold)
+        print('from inside: ', self.string, '\n')
+    def __str__(self):
+        return self.string
+        
 class DeathByZombie():
     def __init__(self): pass
     def __str__(self): return 'Oh no! You have been eaten by a zombie! Please try again for redemption.'
 
 class GrowPlant():
-
-    def __init__(self, plant, pos, funds):
-        self.plant = plant
+    def __init__(self, plant_name, pos, funds, noise):
+        self.plant_name = plant_name
         self.pos = pos
         self.funds = funds
+        self.mp3 = noise
 
     def __str__(self):
-        return '{} planted at {}.\nRemaining Suns: {}'.format(self.plant, self.pos, self.funds)
+        base = '{} planted at {}.\nRemaining Suns: {}'
+        return base.format(self.plant_name, self.pos, self.funds)
 
 class Init():
     def __init__(self): pass
@@ -40,14 +45,15 @@ class InitLevel():
         self.pause_gameplay = True
 
 class LoopEnd():
-
     def __init__(self):
         self.name = 'LoopEnd'
 
 class MoveHome():
     def __init__(self):
         self.mp3 = 'home'
-        
+    def __str__(self):
+        return 'Home. Postion now [1, 1]'
+
 class NoGold():
     def __init__(self):
         self.mp3 = 'no_gold'
@@ -60,12 +66,12 @@ class PlayerMoves():
         self.obj = obj
         self.direction = direction
         self.step = step
+        self.mp3 = 'move'
 
     def __str__(self):
         return '{}: {}'.format(self.obj.name, self.obj.pos)
 
 class SunCollected():
-
     def __init__(self, gold):
         self.gold = gold
         self.mp3 = 'coins2'

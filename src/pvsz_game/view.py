@@ -9,6 +9,7 @@ import pygame
 import pkg_resources
 
 from time import sleep
+from gtts import gTTS
 
 class View:
 
@@ -23,6 +24,8 @@ class View:
     def notify(self, event):
         self.event = event
         name = event.__class__.__name__
+        if name == 'Stats':
+            print(event.string)
         if name in self.event_func_dict:
             self.event_func_dict[name]()
 
@@ -82,9 +85,9 @@ class AudioView(View):
 
         self.previous_player_row = None
         self.event_func_dict = {'CheckBoard': self.check_board,
-                                'CheckPlayer': self.check_player,
+                                'CheckPlayer': self.tts_and_play,
                                 'DeathByZombie': self.show,
-                                'GrowPlant': self.show,
+                                'GrowPlant': self.play,
                                 'MoveHome': self.play,
                                 'InitLevel': self.play,
                                 'LoopEnd': self.loop_end,
@@ -95,11 +98,11 @@ class AudioView(View):
                                 'UserQuit': self.show}
 
     def check_board(self): pass
-    def check_player(self): pass
     def loop_end(self): pass
     def show(self): pass
 
     def player_moves(self):
+        self.play()
         row = self.model.player.pos[0]
         if row != self.previous_player_row:
             self.previous_player_row = row
@@ -108,6 +111,7 @@ class AudioView(View):
                 volume = (100 - zombie_col)/100
                 pygame.mixer.music.set_volume(volume)
                 self.play('zombie')
+                pygame.mixer.music.set_volume(100)
 
     def toggle_pause(self):
         if self.model.paused:
@@ -141,7 +145,7 @@ class AudioView(View):
             pause = False
         if pause:
             while pygame.mixer.music.get_busy():
-                sleep(.1)
+                sleep(.01)
 
     def play(self, filename=None):
         """Play the event mp3.
@@ -167,5 +171,6 @@ class AudioView(View):
 
     def tts_and_play(self):
         """Uses Google's text-to-speech to play an event's string"""
-        gTTS(self.event.string).save('data/temp.mp3')
+        template = pkg_resources.resource_filename('pvsz_game', 'data/temp.mp3')
+        gTTS(self.event.string).save(template)
         self.play('temp')
