@@ -20,6 +20,9 @@ class CheckPlayer():
     def __str__(self):
         return self.string
 
+class CheckInPos():
+    pass
+    
 class DeathByZombie():
     def __init__(self): pass
     def __str__(self): return 'Oh no! You have been eaten by a zombie! Please try again for redemption.'

@@ -39,7 +39,8 @@ class Zombie():
         self.attack_pause = TYPE_STATS[self.level]['attack_pause']
         self.time_till_move = self.pause
         self.is_frozen = False
-
+        self.noise = 'zombie'
+        
         self.spawn()
 
     def __str__(self):

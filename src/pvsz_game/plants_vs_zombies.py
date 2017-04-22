@@ -177,7 +177,7 @@ class Model():
         if board_pos_empty and enough_gold:
             self.grow_plant(new_plant, event)
         elif not board_pos_empty:
-            pass
+            pass #TODO error noise if placing plant on occupied spot
         elif not enough_gold:
             self.ev_manager.post(events.NoGold())
 

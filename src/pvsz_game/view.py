@@ -88,12 +88,12 @@ class AudioView(View):
 
         self.previous_player_row = None
         self.event_func_dict = {'CheckBoard': self.check_board,
+                                'CheckInPos': self.check_in_pos,
                                 'CheckPlayer': self.tts_and_play,
                                 'DeathByZombie': self.show,
                                 'GrowPlant': self.play,
                                 'MoveHome': self.play,
                                 'InitLevel': self.play,
-                                'LoopEnd': self.loop_end,
                                 'NoGold':self.play,
                                 'PlayerMoves': self.player_moves,
                                 'SunCollected': self.play,
@@ -101,7 +101,13 @@ class AudioView(View):
                                 'UserQuit': self.show}
 
     def check_board(self): pass
-    def loop_end(self): pass
+
+    def check_in_pos(self):
+        square = self.model.board[self.model.player.pos]
+        if square:
+            self.play(square[0].noise)
+            self.tts_and_play('Health is {}.'.format(square[0].health))
+
     def show(self): pass
 
     def player_moves(self):
@@ -172,8 +178,17 @@ class AudioView(View):
 
         self.check_pause_gameplay()
 
-    def tts_and_play(self):
-        """Uses Google's text-to-speech to play an event's string"""
+    def tts_and_play(self, string=''):
+        """Uses Google's text-to-speech to play a string
+
+        Parameters
+        ----------
+        string : str (default='')
+            Sentence or phrase to be spoken.
+        """
+        if not string:
+            string = self.event.string
+
         template = pkg_resources.resource_filename('pvsz_game', 'data/temp.mp3')
-        gTTS(self.event.string).save(template)
+        gTTS(string).save(template)
         self.play('temp')
