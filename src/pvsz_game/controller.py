@@ -55,6 +55,21 @@ class Controller():
             message = events.MoveHome()
         elif event.key == pygame.K_p:
             message = events.TogglePause()
+        elif event.key == pygame.K_t:
+            pass #TODO test all noises
+        return message
+
+    def check_state_checks(self, message, event):
+        """Presents information about current state of game."""
+        if event.key == pygame.K_b:
+            message = events.CheckBoard()
+        elif event.key == pygame.K_y:
+            message = events.CheckPlayer(self.model.player.pos, self.model.player.gold)
+        elif event.key == pygame.K_d:
+            pass #TODO print plant Stats
+        elif event.key == pygame.K_i:
+            message = events.CheckInPos()
+            pass #TODO print health of plant on active square
         return message
 
     def toggle_pause(self):
@@ -72,18 +87,6 @@ class Controller():
                     print(message.__class__.__name__)
             if isinstance(message, events.TogglePause):
                 self.ev_manager.post(message)
-
-    def check_state_checks(self, message, event):
-        """Presents information about current state of game."""
-        if event.key == pygame.K_b:
-            message = events.CheckBoard()
-        elif event.key == pygame.K_m:
-            message = events.CheckPlayer(self.model.player.pos, self.model.player.gold)
-        elif event.key == pygame.K_d:
-            pass #TODO print plant Stats
-        elif event.key == pygame.K_h:
-            pass #TODO print health of plant on active square
-        return message
 
     def notify(self, event):
         if isinstance(event, events.LoopEnd):

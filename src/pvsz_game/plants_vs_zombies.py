@@ -55,11 +55,28 @@ class Board():
         Returns
         -------
         col_num : int
-            Index of the first column containing a zombie."""
+            Index of the first column containing a zombie.
+        """
         row = self.board[row_num]
         for col_num, square in enumerate(row):
             if any(self.is_zombie([row_num, col_num])):
                 return col_num
+
+    def zombies_in_row(self, row_num):
+        """Return number of zombies in given row.
+
+        Parameters
+        ----------
+        row_num : int
+            Index of row to search.
+
+        Returns
+        -------
+        zombie_count : int
+            Number of zombies in row
+        """
+        zombie_count = sum([len(self.is_zombie((row_num, i))) for i in range(100)])
+        return zombie_count
 
     def del_item(self, item):
         """Removes an item from it's 2D location on the board.

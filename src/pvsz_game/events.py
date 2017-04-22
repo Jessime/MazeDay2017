@@ -9,7 +9,8 @@ When making a event similar to another event, it's best if their first words are
 """
 
 class CheckBoard():
-    def __init__(self): pass
+    def __init__(self):
+        self.pause_gameplay = True
     def __str__(self): return 'Board state check requested.'
 
 class CheckPlayer():
@@ -22,7 +23,7 @@ class CheckPlayer():
 
 class CheckInPos():
     pass
-    
+
 class DeathByZombie():
     def __init__(self): pass
     def __str__(self): return 'Oh no! You have been eaten by a zombie! Please try again for redemption.'

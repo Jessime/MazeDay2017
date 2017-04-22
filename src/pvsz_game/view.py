@@ -100,7 +100,17 @@ class AudioView(View):
                                 'TogglePause' : self.toggle_pause,
                                 'UserQuit': self.show}
 
-    def check_board(self): pass
+    def check_board(self):
+        for row_num in range(5):
+            zombie_count = self.model.board.zombies_in_row(row_num)
+            self.play('there_are')
+            self.play(str(zombie_count))
+            self.play('zombie_row')
+            self.play(str(row_num))
+            if zombie_count > 0:
+                zombie_col = self.model.board.first_zombie_col(row_num)
+                self.play('starting_at')
+                self.tts_and_play(str(zombie_col))
 
     def check_in_pos(self):
         square = self.model.board[self.model.player.pos]
