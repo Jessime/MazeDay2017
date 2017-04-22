@@ -220,7 +220,7 @@ class Model():
         if isinstance(event, events.MoveHome):
             self.move_home()
         elif isinstance(event, events.PlayerMoves):
-            event.obj.move(event.direction, event.step)    
+            event.obj.move(event.direction, event.step)
         elif isinstance(event, events.TogglePause):
             self.toggle_pause()
         elif isinstance(event, events.TryPlanting):
@@ -260,8 +260,7 @@ class PvsZ():
     def __init__(self, num_lvls=3, print_only=False, no_printing=False):
         self.ev_manager = events.EventManager()
         self.model = Model(self.ev_manager, num_lvls)
-        if not no_printing:
-            self.basic_view = BasicView(self.ev_manager, self.model)
+        self.basic_view = BasicView(self.ev_manager, self.model, no_printing)
         if not print_only:
             self.audio_view = AudioView(self.ev_manager, self.model)
         self.controller = Controller(self.ev_manager, self.model)

@@ -31,9 +31,9 @@ class View:
 
 class BasicView(View):
 
-    def __init__(self, ev_manager, model):
+    def __init__(self, ev_manager, model, no_printing):
         super().__init__(ev_manager, model)
-
+        self.no_printing = no_printing
         self.clock = pygame.time.Clock()
         self.event_func_dict = {'CheckBoard': self.check_board,
                                 'CheckPlayer': self.check_player,
@@ -49,11 +49,11 @@ class BasicView(View):
                                 'Win':self.show}
 
     def check_board(self):
-        print('\n', self.model.board.items, '\n')
-        print(self.model.board, '\n')
+        self.show(self.model.board.items)
+        self.show(self.model.board)
 
     def check_player(self):
-        print('\n', 'Gold: {}'.format(self.model.player.gold), '\n')
+        self.show('Gold: {}'.format(self.model.player.gold))
 
     def exit_game(self):
         pygame.display.quit()
@@ -69,13 +69,16 @@ class BasicView(View):
         self.clock.tick(20)
 
     def player_moves(self):
-        print(self.event)
+        self.show()
         current_square = self.model.board[self.model.player.pos]
-        print('Square contains: {}'.format(current_square))
+        self.show('Square contains: {}'.format(current_square))
 
-    def show(self):
-        print('\n', self.event, '\n')
-
+    def show(self, string=''):
+        if not self.no_printing:
+            if string:
+                print('\n', string, '\n')
+            else:
+                print('\n', self.event, '\n')
 
 
 class AudioView(View):
