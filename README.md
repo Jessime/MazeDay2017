@@ -18,7 +18,7 @@ Each mini-game is currently run independently. Please refer to the `README` of t
 
 Below is a list of games currently available
 
-1. Typer - A type racing games where you must reach a certain Words-Per-Minute to make it to the next level.
+1. Speedy Typer - A type racing games where you must reach a certain Words-Per-Minute to make it to the next level.
 2. Minesweeper - Modeled after the classic Windows puzzle game, see if you can clear the board of mines to win the game.
 3. Plants vs. Zombies - A castle defense style game!
 4. Binball - A pinball arcade game where flippers have been replaced by bins. How many points can you score?!

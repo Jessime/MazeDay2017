@@ -34,16 +34,21 @@ class Init():
     def __init__(self): pass
     def __str__(self): return 'Starting app.'
 
+class InitLevel():
+    def __init__(self):
+        self.mp3 = 'start'
+        self.pause_gameplay = True
+
 class LoopEnd():
 
     def __init__(self):
         self.name = 'LoopEnd'
 
 class MoveHome():
-    pass
-
+    def __init__(self):
+        self.mp3 = 'home'
+        
 class NoGold():
-
     def __init__(self):
         self.mp3 = 'no_gold'
     def __str__(self):
@@ -66,6 +71,10 @@ class SunCollected():
         self.mp3 = 'coins2'
     def __str__(self):
         return 'Sun collected! Total gold: {}'.format(self.gold)
+
+class TogglePause():
+    def __init__(self):
+        self.pause_gameplay = True
 
 class TryCollecting():
 
@@ -98,11 +107,6 @@ class EventManager():
         self.listeners = []
 
     def register(self, listener):
-        # The order of registration should usually be:
-            # Model
-            # Controller
-            # Basic View
-            # Audio View
         self.listeners.append(listener)
 
     def post(self, event):

@@ -8,6 +8,8 @@ Created on Sat Sep 10 15:25:02 2016
 import pygame
 import pkg_resources
 
+from time import sleep
+
 class View:
 
     def __init__(self, ev_manager, model):
@@ -34,6 +36,7 @@ class BasicView(View):
                                 'CheckPlayer': self.check_player,
                                 'DeathByZombie': self.show,
                                 'GrowPlant': self.show,
+                                'MoveHome': self.show,
                                 'Init': self.initialize,
                                 'LoopEnd': self.loop_end,
                                 'NoGold':self.show,
@@ -82,10 +85,13 @@ class AudioView(View):
                                 'CheckPlayer': self.check_player,
                                 'DeathByZombie': self.show,
                                 'GrowPlant': self.show,
+                                'MoveHome': self.play,
+                                'InitLevel': self.play,
                                 'LoopEnd': self.loop_end,
                                 'NoGold':self.play,
                                 'PlayerMoves': self.player_moves,
                                 'SunCollected': self.play,
+                                'TogglePause' : self.toggle_pause,
                                 'UserQuit': self.show}
 
     def check_board(self): pass
@@ -103,6 +109,40 @@ class AudioView(View):
                 pygame.mixer.music.set_volume(volume)
                 self.play('zombie')
 
+    def toggle_pause(self):
+        if self.model.paused:
+            self.play('pause')
+        else:
+            self.play('resume')
+
+
+    def skip_on_busy(self):
+        """Decides if mp3 should play or not.
+
+        Returns
+        -------
+        skip : bool
+            If True, mp3 file will not play
+        """
+        skip = False
+        try:
+            check_busy = self.event.check_busy
+        except AttributeError:
+            check_busy = False
+        if check_busy and pygame.mixer.music.get_busy():
+            skip = True
+        return skip
+
+    def check_pause_gameplay(self):
+        """Decide if game should be slept until mp3 is finished"""
+        try:
+            pause = self.event.pause_gameplay
+        except AttributeError:
+            pause = False
+        if pause:
+            while pygame.mixer.music.get_busy():
+                sleep(.1)
+
     def play(self, filename=None):
         """Play the event mp3.
 
@@ -113,6 +153,19 @@ class AudioView(View):
         """
         if filename is None:
             filename = self.event.mp3
+        if filename == '': #TODO fix this
+            return
+
+        if self.skip_on_busy():
+            return
+
         template = pkg_resources.resource_filename('pvsz_game', 'data/{}.mp3'.format(filename))
         pygame.mixer.music.load(template)
         pygame.mixer.music.play()
+
+        self.check_pause_gameplay()
+
+    def tts_and_play(self):
+        """Uses Google's text-to-speech to play an event's string"""
+        gTTS(self.event.string).save('data/temp.mp3')
+        self.play('temp')
