@@ -11,12 +11,13 @@ import sys
 import pickle
 import pygame
 
+from pkg_resources import resource_filename
 from subprocess import Popen, check_call
 from gtts import gTTS
 
-from aligner import align_strings
+from .aligner import align_strings
 
-class TypingGame():
+class Typer():
     """"A basic type racing game to measure Words Per Minute.
 
     Parameters
@@ -81,20 +82,23 @@ class TypingGame():
                 lines = infile.readlines()
             sentences = [l.lower().strip() for l in lines]
         else:
-            infile = 'data/audio_lookup_subset.txt'
+            infile = resource_filename('typer_game', 'data/audio_lookup_subset.txt')
             sentences = pickle.load(open(infile, 'rb'))
         return sentences
 
     def play_linux(self, mp3, pause=False):
+        template = resource_filename('typer_game', 'data/{}.mp3'.format(mp3))
         sub = check_call if pause else Popen
-        sub(['mpg123', '-q', mp3])
+        sub(['mpg123', '-q', template])
 
     def play_osx(self, mp3, pause=False):
+        template = resource_filename('typer_game', 'data/{}.mp3'.format(mp3))
         sub = check_call if pause else Popen
-        sub(['afplay', mp3])
+        sub(['afplay', template])
 
     def play_windows(self, mp3, pause=False):
-        pygame.mixer.music.load(mp3)
+        template = resource_filename('typer_game', 'data/{}.mp3'.format(mp3))
+        pygame.mixer.music.load(template)
         pygame.mixer.music.play()
         if pause:
             while pygame.mixer.music.get_busy():
@@ -109,6 +113,8 @@ class TypingGame():
             The function used to play the sentence.
         """
         platform = sys.platform
+        if platform == 'win32':
+            pygame.mixer.init()
         if self.verbose:
             print('\nPlatform: {}\n'.format(platform))
         platform2play = {'linux':self.play_linux,
@@ -125,9 +131,9 @@ class TypingGame():
         string : str
             The sentence or words to be spoken.
         """
-        temp = 'data/temp.mp3'
-        gTTS(string).save(temp)
-        self.play_mp3(temp, pause)
+        template = resource_filename('typer_game', 'data/temp.mp3')
+        gTTS(string).save(template)
+        self.play_mp3('temp', pause)
 
     def hamming_score(self, str1, str2):
         """Typing accuracy based on hamming distance of prompt vs. answer.
@@ -154,13 +160,13 @@ class TypingGame():
         while not move_on:
             prompt = 'Are you ready for level {}? '.format(self.level)
             if self.level < 6:
-                self.play_mp3('data/prompts/{}.mp3'.format(self.level))
+                self.play_mp3('prompts/{}'.format(self.level))
             ans = input(prompt).lower()
             if ans in ('y', 'yes'):
                 move_on = True
             elif ans in ('n', 'no'):
                 print('\nSee you next time!\n')
-                self.play_mp3('data/prompts/bye.mp3')
+                self.play_mp3('prompts/bye')
                 sys.exit()
 
     def print_alignment(self, aligned):
@@ -184,7 +190,7 @@ class TypingGame():
         else:
             sentence = random.choice(list(self.sentences.keys()))
             load_info = self.sentences[sentence]
-            mp3_file = 'data/{}/{}.mp3'.format(load_info[0], load_info[1])
+            mp3_file = '{}/{}'.format(load_info[0], load_info[1])
             self.play_mp3(mp3_file)
         if not self.no_printing:
             print('')
@@ -255,7 +261,7 @@ class TypingGame():
                  'But there will be punctuation in the middle and end of sentences.\n')
         print(intro)
         if not self.skip_intro:
-            self.play_mp3('data/prompts/intro.mp3', pause=True)
+            self.play_mp3('prompts/intro', pause=True)
         for i in range(self.num_lvls):
             self.pause()
             self.run_level()
@@ -264,21 +270,3 @@ class TypingGame():
                 print(prompt)
                 self.tts_and_play(prompt)
                 break
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-n', '--num_lvls', default=5, type=int, help='The number of levels you want to play')
-    parser.add_argument('-v', '--verbose', action='store_true', help='Print information to help with debugging.')
-    parser.add_argument('-po', '--print_only', action='store_true', help='Set if you do not want to use sound-based sentences')
-    parser.add_argument('-np', '--no_printing', action='store_true', help='Set if you do not want the sentences printed to the console.')
-    parser.add_argument('-s', '--skip_intro', action='store_true', help='Set if you do not want to listen to the intro.')
-    args = parser.parse_args()
-
-    if sys.platform == 'win32':
-        pygame.mixer.init(44100)
-    game = TypingGame(args.num_lvls,
-                      args.verbose,
-                      args.print_only,
-                      args.no_printing,
-                      args.skip_intro)
-    game.run()
