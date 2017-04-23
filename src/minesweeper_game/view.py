@@ -6,7 +6,8 @@ Created on Sat Sep 10 15:25:02 2016
 """
 
 import pygame
-from subprocess import Popen, check_call
+from time import sleep
+from pkg_resources import resource_filename
 
 class View:
 
@@ -44,7 +45,8 @@ class BasicView(View):
         print('\n', 'Pos: {}'.format(self.model.pos), '\n')
 
     def check_board(self):
-        print('    0, 1, 2, 3, 4. 5, 6, 7')
+        print(len(self.model.board))
+        print('\n'+' '*4+', '.join(map(str, range(len(self.model.board)))))
         print('\n'.join(['{}: {}'.format(i, row) for i, row in enumerate(self.model.board)]))
 
     def check_player(self):
@@ -83,30 +85,24 @@ class AudioView(View):
                                 'Win' : self.play}
 
     def button_press(self):
-        cmd = 'mpg123 -q data/press.mp3'.split()
-        check_call(cmd)
+        self.play()
         if not self.event.button.is_bomb:
-            self.play_number()
+            self.play(str(self.event.button.number))
 
     def change_pos(self):
-        cmd = 'mpg123 -q data/move.mp3'.split()
-        check_call(cmd)
+        self.play()
         if self.model.has_pressed:
             if self.event.button.is_flagged:
-                cmd = 'mpg123 -q data/buzz.mp3'.split()
-                Popen(cmd)
+                self.play('buzz')
             if not self.event.button.is_hidden:
-                self.play_number()
+                self.play(str(self.event.button.number))
 
     def check_player(self):
-        cmd = 'mpg123 -q data/{}.mp3'.format(self.model.pos[0]).split()
-        check_call(cmd)
-        cmd = 'mpg123 -q data/{}.mp3'.format(self.model.pos[1]).split()
-        Popen(cmd)
+        self.play(str(self.model.pos[0]))
+        self.play(str(self.model.pos[1]))
 
     def flag_num(self):
-        cmd = 'mpg123 -q data/{}.mp3'.format(self.event.num).split()
-        Popen(cmd)
+        self.play(str(self.event.num))
 
     def initialize(self):
         pygame.init()
@@ -115,11 +111,22 @@ class AudioView(View):
     def loop_end(self):
         self.clock.tick(20)
 
-    def play(self):
-        cmd = 'mpg123 -q data/{}.mp3'.format(self.event.filename).split()
-        Popen(cmd)
+    def check_pause_gameplay(self):
+        """Decide if game should be slept until mp3 is finished"""
+        try:
+            pause = self.event.pause_gameplay
+        except AttributeError:
+            pause = False
+        if pause:
+            while pygame.mixer.music.get_busy():
+                sleep(.01)
 
-    def play_number(self):
-        num = self.event.button.number
-        cmd = 'mpg123 -q data/{}.mp3'.format(num).split()
-        Popen(cmd)
+    def play(self, filename=None):
+        if filename is None:
+            filename = self.event.filename
+        pkg = 'minesweeper_game'
+        template = resource_filename(pkg, 'data/{}.mp3'.format(filename))
+        pygame.mixer.music.load(template)
+        pygame.mixer.music.play()
+
+        self.check_pause_gameplay()

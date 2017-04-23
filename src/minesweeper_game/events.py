@@ -11,19 +11,26 @@ class ButtonPress():
 
     def __init__(self, button):
         self.button = button
+        self.pause_gameplay = True
+        self.filename = 'press'
 
 class ChangePos():
 
     def __init__(self, button):
         self.button = button
+        self.filename = 'move'
+        self.pause_gameplay = True
 
 class CheckBoard():
 
     def __str__(self): return 'Show the current state of the board.'
 
 class CheckPlayer():
+    def __init__(self):
+        self.pause_gameplay = True
 
-    def __str__(self): return 'Show the current state of the Player.'
+    def __str__(self):
+        return 'Show the current state of the Player.'
 
 class CountUnflagged():
     pass
@@ -32,6 +39,7 @@ class Explode():
 
     def __init__(self):
         self.filename = 'explosion'
+        self.pause_gameplay = True
 
 class FlagNum():
 
@@ -79,6 +87,7 @@ class Win():
 
     def __init__(self):
         self.filename = 'cheer'
+        self.pause_gameplay = True
 
     def __str__(self):
         return 'Wow, you made it out alive! Good job!'
@@ -90,7 +99,7 @@ class EventManager():
 
     def register(self, listener):
         self.listeners.append(listener)
-
+        
     def post(self, event):
         for listener in self.listeners:
             listener.notify(event)
