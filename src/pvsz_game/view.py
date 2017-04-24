@@ -5,9 +5,12 @@ Created on Sat Sep 10 15:25:02 2016
 @author: jessime
 """
 
+import os
 import pygame
-import pkg_resources
 
+from pkg_resources import resource_filename
+from random import choice
+from string import ascii_lowercase
 from time import sleep
 from gtts import gTTS
 
@@ -182,11 +185,19 @@ class AudioView(View):
         if self.skip_on_busy():
             return
 
-        template = pkg_resources.resource_filename('pvsz_game', 'data/{}.mp3'.format(filename))
-        pygame.mixer.music.load(template)
+        filename = resource_filename('pvsz_game', 'data/{}.mp3'.format(filename))
+        pygame.mixer.music.load(filename)
         pygame.mixer.music.play()
 
         self.check_pause_gameplay()
+    #
+    # def clean(self, filename):
+    #     """Remove temporary file when it is freed"""
+    #     print(filename)
+    #     pygame.mixer.quit()
+    #     sleep(.1)
+    #     os.remove(filename)
+    #     pygame.mixer.init()
 
     def tts_and_play(self, string=''):
         """Uses Google's text-to-speech to play a string
@@ -198,7 +209,8 @@ class AudioView(View):
         """
         if not string:
             string = self.event.string
-
-        template = pkg_resources.resource_filename('pvsz_game', 'data/temp.mp3')
+        fake = resource_filename('pvsz_game', 'data/1.mp3') #TODO hack shouldn't have to load fake file
+        pygame.mixer.music.load(fake)
+        template = resource_filename('pvsz_game', 'data/temp.mp3')
         gTTS(string).save(template)
         self.play('temp')

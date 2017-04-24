@@ -131,6 +131,8 @@ class Typer():
         string : str
             The sentence or words to be spoken.
         """
+        fake = resource_filename('typer_game', 'data/1.mp3') #TODO hack shouldn't have to load fake file
+        pygame.mixer.music.load(fake)
         template = resource_filename('typer_game', 'data/temp.mp3')
         gTTS(string).save(template)
         self.play_mp3('temp', pause)

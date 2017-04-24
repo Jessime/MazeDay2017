@@ -17,7 +17,8 @@ class CheckPlayer():
     def __init__(self, pos, gold):
         base = 'Position is {}, {}.\nGold is {}.'
         self.string = base.format(pos[0], pos[1], gold)
-
+        self.pause_gameplay = True
+        
     def __str__(self):
         return self.string
 
