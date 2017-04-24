@@ -6,7 +6,7 @@ Created on Sat Sep 10 15:25:02 2016
 """
 
 import pygame
-import events
+import minesweeper_game.events as events
 
 class Controller():
 

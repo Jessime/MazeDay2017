@@ -7,6 +7,7 @@ Created on Sat Sep 10 15:25:02 2016
 
 import pygame
 import pvsz_game.events as events
+import inspect
 
 class Controller():
 
@@ -53,16 +54,39 @@ class Controller():
         elif event.key == pygame.K_h:
             message = events.MoveHome()
         elif event.key == pygame.K_p:
-            pass #TODO add pause
+            message = events.TogglePause()
+        elif event.key == pygame.K_t:
+            pass #TODO test all noises
         return message
 
     def check_state_checks(self, message, event):
         """Presents information about current state of game."""
         if event.key == pygame.K_b:
             message = events.CheckBoard()
-        if event.key == pygame.K_m:
-            message = events.CheckPlayer()
+        elif event.key == pygame.K_y:
+            message = events.CheckPlayer(self.model.player.pos, self.model.player.gold)
+        elif event.key == pygame.K_d:
+            pass #TODO print plant Stats
+        elif event.key == pygame.K_i:
+            message = events.CheckInPos()
+            pass #TODO print health of plant on active square
         return message
+
+    def toggle_pause(self):
+        """If game paused, send no events until game is unpaused"""
+        message = None
+        print('paused: ', self.model.paused)
+        print('\n'*2)
+        #print('caller: ', inspect.getouterframes(inspect.currentframe(), 2)[1][3])
+        #print('caller: ', inspect.getouterframes(inspect.currentframe(), 2))
+        while self.model.paused:
+            for pygame_event in pygame.event.get():
+                print('event: ', pygame_event)
+                if pygame_event.type == pygame.KEYDOWN:
+                    message = self.check_others(message, pygame_event)
+                    print(message.__class__.__name__)
+            if isinstance(message, events.TogglePause):
+                self.ev_manager.post(message)
 
     def notify(self, event):
         if isinstance(event, events.LoopEnd):
@@ -74,3 +98,6 @@ class Controller():
                         if message:
                             self.ev_manager.post(message)
                             break
+
+        elif isinstance(event, events.TogglePause):
+            self.toggle_pause()

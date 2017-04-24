@@ -7,9 +7,9 @@ Created on Fri Sep  9 23:14:44 2016
 import random
 import argparse
 
-import events
-from controller import Controller
-from view import BasicView, AudioView
+import minesweeper_game.events as events
+from .controller import Controller
+from .view import BasicView, AudioView
 
 
 class Button():
@@ -102,8 +102,8 @@ class Model():
     """
     def __init__(self, ev_manager, size=4, n_bombs=3):
         self.ev_manager = ev_manager
-        self.size = 4
-        self.n_bombs = 3
+        self.size = size
+        self.n_bombs = n_bombs
         assert 3 <= self.size <= 10, 'The size of the board must be between 3 and 10.'
         assert 1 <= self.n_bombs <= 10, 'You must have between 1 and 10 bombs.'
         self.board = []
@@ -231,10 +231,11 @@ class Model():
         while self.running:
             self.check_win()
             self.ev_manager.post(events.LoopEnd())
+            # 1/0
         if self.win:
             self.ev_manager.post(events.Win())
 
-class App():
+class Minesweeper():
     """Stores and configures the MVC system.
 
     Parameters
@@ -264,24 +265,8 @@ class App():
     def __init__(self, print_only=False, no_printing=False, size=4, n_bombs=3):
         self.ev_manager = events.EventManager()
         self.model = Model(self.ev_manager, size=size, n_bombs=n_bombs)
-        self.controller = Controller(self.ev_manager, self.model)
         if not no_printing:
             self.basic_view = BasicView(self.ev_manager, self.model)
         if not print_only:
             self.audio_view = AudioView(self.ev_manager, self.model)
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    #parser.add_argument('-v', '--verbose', action='store_true', help='Print information to help with debugging.')
-    parser.add_argument('-s', '--size', default=4, type=int, help='Width and height of the board.')
-    parser.add_argument('-n', '--n_bombs', default=3, type=int, help='Number of bombs to place on board.')
-    parser.add_argument('-po', '--print_only', action='store_true', help='Set if you do not want to use sound-based sentences')
-    parser.add_argument('-np', '--no_printing', action='store_true', help='Set if you do not want information printed to the console.')
-    args = parser.parse_args()
-
-    app = App(print_only=args.print_only,
-              no_printing=args.no_printing,
-              size=args.size,
-              n_bombs=args.n_bombs)
-
-    app.model.run()
+        self.controller = Controller(self.ev_manager, self.model)

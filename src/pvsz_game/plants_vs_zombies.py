@@ -6,6 +6,7 @@ Created on Fri Sep  9 23:14:44 2016
 """
 import random
 import time
+import inspect
 
 import pvsz_game.events as events
 from .controller import Controller
@@ -54,11 +55,28 @@ class Board():
         Returns
         -------
         col_num : int
-            Index of the first column containing a zombie."""
+            Index of the first column containing a zombie.
+        """
         row = self.board[row_num]
         for col_num, square in enumerate(row):
             if any(self.is_zombie([row_num, col_num])):
                 return col_num
+
+    def zombies_in_row(self, row_num):
+        """Return number of zombies in given row.
+
+        Parameters
+        ----------
+        row_num : int
+            Index of row to search.
+
+        Returns
+        -------
+        zombie_count : int
+            Number of zombies in row
+        """
+        zombie_count = sum([len(self.is_zombie((row_num, i))) for i in range(100)])
+        return zombie_count
 
     def del_item(self, item):
         """Removes an item from it's 2D location on the board.
@@ -123,10 +141,11 @@ class Model():
                              'CherryBomb': CherryBomb,
                              'WallNut':WallNut,
                              'SnowPea':SnowPea}
-        self.loop_start = time.time()
-        self.loop_time = 0
+
         self.game_over = False
         self.player_win = None
+        self.paused = False
+        self.loop_time = 1/20
 
         self.ev_manager.register(self)
 
@@ -162,7 +181,10 @@ class Model():
             self.board[event.pos].append(new_plant)
             self.board.items['plants'].append(new_plant)
             self.player.gold -= new_plant.cost
-            ev = events.GrowPlant(event.plant, event.pos, self.player.gold)
+            ev = events.GrowPlant(new_plant.__class__.__name__,
+                                  event.pos,
+                                  self.player.gold,
+                                  new_plant.noise)
             self.ev_manager.post(ev)
 
     def try_planting(self, event):
@@ -172,7 +194,7 @@ class Model():
         if board_pos_empty and enough_gold:
             self.grow_plant(new_plant, event)
         elif not board_pos_empty:
-            pass
+            pass #TODO error noise if placing plant on occupied spot
         elif not enough_gold:
             self.ev_manager.post(events.NoGold())
 
@@ -190,6 +212,7 @@ class Model():
             self.level_over = True
 
     def clean_and_reset(self):
+        self.paused = True
         self.level_over = False
         self.zombies_left = self.zombies_in_stream
         self.wave_launched = False
@@ -202,17 +225,25 @@ class Model():
         if self.player_win:
             self.ev_manager.post(events.Win())
 
+    def toggle_pause(self):
+        self.paused = not self.paused
+        print('model caller: ', inspect.getouterframes(inspect.currentframe(), 2)[1])
+
+    def move_home(self):
+        self.player.pos = [0, 0]
+
     def notify(self, event):
         #TODO refactor to dict
-        if isinstance(event, events.PlayerMoves):
+        if isinstance(event, events.MoveHome):
+            self.move_home()
+        elif isinstance(event, events.PlayerMoves):
             event.obj.move(event.direction, event.step)
+        elif isinstance(event, events.TogglePause):
+            self.toggle_pause()
         elif isinstance(event, events.TryPlanting):
             self.try_planting(event)
         elif isinstance(event, events.TryCollecting):
             self.try_collecting(event)
-        elif isinstance(event, events.LoopEnd):
-            self.loop_time = time.time() - self.loop_start
-            self.loop_start = time.time()
         elif isinstance(event, events.UserQuit):
             self.game_over = True
             self.level_over = True
@@ -222,13 +253,15 @@ class Model():
         self.update_zombies()
         self.board.clean()
         self.check_level_end()
-        if not self.player.alive: self.game_over = True
+        if not self.player.alive:
+            self.game_over = True
 
     def run(self):
         self.ev_manager.post(events.Init())
         for level in range(self.num_lvls):
+            #self.ev_manager.post(events.InitLevel())
             self.level = level
-            input('Are you ready for level {}? '.format(level))
+            #self.ev_manager.post(events.TogglePause())
             while not self.level_over:
                 self.update()
                 self.ev_manager.post(events.LoopEnd())
@@ -244,8 +277,7 @@ class PvsZ():
     def __init__(self, num_lvls=3, print_only=False, no_printing=False):
         self.ev_manager = events.EventManager()
         self.model = Model(self.ev_manager, num_lvls)
-        self.controller = Controller(self.ev_manager, self.model)
-        if not no_printing:
-            self.basic_view = BasicView(self.ev_manager, self.model)
+        self.basic_view = BasicView(self.ev_manager, self.model, no_printing)
         if not print_only:
             self.audio_view = AudioView(self.ev_manager, self.model)
+        self.controller = Controller(self.ev_manager, self.model)
