@@ -12,7 +12,7 @@ import events
 import collision
 from controller import Controller
 from view import BasicView, AudioView
-from components import Particle, Bin, init_components, cap
+from components import Particle, Bin, init_components, cap, Coin
 
 import argparse
 
@@ -21,6 +21,7 @@ class Model():
         self.ev_manager = ev_manager
 
         self.player_score = 0
+        self.score_multiplier = 1
         self.player_lives = 3
         self.launch_power = 0
         self.islaunched = False
@@ -93,7 +94,7 @@ class Model():
                          self.segment_list,
                          self.particle_list)
         if self.ball.collision_partner is not None:
-            self.player_score += self.ball.collision_partner.value
+            # self.player_score += self.ball.collision_partner.value
             mp3 = self.ball.collision_partner.noise
             self.ev_manager.post(events.Collision(mp3))
             self.ball.collision_partner = None
@@ -125,13 +126,13 @@ class Model():
         for spinner in self.spinner_list:
             contact = collision.ball_rect(self.ball, spinner.rekt)
             if contact and not spinner.spinning:
-                self.player_score += spinner.value
+                # self.player_score += spinner.value
                 spinner.spinning = True
                 self.ev_manager.post(events.SpinnerCollide())
 
     def check_tubes(self):
         did_collide, points = self.tube_manager.update(self.ball)
-        self.player_score += points
+        # self.player_score += points
         if did_collide:
             self.ev_manager.post(events.TubeTravel())
 
@@ -139,9 +140,18 @@ class Model():
         for curver in self.curver_list:
             contact = collision.ball_circle(self.ball, curver)
             if contact:
-                self.player_score += curver.value
+                # self.player_score += curver.value
                 self.ball.angle += curver.curve
                 self.ev_manager.post(events.Collision(curver.noise))
+
+    def check_platforms(self):
+        contact = collision.segment_particle(self.platforms.seg_1, self.ball)
+        if contact:
+            # print(contact)
+            self.ball.x == self.platforms.seg_2.a.x
+            self.ball.y == 650
+            self.ball.angle = math.pi*1.5
+            self.ball.speed = 0
 
     def check_coin(self):
         index = None
@@ -152,8 +162,28 @@ class Model():
                 self.player_score += coin.value
                 self.ev_manager.post(events.Collision(coin.noise))
                 index = i
+                print(self.player_score)
                 del self.coin_list[i]
-        # print(i)
+                if not self.coin_list:
+                    #reinstanciate coins
+                    self.score_multiplier += 1
+                    print(self.score_multiplier)
+                    self.coin_list = [  # TODO hack
+                                       Coin(80,810,9,25*self.score_multiplier),  #lt.1
+                                       Coin(112,822,9,25*self.score_multiplier), #lt.4
+                                       Coin(95,777,9,25*self.score_multiplier),  #lt.2
+                                       Coin(110,740,9,25*self.score_multiplier), #lt.3
+                                       Coin(144,835,9,25*self.score_multiplier), #lt.6
+                                       Coin(125,790,9,25*self.score_multiplier), #lt.5
+                                       Coin(self.width-41-80,810,9,25*self.score_multiplier),  #lrt.1
+                                       Coin(self.width-41-112,822,9,25*self.score_multiplier), #rt.4
+                                       Coin(self.width-41-95,777,9,25*self.score_multiplier),  #rt.2
+                                       Coin(self.width-41-110,740,9,25*self.score_multiplier), #rt.3
+                                       Coin(self.width-41-144,835,9,25*self.score_multiplier), #rt.6
+                                       Coin(self.width-41-125,790,9,25*self.score_multiplier), #rt.5
+                                       Coin(30,20,15,100*self.score_multiplier),
+                                       Coin(540,323,12,100*self.score_multiplier)]
+
     def check_launcher_error(self):    # TODO hack
         if self.successful_launch:
             contact = collision.ball_rect(self.ball, self.launch_runway)
@@ -213,6 +243,7 @@ class Model():
         self.failure_to_launch()
         self.ball_collisions()
         self.update_bins_spinners()
+        self.check_platforms()
         self.platforms.update()
         self.check_in_bins()
         self.check_spinners()

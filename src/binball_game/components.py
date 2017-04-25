@@ -82,7 +82,7 @@ class Platforms():
         self.seg_1 = Segment(start_pt1,(start_pt1[0]+50,start_pt1[1]))
         self.seg_2 = Segment(start_pt2,(start_pt2[0]+50,start_pt2[1]))
         self.color = (25,235,123)
-        self.distance = 600-41-100-50
+        self.distance = 600-41-200-50
         range_ = range(start_pt1[0], start_pt1[0]+self.distance, 2)
         self.pos_gen = cycle((*range_, *range_[::-1]))
 
@@ -92,7 +92,6 @@ class Platforms():
         self.seg_1.b.x = new_pos + 50
         self.seg_2.a.x = new_pos
         self.seg_2.b.x = new_pos + 50
-
 
 class Particle():
     """ A circular object with a velocity, size and mass """
@@ -508,6 +507,7 @@ def init_components(width, height):
     components_dict['launch_runway'] = pygame.Rect(width-1-40,150,40,height-150)
 
     ball = Particle(599-16,1000-15,15) # real
+    # ball = Particle(200, 50, 15) #testing platforms
     components_dict['ball'] = ball
 
     bins = [Bin(0, pygame.Rect(150,912,40,48), (0, 255, 255), 'note1'),
@@ -532,24 +532,45 @@ def init_components(width, height):
                    CurveBall(490, 290, 20)]
     components_dict['curver_list'] = curver_list
 
-    coin_list = [Coin(80,810,9,50),  #lt.1
-                 Coin(112,822,9,50), #lt.4
-                 Coin(95,777,9,50),  #lt.2
-                 Coin(110,740,9,50), #lt.3
-                 Coin(144,835,9,50), #lt.6
-                 Coin(125,790,9,50), #lt.5
-                 Coin(width-41-80,810,9,50),  #lrt.1
-                 Coin(width-41-112,822,9,50), #rt.4
-                 Coin(width-41-95,777,9,50),  #rt.2
-                 Coin(width-41-110,740,9,50), #rt.3
-                 Coin(width-41-144,835,9,50), #rt.6
-                 Coin(width-41-125,790,9,50), #rt.5
-                 Coin(30,20,15,200),
-                 Coin(540,323,12,200)
+    coin_list =  [
+                #   Coin(width-20, 200,9,50), #test coin
+                #   Coin(width-20, 600,9,50)  #test coin
+                 Coin(80,810,9,25),  #lt.1
+                 Coin(112,822,9,25), #lt.4
+                 Coin(95,777,9,25),  #lt.2
+                 Coin(110,740,9,25), #lt.3
+                 Coin(144,835,9,25), #lt.6
+                 Coin(125,790,9,25), #lt.5
+                 Coin(width-41-80,810,9,25),  #lrt.1
+                 Coin(width-41-112,822,9,25), #rt.4
+                 Coin(width-41-95,777,9,25),  #rt.2
+                 Coin(width-41-110,740,9,25), #rt.3
+                 Coin(width-41-144,835,9,25), #rt.6
+                 Coin(width-41-125,790,9,25), #rt.5
+                 Coin(30,20,15,100),
+                 Coin(540,323,12,100),
+                 #around main curver
+                 Coin(188,500,9,25),
+                 Coin(312,500,9,25),
+                 Coin(250,438,9,25),
+                 Coin(250,562,9,25),
+                 Coin(280,552,9,25),
+                 Coin(302,530,9,25),
+                 Coin(280,448,9,25),
+                 Coin(302,470,9,25),
+                 Coin(198,470,9,25),
+                 Coin(198,530,9,25),
+                 Coin(220,552,9,25),
+                 Coin(220,448,9,25),
+                 Coin(250,500,12,100) #middle coin curver
                  ]
+    for c in range(110,490,38):
+        coin_list.append(Coin(c,85,9,25))
+
     components_dict['coin_list'] = coin_list
 
     components_dict['platforms'] = Platforms((100,100),(100,650))
+
     # flipper_left = Flipper(Point(150, 912),
     #                        Point(245, 960),
     #                        1.57)
