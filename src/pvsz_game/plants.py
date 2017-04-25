@@ -127,6 +127,7 @@ class CherryBomb(Plant):
                 item.health -= self.damage
 
     def produce(self, timedelta):
+        product = ''
         self.time_to_detonate -= timedelta
         if self.time_to_detonate <= 0:
             self.health = 0
@@ -136,16 +137,18 @@ class CherryBomb(Plant):
                 for j in col_changes:
                     active_pos = [self.pos[0] + i, self.pos[1] + j]
                     self.explode(active_pos)
-
-class WallNut(Plant):
+            product = 'explosion'
+        return product
+        
+class WalNut(Plant):
 
     def __init__(self, pos, board):
         super().__init__(pos, board, cost=50)
         self.health = 1200
         self.noise = 'walnut'
-        
+
     def __str__(self):
-        return 'WallNut({})'.format(self.health)
+        return 'WalNut({})'.format(self.health)
 
     def __repr__(self):
         return str(self)

@@ -18,16 +18,25 @@ class CheckPlayer():
         base = 'Position is {}, {}.\nGold is {}.'
         self.string = base.format(pos[0], pos[1], gold)
         self.pause_gameplay = True
-        
+
     def __str__(self):
         return self.string
 
 class CheckInPos():
-    pass
+    def __init__(self):
+        self.pause_gameplay = True
 
 class DeathByZombie():
-    def __init__(self): pass
+    def __init__(self):
+        self.mp3 = 'death'
+        self.pause_gameplay = True
+        
     def __str__(self): return 'Oh no! You have been eaten by a zombie! Please try again for redemption.'
+
+class Explosion():
+    def __init__(self):
+        self.pause_gameplay = True
+        self.mp3 = 'explosion'
 
 class GrowPlant():
     def __init__(self, plant_name, pos, funds, noise):

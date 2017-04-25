@@ -11,7 +11,7 @@ import inspect
 import pvsz_game.events as events
 from .controller import Controller
 from .view import BasicView, AudioView
-from .plants import CherryBomb, Plant, PeaShooter, Sunflower, Sun, WallNut, SnowPea
+from .plants import CherryBomb, Plant, PeaShooter, Sunflower, Sun, WalNut, SnowPea
 from .zombies import Zombie
 
 class Board():
@@ -75,7 +75,7 @@ class Board():
         zombie_count : int
             Number of zombies in row
         """
-        zombie_count = sum([len(self.is_zombie((row_num, i))) for i in range(100)])
+        zombie_count = sum([sum(self.is_zombie((row_num, i))) for i in range(100)])
         return zombie_count
 
     def del_item(self, item):
@@ -139,7 +139,7 @@ class Model():
         self.plant_lookup = {'Sunflower': Sunflower,
                              'PeaShooter': PeaShooter,
                              'CherryBomb': CherryBomb,
-                             'WallNut':WallNut,
+                             'WalNut':WalNut,
                              'SnowPea':SnowPea}
 
         self.game_over = False
@@ -151,7 +151,9 @@ class Model():
 
     def check_plant_production(self):
         for plant in self.board.items['plants']:
-            plant.produce(self.loop_time)
+            product = plant.produce(self.loop_time)
+            if product == 'explosion':
+                self.ev_manager.post(events.Explosion())
 
     def spawn(self):
         """Randomly add new Zombie to board"""
