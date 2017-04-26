@@ -4,8 +4,8 @@ import time
 from random import uniform, choice
 from itertools import cycle
 
-import collision
-import events
+import binball_game.collision as collision
+import binball_game.events as events
 
 class Point():
     def __init__(self, x, y=None):

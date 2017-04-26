@@ -6,7 +6,7 @@ Created on Sat Sep 10 15:25:02 2016
 """
 
 import pygame
-import pkg_resources
+from pkg_resources import resource_filename
 
 from gtts import gTTS
 from time import sleep
@@ -178,8 +178,7 @@ class AudioView(View):
         if self.skip_on_busy():
             return
 
-        #template = pkg_resources.resource_filename('pinball_game', 'data/{}.mp3'.format(filename))
-        template = 'data/{}.mp3'.format(filename)
+        template = resource_filename('binball_game', 'data/{}.mp3'.format(filename))
         pygame.mixer.music.load(template)
         pygame.mixer.music.play()
 
@@ -187,5 +186,6 @@ class AudioView(View):
 
     def tts_and_play(self):
         """Uses Google's text-to-speech to play an event's string"""
-        gTTS(self.event.string).save('data/temp.mp3')
+        template = resource_filename('binball_game', 'data/temp.mp3')
+        gTTS(self.event.string).save(template)
         self.play('temp')

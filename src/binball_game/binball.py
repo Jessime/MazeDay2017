@@ -5,16 +5,13 @@ Created on Fri Sep  9 23:14:44 2016
 @author: jessime
 """
 import time
-import os
 import math
 
-import events
-import collision
-from controller import Controller
-from view import BasicView, AudioView
-from components import Particle, Bin, init_components, cap, Coin, init_coin_list
-
-import argparse
+import binball_game.events as events
+import binball_game.collision as collision
+from .controller import Controller
+from .view import BasicView, AudioView
+from .components import Particle, Bin, init_components, cap, Coin, init_coin_list
 
 class Model():
     def __init__(self, ev_manager, difficulty):
@@ -247,14 +244,3 @@ class App():
         if sound:
             self.audio_view = AudioView(self.ev_manager, self.model)
         self.controller = Controller(self.ev_manager, self.model)
-
-if __name__ == '__main__':
-    os.environ['SDL_VIDEO_CENTERED'] = '1'
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-ns', '--no_sound', action='store_false')
-    parser.add_argument('-nv', '--no_video', action='store_false')
-    choices = ['easy','regular','hard','veteran']
-    parser.add_argument('-d', '--difficulty', choices=choices, default='regular')
-    args = parser.parse_args()
-    app = App(args.no_sound, args.no_video, args.difficulty)
-    app.model.run()
