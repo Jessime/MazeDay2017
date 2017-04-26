@@ -184,10 +184,6 @@ class Particle():
                     self.y -= math.sin(self.angle)
                     self.pos = Point(self.x, self.y)
 
-                # if isinstance(seg,Flipper):
-                #     if seg.flip_up or seg.flip_down:
-                #         self.speed *= 2
-
     def particle_bounce(self, particle_list):
         """Check for collision with all particles. Update attributes appropriately.
 
@@ -288,7 +284,6 @@ class TubeManager():
             if did_collide:
                 points = tube.value
                 self.teleport_ball(ball, tube)
-                # print(points)
                 break
         return did_collide, points
 
@@ -406,7 +401,6 @@ class Spinner():
                     self.color = (150, 100, 50)
                 else:
                     self.color = self.original_color
-                # print(self.color)
         if self.spin_left == 0:
             self.spin_left = 100
             self.spinning = False
@@ -587,8 +581,6 @@ def init_segment_list(width, height):
                       ((260, 370), (310, 390),20), #Middle
                       ((55,820), (100,700)), #left triangle pt1
                       ((55,820), (150,860)), #left triangle pt2
-                      #((100,697), (145,865)), #left triangle pt3
-                      #((415,865),(460,697)), #right triangle pt1
                       ((410,860), (width-100,820)), #right triangle pt2
                       ((width-1-141,700), (width-100,820)),#right triangle pt3
                       ((width-1-40, 250), (width-1-150, 450)), #right tunnel top
@@ -597,7 +589,6 @@ def init_segment_list(width, height):
                       ((0, 300), (75, 440)), #left tunnel bottom
                       ((80, 0), (78, 25)), # small top tunnel left
                       ((120, 0), (122, 25)), # small top tunnel right
-                    #   ((185, 25), (200, 0)) # top tunnel 2
                      ]
     segment_list = [Segment(*d) for d in segment_data]
     return segment_list

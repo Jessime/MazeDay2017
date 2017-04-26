@@ -41,18 +41,10 @@ class Model():
         self.bin_gravity = difficulty_dict[difficulty]
         components_dict = init_components(self.width, self.height, self.bin_gravity)
         self.ball = components_dict['ball']
-        # self.ball.x = 490
-        # self.ball.y = 111
-        # self.ball.angle = 6*math.pi
-        #self.ball.y = 200
-        #self.ball.angle = 1.25*math.pi
-        # self.ball.speed = 0
 
         self.segment_list = components_dict['segment_list']
         self.particle_list = components_dict['particle_list']
         self.launch_runway = components_dict['launch_runway']
-        # self.flipper_left = components_dict['flipper_left']
-        # self.flipper_right = components_dict['flipper_right']
         self.bin_list = components_dict['bin_list']
         self.spinner_list = components_dict['spinner_list']
         self.tube_manager = components_dict['tube_manager']
@@ -65,18 +57,10 @@ class Model():
         self.event = None
         self.ev_manager.register(self)
 
-    # def flip(self):
-    #     if self.event.side == 'l':
-    #         self.flipper_left.flip_up = True
-    #     elif self.event.side == 'r':
-    #         self.flipper_right.flip_up = True
-
     def notify(self, event):
         self.event = event
         if isinstance(event, events.UserQuit):
             self.exit_game()
-        # elif isinstance(event, events.Flip):
-        #     self.flip()
         elif isinstance(event, events.TogglePause):
             self.toggle_pause()
         elif isinstance(event, events.PowerLaunch):
@@ -159,7 +143,6 @@ class Model():
     def check_platforms(self):
         contact = collision.segment_particle(self.platforms.seg_1, self.ball)
         if contact:
-            # print(contact)
             self.ball.x = self.platforms.seg_2.a.x
             self.ball.y = self.platforms.seg_2.a.y
             self.ball.angle = math.pi*1.5
@@ -168,7 +151,6 @@ class Model():
     def check_coin(self):
         index = None
         for i, coin in enumerate(self.coin_list):
-            # print(i)
             contact = collision.ball_circle(self.ball, coin)
             if contact:
                 self.player_score += coin.value*self.score_multiplier
@@ -250,8 +232,6 @@ class Model():
         self.check_launcher_error()
         self.check_dying()
         self.check_gameover()
-            # print('')
-        # input('waiting :'
 
     def run(self):
         self.ev_manager.post(events.Init())

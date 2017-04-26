@@ -9,7 +9,6 @@ These Events are in alphabetical order.
 class Collision():
     def __init__(self, mp3):
         self.mp3 = mp3
-        # self.pause_gameplay = pause_gameplay
 
 class Init():
     def __init__(self): pass
@@ -26,10 +25,6 @@ class UserQuit():
 class FailedLaunch():
     def __init__(self):
         self.mp3 = 'launch_error'
-
-# class Flip():
-#     def __init__(self, side):
-#         self.side = side
 
 class GameOver():
     def __init__(self): pass
