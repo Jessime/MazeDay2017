@@ -487,54 +487,10 @@ class CurveBall(Particle):
 
         self.color = (179, 189, 206)
 
-def init_components(width, height):
-    """Set all the pieces of the game board to their proper locations
-
-    Parameters
-    ----------
-    width : int
-        width of screen
-    height : int
-        height of screen
-
-    Returns
-    -------
-    components_dict : dict
-        wrapper around all different types of components
-    """
-    components_dict = {}
-
-    components_dict['launch_runway'] = pygame.Rect(width-1-40,150,40,height-150)
-
-    ball = Particle(599-16,1000-15,15) # real
-    # ball = Particle(200, 50, 15) #testing platforms
-    components_dict['ball'] = ball
-
-    bins = [Bin(0, pygame.Rect(150,912,40,48), (0, 255, 255), 'note1'),
-            Bin(1, pygame.Rect(150+40,912,80,48), (0, 255, 0), 'note2'),
-            Bin(2, pygame.Rect(290,912,80,48), (255, 0, 0), 'note3'),
-            Bin(3, pygame.Rect(290+80,912,40,48), (255, 0, 255), 'note4')]
-    components_dict['bin_list'] = bins
-
-    spin = [Spinner(pygame.Rect(482, 400, 25, 25)), #left
-            Spinner(pygame.Rect(5, 275, 25, 25)), #top
-            Spinner(pygame.Rect(88, 0, 25, 25))] #right
-    components_dict['spinner_list'] = spin
-
-    tube_list = [Tube(17, 50, 7, (17, 20), .25*math.pi), #top left corner
-                 Tube(width - 60, 425, 7, (width-75, 440), 1.4*math.pi), # middle right
-                 Tube(140, 15, 7, (111, 35), 1.5*math.pi)]
-    components_dict['tube_manager'] = TubeManager(tube_list)
-
-    curver_list = [CurveBall(250, 500, 50),
-                   CurveBall(525, 250, 25),
-                   CurveBall(520, 200, 20),
-                   CurveBall(490, 290, 20)]
-    components_dict['curver_list'] = curver_list
-
+def init_coin_list(width, height):
     coin_list =  [
-                #   Coin(width-20, 200,9,50), #test coin
-                #   Coin(width-20, 600,9,50)  #test coin
+    #   Coin(width-20, 200,9,50), #test coin
+    #   Coin(width-20, 600,9,50)  #test coin
                  Coin(80,810,9,25),  #lt.1
                  Coin(112,822,9,25), #lt.4
                  Coin(95,777,9,25),  #lt.2
@@ -566,20 +522,57 @@ def init_components(width, height):
                  ]
     for c in range(110,490,38):
         coin_list.append(Coin(c,85,9,25))
+    return coin_list
 
-    components_dict['coin_list'] = coin_list
+def init_launch_runway(width, height):
+    return pygame.Rect(width-1-40,150,40,height-150)
 
-    components_dict['platforms'] = Platforms((100,100),(100,650))
+def init_ball():
+    return Particle(599-16,1000-15,15)
+    # return Particle(200, 50, 15) #testing platforms
 
-    # flipper_left = Flipper(Point(150, 912),
-    #                        Point(245, 960),
-    #                        1.57)
-    # flipper_right = Flipper(Point(410, 912),
-    #                         Point(315, 960),
-    #                         1.57, 'r')
-    # components_dict['flipper_left'] = flipper_left
-    # components_dict['flipper_right'] = flipper_right
+def init_bin_list():
+    bins = [Bin(0, pygame.Rect(150,912,40,48), (0, 255, 255), 'note1'),
+            Bin(1, pygame.Rect(150+40,912,80,48), (0, 255, 0), 'note2'),
+            Bin(2, pygame.Rect(290,912,80,48), (255, 0, 0), 'note3'),
+            Bin(3, pygame.Rect(290+80,912,40,48), (255, 0, 255), 'note4')]
+    return bins
 
+def init_spinner_list():
+    spin = [Spinner(pygame.Rect(482, 400, 25, 25)), #left
+            Spinner(pygame.Rect(5, 275, 25, 25)), #top
+            Spinner(pygame.Rect(88, 0, 25, 25))] #right
+    return spin
+
+def init_tube_list(width):
+    tube_list = [Tube(17, 50, 7, (17, 20), .25*math.pi), #top left corner
+                 Tube(width - 60, 425, 7, (width-75, 440), 1.4*math.pi), # middle right
+                 Tube(140, 15, 7, (111, 35), 1.5*math.pi)]
+    return tube_list
+
+def init_curver_list():
+    curver_list = [CurveBall(250, 500, 50),
+                   CurveBall(525, 250, 25),
+                   CurveBall(520, 200, 20),
+                   CurveBall(490, 290, 20)]
+    return curver_list
+
+def init_platforms():
+    return Platforms((100,100),(100,650))
+
+def init_left_flipper():
+    flipper_left = Flipper(Point(150, 912),
+                           Point(245, 960),
+                           1.57)
+    return flipper_left
+
+def init_right_flipper():
+    flipper_right = Flipper(Point(410, 912),
+                            Point(315, 960),
+                            1.57, 'r')
+    return flipper_right
+
+def init_segment_list(width, height):
     segment_data = [((width-1-40, height-1), (width-1-40,150)), #shooter line
                       ((width-1, 25), (width-1-25,0),1), #top right corner
                       ((75, 0), (0,100),10), #top left corner
@@ -600,12 +593,10 @@ def init_components(width, height):
                       ((120, 0), (122, 25)), # small top tunnel right
                     #   ((185, 25), (200, 0)) # top tunnel 2
                      ]
-
     segment_list = [Segment(*d) for d in segment_data]
-    #segment_list.append(flipper_left)
-    #segment_list.append(flipper_right)
-    components_dict['segment_list'] = segment_list
+    return segment_list
 
+def init_particle_list():
     particle_data = [(295, 355, 25,10), #2
                      (245, 285, 25,10), #1
                      (345, 270, 25,10), #3
@@ -614,10 +605,36 @@ def init_components(width, height):
                      (55, 585, 10,10)   #2
                     ]
     particle_list = [Particle(*d) for d in particle_data]
-    components_dict['particle_list'] = particle_list
-
-    return components_dict
+    return particle_list
 
 def cap(width):
     launch_cap = Segment((width-1-40,150),(width-1,125))
     return launch_cap
+
+def init_components(width, height):
+    """Set all the pieces of the game board to their proper locations
+
+    Parameters
+    ----------
+    width : int
+        width of screen
+    height : int
+        height of screen
+
+    Returns
+    -------
+    components_dict : dict
+        wrapper around all different types of components
+    """
+    components_dict = {}
+    components_dict['launch_runway'] = init_launch_runway(width,height)
+    components_dict['ball'] = init_ball()
+    components_dict['bin_list'] = init_bin_list()
+    components_dict['spinner_list'] = init_spinner_list()
+    components_dict['tube_manager'] = TubeManager(init_tube_list(width))
+    components_dict['curver_list'] = init_curver_list()
+    components_dict['coin_list'] = init_coin_list(width,height)
+    components_dict['platforms'] = init_platforms()
+    components_dict['segment_list'] = init_segment_list(width,height)
+    components_dict['particle_list'] = init_particle_list()
+    return components_dict

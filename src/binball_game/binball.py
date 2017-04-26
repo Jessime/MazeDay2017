@@ -12,7 +12,7 @@ import events
 import collision
 from controller import Controller
 from view import BasicView, AudioView
-from components import Particle, Bin, init_components, cap, Coin
+from components import Particle, Bin, init_components, cap, Coin, init_coin_list
 
 import argparse
 
@@ -148,8 +148,8 @@ class Model():
         contact = collision.segment_particle(self.platforms.seg_1, self.ball)
         if contact:
             # print(contact)
-            self.ball.x == self.platforms.seg_2.a.x
-            self.ball.y == 650
+            self.ball.x = self.platforms.seg_2.a.x
+            self.ball.y = self.platforms.seg_2.a.y
             self.ball.angle = math.pi*1.5
             self.ball.speed = 0
 
@@ -159,30 +159,14 @@ class Model():
             # print(i)
             contact = collision.ball_circle(self.ball, coin)
             if contact:
-                self.player_score += coin.value
+                self.player_score += coin.value*self.score_multiplier
                 self.ev_manager.post(events.Collision(coin.noise))
                 index = i
-                print(self.player_score)
                 del self.coin_list[i]
                 if not self.coin_list:
-                    #reinstanciate coins
                     self.score_multiplier += 1
                     print(self.score_multiplier)
-                    self.coin_list = [  # TODO hack
-                                       Coin(80,810,9,25*self.score_multiplier),  #lt.1
-                                       Coin(112,822,9,25*self.score_multiplier), #lt.4
-                                       Coin(95,777,9,25*self.score_multiplier),  #lt.2
-                                       Coin(110,740,9,25*self.score_multiplier), #lt.3
-                                       Coin(144,835,9,25*self.score_multiplier), #lt.6
-                                       Coin(125,790,9,25*self.score_multiplier), #lt.5
-                                       Coin(self.width-41-80,810,9,25*self.score_multiplier),  #lrt.1
-                                       Coin(self.width-41-112,822,9,25*self.score_multiplier), #rt.4
-                                       Coin(self.width-41-95,777,9,25*self.score_multiplier),  #rt.2
-                                       Coin(self.width-41-110,740,9,25*self.score_multiplier), #rt.3
-                                       Coin(self.width-41-144,835,9,25*self.score_multiplier), #rt.6
-                                       Coin(self.width-41-125,790,9,25*self.score_multiplier), #rt.5
-                                       Coin(30,20,15,100*self.score_multiplier),
-                                       Coin(540,323,12,100*self.score_multiplier)]
+                    self.coin_list = init_coin_list(self.width,self.height)
 
     def check_launcher_error(self):    # TODO hack
         if self.successful_launch:
