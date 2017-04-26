@@ -62,13 +62,14 @@ class Segment():
     angle : float
         angle of segment in radians, where a horizontal segment is 0 or pi
     """
-    def __init__(self, a, b, value=0, noise='seg2'):
+    def __init__(self, a, b, value=0, noise='seg2', color=(0,0,0)):
         self.a = Point(*a)
         self.b = Point(*b)
         self.angle = (math.atan2(self.b.x-self.a.x, self.b.y-self.a.y) + math.pi/2) % (2*math.pi)
 
         self.value = value
         self.noise = noise
+        self.color = color
         self.thickness = 10
 
     def __repr__(self):
@@ -79,9 +80,10 @@ class Platforms():
     """ """
 
     def __init__(self, start_pt1, start_pt2, noise='seg2'):
-        self.seg_1 = Segment(start_pt1,(start_pt1[0]+50,start_pt1[1]))
-        self.seg_2 = Segment(start_pt2,(start_pt2[0]+50,start_pt2[1]))
-        self.color = (25,235,123)
+        self.seg_1 = Segment(start_pt1, (start_pt1[0]+50, start_pt1[1]))
+        self.seg_2 = Segment(start_pt2,
+                             (start_pt2[0]+50, start_pt2[1]),
+                             color=(184, 199, 224))
         self.distance = 600-41-200-50
         range_ = range(start_pt1[0], start_pt1[0]+self.distance, 2)
         self.pos_gen = cycle((*range_, *range_[::-1]))
@@ -96,7 +98,7 @@ class Platforms():
 class Particle():
     """ A circular object with a velocity, size and mass """
 
-    def __init__(self, x, y, size, value=0, noise='jump'):
+    def __init__(self, x, y, size, value=0, noise='jump', bin_gravity=0.01):
         self.x = x
         self.y = y
         self.size = size
@@ -112,7 +114,9 @@ class Particle():
         self.mass = 1
         self.drag = 1#.998
         self.elasticity = 0.82
-        self.gravity = (3/2*math.pi, 0.065)
+        self.original_gravity = (3/2*math.pi, 0.065)
+        self.bin_gravity = (3/2*math.pi, bin_gravity)
+        self.gravity = self.original_gravity
         self.score = 0
         self.collision_partner = None
 
@@ -224,7 +228,7 @@ class Coin(Particle):
 class Tube(Particle):
 
     def __init__(self, x, y, size, drop_spot, ejection_angle,
-                 value=65, noise='suck'):
+                 value=85, noise='suck'):
         super().__init__(x, y, size, value=value, noise=noise)
         self.drop_spot = drop_spot
         self.ejection_angle = ejection_angle
@@ -333,7 +337,9 @@ class Bin():
             Bin.last_pressed = 0
             message = events.PressedBinEval(self.num, 'collide')
             ball.speed = ball.max_speed * .75
-            ball.angle = uniform(.25,.75)*math.pi
+            frac_of_bin = ((ball.y-self.rekt.top)/self.rekt.height)
+            ball.angle = (0.25 + frac_of_bin*0.5)*math.pi
+            ball.gravity = ball.original_gravity
             ball.y = self.rekt.top - 15
             self.active = False
 
@@ -381,7 +387,7 @@ class Spinner():
         Number of frames left to spin
     """
 
-    def __init__(self, rekt, value=70, noise='spin'):
+    def __init__(self, rekt, value=75, noise='spin'):
         self.rekt = rekt
         self.value = value
         self.noise = noise
@@ -485,7 +491,7 @@ class CurveBall(Particle):
         super().__init__(x, y, size, value=value, noise=noise)
         self.curve = curve
 
-        self.color = (179, 189, 206)
+        self.color = (142, 19, 214)
 
 def init_coin_list(width, height):
     coin_list =  [
@@ -527,15 +533,15 @@ def init_coin_list(width, height):
 def init_launch_runway(width, height):
     return pygame.Rect(width-1-40,150,40,height-150)
 
-def init_ball():
-    return Particle(599-16,1000-15,15)
-    # return Particle(200, 50, 15) #testing platforms
+def init_ball(bin_gravity):
+    return Particle(599-16,1000-15,15,bin_gravity=bin_gravity)
+    # return Particle(200, 50, 15,bin_gravity=bin_gravity) #testing platforms
 
 def init_bin_list():
-    bins = [Bin(0, pygame.Rect(150,912,40,48), (0, 255, 255), 'note1'),
+    bins = [Bin(0, pygame.Rect(150,912,40,48), (255, 0, 255), 'note1'),
             Bin(1, pygame.Rect(150+40,912,80,48), (0, 255, 0), 'note2'),
             Bin(2, pygame.Rect(290,912,80,48), (255, 0, 0), 'note3'),
-            Bin(3, pygame.Rect(290+80,912,40,48), (255, 0, 255), 'note4')]
+            Bin(3, pygame.Rect(290+80,912,40,48), (0, 255, 255), 'note4')]
     return bins
 
 def init_spinner_list():
@@ -611,7 +617,7 @@ def cap(width):
     launch_cap = Segment((width-1-40,150),(width-1,125))
     return launch_cap
 
-def init_components(width, height):
+def init_components(width, height, bin_gravity):
     """Set all the pieces of the game board to their proper locations
 
     Parameters
@@ -628,7 +634,7 @@ def init_components(width, height):
     """
     components_dict = {}
     components_dict['launch_runway'] = init_launch_runway(width,height)
-    components_dict['ball'] = init_ball()
+    components_dict['ball'] = init_ball(bin_gravity)
     components_dict['bin_list'] = init_bin_list()
     components_dict['spinner_list'] = init_spinner_list()
     components_dict['tube_manager'] = TubeManager(init_tube_list(width))

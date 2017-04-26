@@ -40,7 +40,6 @@ class BasicView(View):
 
         self.background_color = (255,255,255)
         self.screen = None
-        self.seg_color = (0,0,0)
 
     def exit_game(self):
         pygame.display.quit()
@@ -68,7 +67,7 @@ class BasicView(View):
         for seg in (*self.model.segment_list,
                     self.model.platforms.seg_1,
                     self.model.platforms.seg_2):
-            pygame.draw.line(self.screen, self.seg_color,
+            pygame.draw.line(self.screen, seg.color,
                             [seg.a.x,seg.a.y],
                             [seg.b.x,seg.b.y],
                             seg.thickness)

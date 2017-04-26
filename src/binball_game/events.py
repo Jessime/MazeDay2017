@@ -7,9 +7,9 @@ Created on Sat Sep 10 15:25:02 2016
 These Events are in alphabetical order.
 """
 class Collision():
-    def __init__(self, mp3, pause_gameplay=False):
+    def __init__(self, mp3):
         self.mp3 = mp3
-        self.pause_gameplay = pause_gameplay
+        # self.pause_gameplay = pause_gameplay
 
 class Init():
     def __init__(self): pass

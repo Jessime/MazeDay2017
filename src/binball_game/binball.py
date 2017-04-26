@@ -17,8 +17,9 @@ from components import Particle, Bin, init_components, cap, Coin, init_coin_list
 import argparse
 
 class Model():
-    def __init__(self, ev_manager):
+    def __init__(self, ev_manager, difficulty):
         self.ev_manager = ev_manager
+        self.difficulty = difficulty
 
         self.player_score = 0
         self.score_multiplier = 1
@@ -33,7 +34,12 @@ class Model():
         self.width = 600
         self.height = 1000
 
-        components_dict = init_components(self.width, self.height)
+        difficulty_dict = {'veteran': 0.04,
+                           'hard' : 0.02,
+                           'regular': 0.01,
+                           'easy': 0.005}
+        self.bin_gravity = difficulty_dict[difficulty]
+        components_dict = init_components(self.width, self.height, self.bin_gravity)
         self.ball = components_dict['ball']
         # self.ball.x = 490
         # self.ball.y = 111
@@ -78,8 +84,12 @@ class Model():
         elif isinstance(event, events.Launch):
             self.launch()
         elif isinstance(event, events.PressedBin):
-            message = self.bin_list[self.event.num].pressed_event(self.ball)
-            self.ev_manager.post(message)
+            self.pressed_bin()
+
+    def pressed_bin(self):
+        bin_ = self.bin_list[self.event.num]
+        message = bin_.pressed_event(self.ball)
+        self.ev_manager.post(message)
 
     def exit_game(self):
         self.running = False
@@ -94,7 +104,7 @@ class Model():
                          self.segment_list,
                          self.particle_list)
         if self.ball.collision_partner is not None:
-            # self.player_score += self.ball.collision_partner.value
+            self.player_score += self.ball.collision_partner.value
             mp3 = self.ball.collision_partner.noise
             self.ev_manager.post(events.Collision(mp3))
             self.ball.collision_partner = None
@@ -117,22 +127,24 @@ class Model():
         for bin_ in self.bin_list:
             contact = collision.ball_rect(self.ball, bin_.rekt)
             if contact and not bin_.active:
+                self.start_bin_timer = time.time()
                 bin_.active = True
                 self.ball.angle = 1.5*math.pi
                 self.ball.speed = 0#1
-                self.ev_manager.post(events.Collision(bin_.noise, True))
+                self.ball.gravity = self.ball.bin_gravity
+                self.ev_manager.post(events.Collision(bin_.noise))
 
     def check_spinners(self):
         for spinner in self.spinner_list:
             contact = collision.ball_rect(self.ball, spinner.rekt)
             if contact and not spinner.spinning:
-                # self.player_score += spinner.value
+                self.player_score += spinner.value
                 spinner.spinning = True
                 self.ev_manager.post(events.SpinnerCollide())
 
     def check_tubes(self):
         did_collide, points = self.tube_manager.update(self.ball)
-        # self.player_score += points
+        self.player_score += points
         if did_collide:
             self.ev_manager.post(events.TubeTravel())
 
@@ -140,7 +152,7 @@ class Model():
         for curver in self.curver_list:
             contact = collision.ball_circle(self.ball, curver)
             if contact:
-                # self.player_score += curver.value
+                self.player_score += curver.value
                 self.ball.angle += curver.curve
                 self.ev_manager.post(events.Collision(curver.noise))
 
@@ -194,8 +206,9 @@ class Model():
             bin_.active = False
 
     def reset(self):
-        self.ball = Particle(599-16,1000-15,15)
+        self.ball = Particle(599-16,1000-15,15,self.bin_gravity)
         self.ball.speed = 0
+        self.ball.gravity = self.ball.original_gravity
         self.islaunched = False
         self.successful_launch = False
         self.failed_launch = False
@@ -247,9 +260,9 @@ class Model():
             self.ev_manager.post(events.LoopEnd())
 
 class App():
-    def __init__(self, sound=True, video=True):
+    def __init__(self, sound=True, video=True, difficulty='regular'):
         self.ev_manager = events.EventManager()
-        self.model = Model(self.ev_manager)
+        self.model = Model(self.ev_manager, difficulty)
         self.basic_view = BasicView(self.ev_manager, self.model, video)
         if sound:
             self.audio_view = AudioView(self.ev_manager, self.model)
@@ -260,6 +273,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-ns', '--no_sound', action='store_false')
     parser.add_argument('-nv', '--no_video', action='store_false')
+    choices = ['easy','regular','hard','veteran']
+    parser.add_argument('-d', '--difficulty', choices=choices, default='regular')
     args = parser.parse_args()
-    app = App(sound=args.no_sound, video=args.no_video)
+    app = App(args.no_sound, args.no_video, args.difficulty)
     app.model.run()
