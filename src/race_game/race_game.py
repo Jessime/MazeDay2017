@@ -30,7 +30,6 @@ stalled_engine = pygame.mixer.Sound('sounds/stalled_engine.wav')
 #turn_alert = pygame.mixer.Sound('sounds/chime_shortened-1sec.wav')
 left_alert = pygame.mixer.Sound('sounds/left_espeak.wav')
 right_alert = pygame.mixer.Sound('sounds/right_espeak.wav')
-
 wall_hit = pygame.mixer.Sound('sounds/loud_concrete_step.wav')
 splash = pygame.mixer.Sound('sounds/splash-jumping-b_shortened-1sec.wav')
 hit_sound = pygame.mixer.Sound('sounds/hit.wav')
@@ -42,6 +41,10 @@ got_laser = pygame.mixer.Sound('sounds/laser.wav')
 win_message = pygame.mixer.Sound('sounds/win_message.wav')
 ship_warning_sound = pygame.mixer.Sound('sounds/ship_warning.wav')
 intro_message = pygame.mixer.Sound('sounds/intro_message.wav')
+lost_life2 = pygame.mixer.Sound('sounds/lost_life_2left.wav')
+lost_life1 = pygame.mixer.Sound('sounds/lost_life_1left.wav')
+game_over = pygame.mixer.Sound('sounds/game_over.wav')
+missed_turn = pygame.mixer.Sound('sounds/missed_turn.wav')
 
 # Set up channels for playing sound
 start_channel = pygame.mixer.Channel(1)
@@ -83,14 +86,17 @@ rt_alert = 0
 lt_alert = 0
 rt_response = 0
 lt_response = 0
+skip_intro = 0
 
-	# Don't allow the car to move before the race has started
 start_channel.play(intro_message)
 while start_channel.get_busy():
-#	response = input()
-#	if response == "c":
-#		break
+	for event in pygame.event.get():
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_c:
+				start_channel.stop()
+				break
 	continue
+
 start_channel.play(race_start,maxtime=2250)
 stalled_channel.play(stalled_engine)
 while start_channel.get_busy():
@@ -132,13 +138,28 @@ while True:
 		enemy_channel.stop()
 		moving_channel.stop()
 		is_moving = 0
-
-	if lives < 1:
-		pos = 0
-		enemy_pos = -5
-		lives = 3
-		lasers=3
-		start_channel.play(race_start,maxtime=2250)
+		if lives == 2:
+			channel = pygame.mixer.find_channel()
+			channel.play(lost_life2)
+			while channel.get_busy():
+				continue
+		if lives == 1:
+			channel = pygame.mixer.find_channel()
+			channel.play(lost_life1)
+			while channel.get_busy():
+				continue
+		if lives < 1:
+			pygame.mixer.stop()
+			channel = pygame.mixer.find_channel()
+			channel.play(game_over)
+			while channel.get_busy():
+				continue			
+			pygame.quit()
+#			pos = 0
+#			enemy_pos = -5
+#			lives = 3
+#			lasers=3
+#			start_channel.play(race_start,maxtime=2250)
 
 	if pos >= max(track.keys())+5:
 		pos = 0
@@ -203,6 +224,9 @@ while True:
 				else:
 					start_channel.play(no_lasers)
 
+			if event.key == pygame.K_SPACE:
+				skip_intro = 1
+
 #			if event.key == pygame.K_DOWN:
 #				if boost == 0: boost = 1
 #				if boost == 1: boost = 0
@@ -234,6 +258,10 @@ while True:
 				channel = pygame.mixer.find_channel()
 				channel.play(splash)
 			pygame.time.set_timer(my_event_IDs["left_response"],0)
+#			channel = pygame.mixer.find_channel()
+#			channel.play(missed_turn)
+#			while channel.get_busy():
+#				continue
 
 		if event.type == my_event_IDs["right_response"]:
 			if rt_response == 0:
@@ -242,7 +270,11 @@ while True:
 				pos-=1
 				channel = pygame.mixer.find_channel()
 				channel.play(splash)
-			pygame.time.set_timer(my_event_IDs["right_response"],0)
+			pygame.time.set_timer(my_event_IDs["right_response"],0)				
+#			channel = pygame.mixer.find_channel()
+#			channel.play(missed_turn)
+#			while channel.get_busy():
+#				continue
 
 		if event.type == my_event_IDs["laser"]:
 			channel = pygame.mixer.find_channel()
