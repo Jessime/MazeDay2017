@@ -50,7 +50,7 @@ def ball_circle(ball, p2, update=False):
         overlap = 0.5*(ball.size + p2.size - dist+1)
         ball.x += math.cos(ball.angle)*overlap
         ball.y -= math.sin(ball.angle)*overlap
-    return  collision_occurs
+    return  collides
 
 
 def closest_point_on_seg(seg, pt):
