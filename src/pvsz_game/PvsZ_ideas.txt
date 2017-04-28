@@ -1,9 +1,0 @@
-Plants vs. Zombies Audio Clone
-
-Move with arrow keys.
-Each plant has it's own sound on hover, maybe two if it has states. Ding to indicate sun on sunflower on hover.
-Zombie noises only play when hovered on a give row.
-There should be some sort of munching noise or indicator that a plant is getting attacked. 
-The sound level of the closest zombie is given as a fraction of it's location to the base.
-
-
