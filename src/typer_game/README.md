@@ -10,7 +10,9 @@ Speedy Typer is a straightforward typing game to test how quickly you can type s
 
 Just running:
 
-`python typing.py`
+```
+python typing.py
+```
 
 will launch straight into a game.
 

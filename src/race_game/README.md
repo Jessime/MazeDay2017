@@ -1,6 +1,6 @@
 # Escape from Tycho Crater
 
-This is an escape game in which your character evades a pursuing UFO.
+This is a running game in which your character evades a pursuing UFO.
 
 ## About
 
@@ -11,7 +11,7 @@ Escape the UFO by evading obstacles and shooting the UFO backward with a laser. 
 Run:
 
 ```
-race_game.py
+python race_game.py
 ```
 
 to start a new game.

@@ -1,4 +1,4 @@
-# MazeDay2017
+# Awesome Audio Arcade
 
 A collection of arcade style audio games for MazeDay 2017.
 
@@ -12,17 +12,24 @@ To install dependencies navigate to the repository and run:
 pip install -r requirements.txt
 ```
 
-Each mini-game is currently run independently. Please refer to the `README` of the game you're interested in for specific instructions.
+Each mini-game is currently run independently. To run Binball, for example, do
+
+```
+cd src
+python binball.py
+```
+
+Please refer to the `README` of the game you're interested in for specific instructions on how to play each game.
 
 # Games
 
-Below is a list of games currently available
+Below is a list of games currently available:
 
 1. Speedy Typer - A type racing games where you must reach a certain Words-Per-Minute to make it to the next level.
 2. Minesweeper - Modeled after the classic Windows puzzle game, see if you can clear the board of mines to win the game.
-3. Plants vs. Zombies - A castle defense style game!
+3. Escape from Tycho Crater - a running game where you flee from a UFO. Can you get
+away?
 4. Binball - A pinball arcade game where flippers have been replaced by bins. How many points can you score?!
-5.
 
 # Contributing
 
@@ -40,3 +47,7 @@ Each game should be given it's own directory. For example, if you're interested 
         └── call_of_duty.py
 
 ```
+
+# Known Issues
+
+Pygame may not run correctly on [Mac OS](https://bitbucket.org/pygame/pygame/issues/203/window-does-not-get-focus-on-os-x-with).

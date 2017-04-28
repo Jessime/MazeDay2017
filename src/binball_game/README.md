@@ -22,6 +22,7 @@ Flag | Full Flag | Default | Description
 --- | --- | --- | ---
 -ns | --no_sound | False | Set to turn off all audio
 -nv | --no_video | False | Set to turn off all video
+-d | --difficulty | 'regular' | Choose either 'easy', 'regular', 'hard', 'veteran' to change reaction speed.
 
 ## Gameplay
 
@@ -33,7 +34,7 @@ Here is a table of all keys, and their effects:
 
 Keys | Description |
 --- | --- |
-space | launches the ball (hold for power)
+space | launches the ball (hold down to increase launch speed)
 d | activates left most bin
 f | activates inner left bin
 j | activates inner right bin
@@ -45,11 +46,11 @@ p | pause game
 
 ### Components
 
-The ball can interact with a variety of components. The basic components are listed below.
+The ball can interact with a variety of components. The components are listed below.
 
 #### Bins
 
-The ball will fall into bins and a corresponding note will play to indicate to the player which key to hit. These bins are located similarly to where flippers would be located if you were playing normal pinball. If you hit the wrong key, you will not be able to correct yourself! The longer you wait after the note plays, the further left the ball will be angled. Wait too long though, and you will lose a life! The bin's noises are (from left to right) note1.mp3, note2.mp3, note3.mp3, and note4.mp3.
+The ball will fall into bins and a corresponding note will play to indicate to the player which key to hit. These bins are located similarly to where flippers would be located if you were playing normal pinball. If you hit the wrong key, you will not be able to correct yourself! The longer you wait after the note plays, the further left the ball will be angled. Wait too long though, and you will lose a life! The bin's noises are (from left to right) note1.mp3, note2.mp3, note3.mp3, and note4.mp3. You can test these sounds by hitting 't'.
 
 #### Segment
 

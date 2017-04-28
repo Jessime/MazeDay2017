@@ -15,7 +15,9 @@ Most resources are image heavy, but here are a couple sources that offer text ex
 
 Run:
 
-`python minesweeper.py`
+```
+python minesweeper.py
+```
 
 to launch straight into a game.
 
