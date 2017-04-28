@@ -54,7 +54,7 @@ The ball will fall into bins and a corresponding note will play to indicate to t
 
 #### Segment
 
-These are basic straight lines. They're worth very few points, and generally don't do anything special. Their noise is seg2.mp3
+These are basic straight lines. They're worth very few points, and generally don't do anything special. Their noise is seg2.mp3.
 
 #### Platforms
 
@@ -62,23 +62,23 @@ These are the horizontally moving segments. The ball can only interact with the 
 
 #### Particle
 
-Round bumpers are almost as common as segments, and also don't do anything special. Their noise is jump.mp3
+Round bumpers are almost as common as segments, and also don't do anything special. Their noise is jump.mp3.
 
 #### Spinner
 
-These rectangles are hard to get to, as they're generally protected by tunnels of segments. You'll know if you hit a spinner because it'll freeze the ball for awhile while it's spinning. This freeze is worth it, since it comes with a large score reward. Their noise is spin.mp3
+These rectangles are hard to get to, as they're generally protected by tunnels of segments. You'll know if you hit a spinner because it'll freeze the ball for awhile while it's spinning. This freeze is worth it, since it comes with a large score reward. Their noise is spin.mp3.
 
 #### CurveBall
 
-These circles are subclasses of Particle, but they have centripetal force associated with it that curves the ball's trajectory. For each frame the ball is in a CurveBall, you will get a small point reward. Their noise is chimes.mp3
+These circles are subclasses of Particle, but they have centripetal force associated with it that curves the ball's trajectory. For each frame the ball is in a CurveBall, you will get a small point reward. Their noise is chimes.mp3.
 
 #### Tubes
 
-Tubes are, as the name may imply, components that send your ball to a different location. Maybe you'll get lucky and score a bunch of points this way! Their noise is suck.mp3
+Tubes are, as the name may imply, components that send your ball to a different location. Maybe you'll get lucky and score a bunch of points this way! Their noise is suck.mp3.
 
 #### Coins
 
-Coins have no other effect than giving you points! Some hard to reach coins are worth more than normal coins. If you collect all of the coins, they reset and be double the amount! Their noise is coins.mp3
+Coins have no other effect than giving you points! Some hard to reach coins are worth more than normal coins. If you collect all of the coins, they reset and be double the amount! Their noise is coins.mp3.
 
 ### Winning
 
