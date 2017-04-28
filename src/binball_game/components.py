@@ -79,7 +79,7 @@ class Segment():
 class Platforms():
     """ """
 
-    def __init__(self, start_pt1, start_pt2, noise='seg2'):
+    def __init__(self, start_pt1, start_pt2, noise=''):
         self.seg_1 = Segment(start_pt1, (start_pt1[0]+50, start_pt1[1]))
         self.seg_2 = Segment(start_pt2,
                              (start_pt2[0]+50, start_pt2[1]),

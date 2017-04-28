@@ -12,13 +12,13 @@ def ball_rect(ball, rect):
 
     Returns
     -------
-    collision_occurs : bool
+    collides : bool
         True if ball's position overlaps with rect
     """
     x_in = rect.left <= ball.x <= rect.right
     y_in = rect.top <= ball.y <= rect.bottom
-    collision_occurs = x_in and y_in
-    return collision_occurs
+    collides = x_in and y_in
+    return collides
 
 def ball_circle(ball, p2, update=False):
     """Determines if ball collides with any circular objects
@@ -37,15 +37,15 @@ def ball_circle(ball, p2, update=False):
 
     Returns
     -------
-    collision_occurs : bool
+    collides : bool
         True if ball's position overlaps with p2's position
     """
     dx = ball.x - p2.x
     dy = -ball.y + p2.y
 
     dist = math.hypot(dx, dy)
-    collision_occurs = dist < ball.size + p2.size
-    if collision_occurs and update:
+    collides = dist < ball.size + p2.size
+    if collides and update:
         ball.angle = (math.atan2(dy, dx)) % (2*math.pi)
         overlap = 0.5*(ball.size + p2.size - dist+1)
         ball.x += math.cos(ball.angle)*overlap
@@ -88,8 +88,14 @@ def segment_particle(seg, particle):
         A line segment containing Points 'a' and 'b'
     particle : Particle
         A circle described by a Point and a size (radius)
+
+    Returns
+    -------
+    collides : bool
+        True if if the ball's position overlaps with a segment
     """
     dist_v = closest_point_on_seg(seg, particle.pos)-particle.pos
     distsq = dist_v.dot(dist_v)
+    collides = particle.size**2 >= distsq
 
-    return particle.size**2 >= distsq
+    return collides

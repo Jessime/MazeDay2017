@@ -14,6 +14,82 @@ from .view import BasicView, AudioView
 from .components import Particle, Bin, init_components, cap, Coin, init_coin_list
 
 class Model():
+    """Handels logic for the system.
+
+    Parameters
+    ----------
+    ev_manager : EventManager
+        Coordinates message passing between MVC classes.
+    difficulty : str (default='regular')
+        Determines the reaction time necessary for successful hit out of a bin,
+        controlled by changing the gravity in the bins.
+
+    Attributes
+    -------
+    player_score : int
+        Tally of points from ball interactions with components.
+    score_multiplier : int
+        Multipler for coin values after all coins have been collected and reset.
+    player_lives : int
+        Number of balls until game over.
+    launch_power : int
+        Determines how fast the ball will move which corresponds to how long the
+        player holds down the spacebar. Low launch_powers will not successfully
+        launch the ball into the main game board.
+    islaunched : bool (default=False)
+        Game play flag. Set to True once the player has let go of the spacebar.
+    successful_launch : bool (default=False)
+        Game play flag. Determines whether or not the ball has been successfully
+        launched (is in the main playing field). A Segment will appear closing off
+        the launching area.
+    failed_launch : bool (default=False)
+        Game option flag. If launch is unsuccessful (not enough launch_power),
+        the ball is reset and player will be able to relaunch the ball.
+    paused : bool (default=False)
+        Game play flag. Option to pause game by freezing the frame.
+    running : bool (default=True)
+        Main loop flag. Game continues running until player wins/loses/quits.
+    width : int
+        Determines width of game board in pixels.
+    height : int
+        Determines height of game board in pixels.
+    bin_gravity : {str : float}
+        A dictionary mapping difficulty strings to gravity float values.
+    ball : Particle
+        A Particle that interacts with Components on the game board. The player can
+        score points when the ball interacts with specific Components and can control
+        the ball's trajectory after the ball falls into a bin. If the ball moves below
+        the bin area, the player loses a life.
+    segment_list : [Segment]
+        A list of Segments that the ball will collide with.
+    particle_list : [Particle]
+        A list of Particle bumpers that the ball will collide with. Will add points to
+        the player score when hit.
+    launch_runway : Rect
+        An invisible Rect that covers the area of the launching runway
+    bin_list : [Bin]
+        A list of Rects
+    spinner_list : [Spinner]
+        A list of Rects that change color once the ball interacts with one. Will add
+        points to the player score when interacted with.
+    tube_manager : TubeManager([Tube])
+        Responsible for updating Tube components.
+    curver_list : [CurveBall]
+        A list of Particles that curves the ball's trajectory when the ball interacts with one.
+        Will add points to the player score when interacted with.
+    coin_list : [Coin]
+        A list of Particles that adds points to the player score when interacted with. Once all
+        coins have been collected, the coins will reset with an increased value.
+    platforms : [Platforms]
+        List of two Segments that move horizontally during game play. When the ball interacts
+        with the upper Platform, the ball will teleport to the bottom Platform and fall down
+        closer to the Bins.
+    starter_segs_len : int
+        Length of the original segment list which does not include the Segment blocking off
+        the launch runway while the ball is in play in the main game board area.
+    event :
+        The last event received from ev_manager.
+    """
     def __init__(self, ev_manager, difficulty):
         self.ev_manager = ev_manager
         self.difficulty = difficulty
