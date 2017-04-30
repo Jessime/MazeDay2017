@@ -322,7 +322,7 @@ def run():
 							channel = pygame.mixer.find_channel()
 							channel.set_volume(0.1)
 							channel.play(explode)
-							enemy_pos-=5
+							enemy_pos-=4
 							lasers-=1
 							aiming = 0
 							aim_pos = [0,0]
