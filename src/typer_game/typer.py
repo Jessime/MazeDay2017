@@ -113,8 +113,7 @@ class Typer():
             The function used to play the sentence.
         """
         platform = sys.platform
-        if platform == 'win32':
-            pygame.mixer.init()
+        pygame.mixer.init()
         if self.verbose:
             print('\nPlatform: {}\n'.format(platform))
         platform2play = {'linux':self.play_linux,
