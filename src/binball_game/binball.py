@@ -127,8 +127,8 @@ class Model():
 
         self.starter_segs_len = len(self.segment_list) #TODO hack. used to check if cap has been added to launcher.
 
-        self.start_coin_timer = None
-        self.start_bin_timer = None
+        self.start_coin_timer = 0
+        self.start_bin_timer = 0
         self.current_coin_value = None
 
         self.ev_manager.register(self)
