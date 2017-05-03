@@ -51,7 +51,7 @@ def run():
 	# Set up channels for playing sound
 	start_channel = pygame.mixer.Channel(1)
 	stalled_channel = pygame.mixer.Channel(2)
-	stalled_channel.set_volume(0.5)
+	stalled_channel.set_volume(0.2)
 	moving_channel = pygame.mixer.Channel(3)
 	moving_channel.set_volume(0.1)
 	#obsticle_alert_channel = pygame.mixer.Channel(4)
@@ -59,7 +59,7 @@ def run():
 	wall_hit_channel = pygame.mixer.Channel(6)
 	wall_hit_channel.set_volume(1)
 	enemy_channel = pygame.mixer.Channel(7)
-	enemy_channel.set_volume(1)
+	enemy_channel.set_volume(0.5)
 	
 	clock = pygame.time.Clock()
 	t = 0
@@ -109,6 +109,22 @@ def run():
 	aimed = 0
 	fire_alert = 0
 	
+	# help menu
+	menu_message = pygame.mixer.Sound(base.format('menu_message'))
+	menu_exit = pygame.mixer.Sound(base.format('menu_exit'))
+	drive_label = pygame.mixer.Sound(base.format('drive_label'))
+	drive_message = pygame.mixer.Sound(base.format('drive_message'))
+	laser_label = pygame.mixer.Sound(base.format('laser_label'))
+	laser_message = pygame.mixer.Sound(base.format('laser_message'))
+	turn_label = pygame.mixer.Sound(base.format('turn_label'))
+	turn_message = pygame.mixer.Sound(base.format('turn_message'))
+
+	help_menu = [\
+		[drive_label,drive_message],\
+		[turn_label,turn_message],\
+		[laser_label,laser_message]\
+		]
+
 	start_channel.play(intro_message)
 	while start_channel.get_busy():
 		for event in pygame.event.get():
@@ -158,17 +174,20 @@ def run():
 				ship_warning = 1		
 	
 		if ship_close == 1 and aiming == 1:
-			if pos-enemy_pos <= 1.5:
-				break
+#			if pos-enemy_pos <= 1.5:
+#				break
 			if aim_alert == 0:
 				while start_channel.get_busy():
 					continue
+				stalled_channel.stop()
+				enemy_channel.stop()
 				gameUtils.play_single_sound(wall_hit_channel,aim_prefix)
 				for sound in aim_message:
 					gameUtils.play_single_sound(wall_hit_channel,aim_dict[sound])
 				pygame.event.clear()
 				pygame.time.set_timer(my_event_IDs["aim_response"],5000)	
 				aim_alert = 1
+				stalled_channel.play(stalled_engine)
 	
 		if aim_pos == ship_aim_pos:
 			if fire_alert ==0:
@@ -285,8 +304,8 @@ def run():
 						aim_pos[1]-=1
 	#					gameUtils.play_single_sound(wall_hit_channel,laser_aim)
 						break
-					if rt_alert == 1 or lt_alert == 1:
-						break
+#					if rt_alert == 1 or lt_alert == 1:
+#						break
 					if moving_channel.get_busy():
 						moving_channel.stop()
 						is_moving = 0
@@ -322,7 +341,7 @@ def run():
 							channel = pygame.mixer.find_channel()
 							channel.set_volume(0.1)
 							channel.play(explode)
-							enemy_pos-=4
+							enemy_pos-=3
 							lasers-=1
 							aiming = 0
 							aim_pos = [0,0]
@@ -332,6 +351,33 @@ def run():
 						ship_aim_pos,aim_message = aim.aim_message()
 						fire_alert = 0
 	
+				if event.key == pygame.K_h:
+					is_moving = 0
+					is_enemy_moving = 0
+					enemy_channel.stop()
+					stalled_channel.stop()
+					moving_channel.stop()
+					menu = 1
+					i = 0
+					start_channel.play(menu_message)
+					while menu == 1:
+						for event in pygame.event.get():
+							if event.type == pygame.KEYDOWN:
+								if event.key == pygame.K_DOWN:
+									if i == len(help_menu)-1: i = 0
+									else: i+=1
+									start_channel.play(help_menu[i][0])
+								if event.key == pygame.K_UP:
+									if i == 0: i = len(help_menu)-1
+									else: i-=1
+									start_channel.play(help_menu[i][0])
+								if event.key == pygame.K_SPACE:
+									start_channel.play(help_menu[i][1])
+								if event.key == pygame.K_ESCAPE:
+									gameUtils.play_single_sound(start_channel,menu_exit)
+									is_enemy_moving = 1
+									menu = 0
+
 			if event.type == my_event_IDs["aim_response"]:
 				pygame.time.set_timer(my_event_IDs["aim_response"],0)
 				if aim_pos != ship_aim_pos or shot_success == 0:
@@ -347,7 +393,7 @@ def run():
 			if event.type == my_event_IDs["left_turn"]:
 				lt_alert = 1
 				channel = pygame.mixer.find_channel()
-				channel.set_volume(1,0)
+				channel.set_volume(1)
 				channel.play(left_alert)
 				pygame.time.set_timer(my_event_IDs["left_turn"],0)
 				lt_response = 0
@@ -357,28 +403,36 @@ def run():
 				rt_alert = 1
 	#			right_turn_channel.play(turn_alert)
 				channel = pygame.mixer.find_channel()
-				channel.set_volume(0,1)
+				channel.set_volume(1)
 				channel.play(right_alert)
 				pygame.time.set_timer(my_event_IDs["right_turn"],0)
 				rt_response = 0
 				pygame.time.set_timer(my_event_IDs["right_response"],1500)
 	
 			if event.type == my_event_IDs["left_response"]:
+				if aiming == 1:
+					pygame.time.set_timer(my_event_IDs["left_response"],0)
+					break
 				if lt_response == 0:
 					moving_channel.stop()
 					is_moving = 0
 					pos-=1
 					channel = pygame.mixer.find_channel()
 					channel.play(splash)
+					aiming = 0
 				pygame.time.set_timer(my_event_IDs["left_response"],0)
 	
 			if event.type == my_event_IDs["right_response"]:
+				if aiming == 1:
+					pygame.time.set_timer(my_event_IDs["right_response"],0)
+					break
 				if rt_response == 0:
 					moving_channel.stop()
 					is_moving = 0
 					pos-=1
 					channel = pygame.mixer.find_channel()
 					channel.play(splash)
+					aiming = 0
 				pygame.time.set_timer(my_event_IDs["right_response"],0)				
 	
 			if event.type == my_event_IDs["laser"]:
