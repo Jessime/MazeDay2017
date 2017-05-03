@@ -217,9 +217,15 @@ class Particle():
 class Coin(Particle):
     """An circular object with a value """
 
-    def __init__(self,x ,y ,size, value, noise='coins'):
+    def __init__(self, x,  y, size, value, noise='coins'):
         super().__init__(x, y, size, value=value, noise=noise)
         self.color = (255,215,0)
+        self.coin_timer = 0
+
+    def pressed_bonus(self):
+        message = None
+        self.coin_timer = time.time()
+
 
 class Tube(Particle):
 

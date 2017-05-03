@@ -6,6 +6,7 @@ Created on Sat Sep 10 15:25:02 2016
 """
 
 import pygame
+import time
 import binball_game.events as events
 
 class Controller():
@@ -29,6 +30,8 @@ class Controller():
             message = events.TogglePause()
         elif event.key == pygame.K_t:
             message = events.TestNotes()
+        elif event.key == pygame.K_r:
+            message = events.CheckCoinBonus(time.time())
         return message
 
     def up_keys(self, message, event):

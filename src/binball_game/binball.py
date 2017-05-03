@@ -127,21 +127,24 @@ class Model():
 
         self.starter_segs_len = len(self.segment_list) #TODO hack. used to check if cap has been added to launcher.
 
-        self.event = None
+        self.start_coin_timer = None
+        self.start_bin_timer = None
+        self.current_coin_value = None
+
         self.ev_manager.register(self)
+        self.event = None
+        self.event_func_dict = {'UserQuit': self.exit_game,
+                                'TogglePause': self.toggle_pause,
+                                'PowerLaunch': self.power_launch,
+                                'Launch': self.launch,
+                                'PressedBin': self.pressed_bin,
+                                'CheckCoinBonus': self.check_coin_bonus}
 
     def notify(self, event):
         self.event = event
-        if isinstance(event, events.UserQuit):
-            self.exit_game()
-        elif isinstance(event, events.TogglePause):
-            self.toggle_pause()
-        elif isinstance(event, events.PowerLaunch):
-            self.power_launch()
-        elif isinstance(event, events.Launch):
-            self.launch()
-        elif isinstance(event, events.PressedBin):
-            self.pressed_bin()
+        name = event.__class__.__name__
+        if name in self.event_func_dict:
+            self.event_func_dict[name]()
 
     def pressed_bin(self):
         bin_ = self.bin_list[self.event.num]
@@ -221,18 +224,24 @@ class Model():
             self.ball.angle = math.pi*1.5
             self.ball.speed = 0
 
+    def check_coin_bonus(self):
+        if self.event.time - self.start_coin_timer < 1:
+            self.player_score += self.current_coin_value*2
+            self.ev_manager.post(events.CoinBonus())
+
     def check_coin(self):
         index = None
         for i, coin in enumerate(self.coin_list):
             contact = collision.ball_circle(self.ball, coin)
             if contact:
+                self.start_coin_timer = time.time()
+                self.current_coin_value = coin.value
                 self.player_score += coin.value*self.score_multiplier
                 self.ev_manager.post(events.Collision(coin.noise))
                 index = i
                 del self.coin_list[i]
                 if not self.coin_list:
                     self.score_multiplier += 1
-                    print(self.score_multiplier)
                     self.coin_list = init_coin_list(self.width,self.height)
 
     def check_launcher_error(self):    # TODO hack

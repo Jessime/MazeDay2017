@@ -39,6 +39,7 @@ d | activates left most bin
 f | activates inner left bin
 j | activates inner right bin
 k | activates right most bin
+r | press after getting coins to score double points
 esc | quits game
 t | tests noises for bins. Bin key will be said, then noise will sound
 b | number of balls left before game is over

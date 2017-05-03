@@ -32,7 +32,8 @@ class BasicView(View):
         self.video = video
 
         self.clock = pygame.time.Clock()
-        self.event_func_dict = {'Init': self.initialize,
+        self.event_func_dict = {'CoinBonus': self.show,
+                                'Init': self.initialize,
                                 'LoopEnd': self.loop_end,
                                 'Lives': self.show,
                                 'Score': self.show,
@@ -107,9 +108,10 @@ class AudioView(View):
                                 'SpinnerCollide' : self.play,
                                 'TestNotes' : self. test_notes,
                                 'TogglePause' : self.toggle_pause,
-                                'TubeTravel' : self.play}
+                                'TubeTravel' : self.play,
+                                'CoinBonus' : self.play}
 
-        self.bin_noise_dict = {True:'coins',
+        self.bin_noise_dict = {True:'flipper',
                                False:'error',
                                'collide':'flipper'}
 

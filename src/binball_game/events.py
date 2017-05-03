@@ -6,6 +6,17 @@ Created on Sat Sep 10 15:25:02 2016
 
 These Events are in alphabetical order.
 """
+
+class CheckCoinBonus():
+    def __init__(self, time):
+        self.time = time
+
+class CoinBonus():
+    def __init__(self):
+        self.mp3 = 'mario_coin'
+    def __str__(self):
+        return 'Extra points!'
+
 class Collision():
     def __init__(self, mp3):
         self.mp3 = mp3
